@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Real option value: user guide — Murray Cantor</title>
+<meta name="description" content="User guide to Real option value: fill in a business case, take a reading, and read what the investment is worth at a confidence you state.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   The user guide pages: additive styles over site.css, as the model pages
+   are. Nothing added to the palette.
+   ---------------------------------------------------------------------- */
+.wrap{max-width:54rem}
+.guide h2{margin-top:0}
+.guide h3{margin:1.8rem 0 .6rem;color:var(--indigo)}
+.guide section{padding:2.2rem 0}
+.guide ol,.guide ul{max-width:38rem;padding-left:1.3rem}
+.guide li{margin:.3rem 0}
+.guide .lead{font-size:1em}
+.toc{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1rem 1.35rem;margin:0 0 1rem}
+.toc .lbl{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--garnet);font-weight:700;margin-bottom:.4rem}
+.toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem;font-size:.95rem;max-width:none}
+.toc li{margin:.15rem 0;break-inside:avoid}
+@media (max-width:40rem){.toc ol{columns:1}}
+.open{display:inline-block;margin:.2rem 0 0;font-size:.82rem;font-weight:600;color:#fff;
+  background:var(--indigo);border:1.5px solid var(--indigo);border-radius:3px;
+  padding:.34rem .8rem;text-decoration:none}
+.open:hover{background:var(--garnet);border-color:var(--garnet)}
+.open:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.25rem}
+table.g{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45;background:#fff;
+  border:1.5px solid var(--rule)}
+table.g th,table.g td{text-align:left;vertical-align:top;padding:.5rem .7rem;
+  border-top:1px solid var(--rule)}
+table.g thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+table.g td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+table.g td b{font-weight:600}
+table.g tr.grp td{background:var(--paper);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.screen{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0 1.25rem;font-size:.95rem;max-width:40rem}
+.screen .big{font-family:var(--serif);font-size:1.9rem;color:var(--indigo);line-height:1.15}
+.screen .say{color:var(--muted);font-size:.9rem}
+.screen dl{display:grid;grid-template-columns:auto auto;gap:.2rem 1.2rem;margin:.7rem 0 0;
+  justify-content:start}
+.screen dt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;align-self:center}
+.screen dd{margin:0;font-variant-numeric:tabular-nums}
+.warnbox{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0;max-width:40rem;font-size:.95rem}
+.kbd{font-weight:600;color:var(--indigo)}
+@media (max-width:34rem){
+  .screen dl{grid-template-columns:1fr}
+  table.g{font-size:.84rem}
+  table.g th,table.g td{padding:.45rem .5rem}
+}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html">Home</a>
+  <a href="real-option-model.html" aria-current="true">Real option value</a>
+  <a href="fixed-bid-model.html">Bid price</a>
+</nav>
+<header class="masthead family">
+  <p class="eyebrow">The model and its pages</p>
+  <h1>Real option value</h1>
+  <p class="standfirst">How to fill in a business case, take a reading and understand what it says. Every figure quoted here is what the page prints for the book's own sample, so you can follow along on screen.</p>
+  <p style="margin:1.1rem 0 0"><a class="open" href="real-option.html">Open Real option value</a></p>
+  <nav class="modeltabs" aria-label="The pages of Real option value">
+    <a href="real-option-model.html">About the model</a>
+    <a href="real-option.html">Run the model</a>
+    <a href="real-option-guide.html" aria-current="page">User guide</a>
+  </nav>
+</header>
+
+<main class="guide">
+
+<nav class="toc" aria-label="Contents">
+  <span class="lbl">Contents</span>
+  <ol>
+    <li><a href="#what">What the page does</a></li>
+    <li><a href="#layout">Finding your way around</a></li>
+    <li><a href="#first">Your first reading</a></li>
+    <li><a href="#typing">Typing figures</a></li>
+    <li><a href="#estimates">Estimates</a></li>
+    <li><a href="#sheet">The sheet, box by box</a></li>
+    <li><a href="#panel">What the sheet implies</a></li>
+    <li><a href="#reading">The reading</a></li>
+    <li><a href="#figures">The figures</a></li>
+    <li><a href="#nonumber">When there is no number</a></li>
+    <li><a href="#own">Building your own business case</a></li>
+    <li><a href="#keeping">Keeping your work</a></li>
+    <li><a href="#quoting">Before you quote a number</a></li>
+  </ol>
+</nav>
+
+<section id="what">
+  <h2>1. What the page does</h2>
+  <p class="lead">This page values a project whose delivery date is yours to choose. The product can ship earlier with less in it or later with more, and what it earns falls the later it arrives. The page answers one question: what is the investment worth, at a confidence you state?</p>
+  <p>You describe the project on a parameter sheet: what it will still cost and how long it will still take, the market it sells into, what a unit sells for and costs, and the confidence you want. Each uncertain figure is an estimate, not a single number. The page then plays the project out 20,000 times, drawing each estimate afresh every time, and adds up what each of those outcomes is worth today after the cost to complete.</p>
+  <p>The reading is the value that 85 of those 100 outcomes reach or beat, if 85% is the confidence you chose. That is the real option value of Chapter 5. Beside it the page gives the return on the money still to spend, read at the same confidence, and the chance that the investment makes money at all.</p>
+  <p>The method is Chapter 5 of <i>Project Economics Under Uncertainty: From Concept to Realization</i>, with the economics of Appendix 3. The sample project, RSonic Terra System, is Chapter 5's worked example with the values of its Table 1.</p>
+</section>
+
+<section id="layout">
+  <h2>2. Finding your way around</h2>
+  <p>Under the page title is a toolbar. At its left is the version of the page, v0.13.3. If the page you are looking at shows an earlier number, your browser is showing an old copy: reload it (hold Shift while reloading, or press Cmd-Shift-R on a Mac).</p>
+  <p>The rest of the toolbar works on your projects:</p>
+  <ul>
+    <li><span class="kbd">Project</span> picks the project you are working on.</li>
+    <li><span class="kbd">New project</span> asks for a name and opens an empty sheet.</li>
+    <li><span class="kbd">Export</span> saves every project on this page to a file on your computer. <span class="kbd">Import</span> reads such a file back.</li>
+    <li><span class="kbd">User guide</span> opens this guide.</li>
+  </ul>
+  <p>Below the toolbar are four tabs.</p>
+  <ul>
+    <li><span class="kbd">Projects</span> lists your projects. Click one to open its sheet.</li>
+    <li><span class="kbd">Sheet</span> is where you type the project in. Beside it is a panel, <i>What the sheet implies</i>, showing what your figures work out to.</li>
+    <li><span class="kbd">Reading</span> gives the value, the figures beside it, a chart of value against delivery delay, a confidence slider, and the pictures of how the outcomes spread.</li>
+    <li><span class="kbd">Figures</span> shows the same pictures on their own.</li>
+  </ul>
+  <p>Everything is worked out inside the page. Nothing you type leaves your computer, and the page works the same whether you open it from a folder or from the website.</p>
+</section>
+
+<section id="first">
+  <h2>3. Your first reading</h2>
+  <p>The page opens on the book's sample. Follow these steps to see a reading before typing anything of your own.</p>
+  <ol>
+    <li>On the <span class="kbd">Projects</span> tab, click <b>RSonic Terra System</b>. Its sheet opens.</li>
+    <li>Read down the sheet. Every box holds a value from Chapter 5, Table 1: development still to cost $4M, $5M or $7.5M, and to take 70, 80 or 100 weeks; a $200 million market; peak penetration of 28%, 35% or 38.5%; a selling price of $3,000, $3,750 or $4,500; and an 85% confidence.</li>
+    <li>Look at the panel beside the sheet. It shows, among other things, 18,667 units sold a month at the peak and development taking 19.18 months on average.</li>
+    <li>Press <span class="kbd">Take a reading</span> at the foot of that panel, or click the <span class="kbd">Reading</span> tab.</li>
+  </ol>
+  <p>You should see this:</p>
+  <div class="screen">
+    <div class="big">$19.5M</div>
+    <div class="say">is what this investment is worth with 85% confidence: 85 times in 100 its net present value, after the cost to complete, is at least this.</div>
+    <dl>
+      <dt>Return on the money still to spend</dt><dd>3.49</dd>
+      <dt>Average value</dt><dd>$57.4M</dd>
+      <dt>Chance it makes money</dt><dd>94.4%</dd>
+      <dt>Chance a unit loses money</dt><dd>41.5%</dd>
+    </dl>
+  </div>
+  <p>Now drag the <span class="kbd">Confidence</span> slider under the chart to 50%. The value rises to $57.3M and the return to 10.47: asking to be right only half the time lets you claim more. Drag it back to 85%. The slider only changes what you are reading; the confidence on the sheet stays as you typed it.</p>
+</section>
+
+<section id="typing">
+  <h2>4. Typing figures</h2>
+  <p>Every box takes the unit printed beside it, and keeps exactly what you type. The page never rescales a figure behind your back.</p>
+  <ul>
+    <li><b>Money</b> may carry a dollar sign and thousands commas: <b>$4,750</b> and <b>4750</b> are the same. A K, M or B after the number means thousands, millions or billions, so <b>200M</b> is 200,000,000.</li>
+    <li><b>Per cent boxes</b> (those marked %) take the per cent as the book prints it. Type <b>85</b> or <b>85%</b> for 85%. A fraction such as <b>0.85</b> is refused, with the fix named, because it could only mean less than one per cent.</li>
+    <li><b>Other boxes</b> refuse a % sign.</li>
+    <li>A comma that is not a thousands comma, as in <b>1,50</b>, is refused rather than guessed at.</li>
+  </ul>
+  <p>A box that still needs a value is outlined in amber. A box holding something the page cannot use is outlined in red, and the panel beside the sheet says why in words, quoting what you typed.</p>
+  <p>When you change anything, the foot of the sheet says <i>unsaved changes</i> and the <span class="kbd">Save sheet</span> button lights. Taking a reading saves the sheet for you, and so does moving to another project, so a reading is always of the sheet you see.</p>
+</section>
+
+<section id="estimates">
+  <h2>5. Estimates</h2>
+  <p>Some boxes hold an estimate rather than a single figure: development cost, duration, peak penetration, selling price and operations cost. A small menu at the left of each lets you state it one of four ways.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Form</th><th>What you type</th><th>The spread it gives</th></tr></thead>
+    <tbody>
+      <tr><td><b>low, expected, high</b></td><td>Three figures, in that order: the low case, the one you expect, the high case.</td><td>A triangle from low to high, peaking at the expected figure. Out of order, the estimate is refused with its name.</td></tr>
+      <tr><td><b>mean and std dev</b></td><td>The average and the standard deviation.</td><td>A normal curve.</td></tr>
+      <tr><td><b>percentile table</b></td><td>One line per point: a probability between 0 and 1, then the value. For example <b>0.05 29</b>, <b>0.50 34</b>, <b>0.95 38</b>.</td><td>A curve through your points.</td></tr>
+      <tr><td><b>pasted values</b></td><td>A list of outcomes, separated by spaces or commas, such as the output of another simulation.</td><td>Your values, as they fall.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The sample uses low, expected, high throughout, as Table 1 does. Changing the form empties that box, so type the new figures straight after.</p>
+</section>
+
+<section id="sheet">
+  <h2>6. The sheet, box by box</h2>
+  <p>The sheet has four groups. The right-hand column gives the sample's value, from Chapter 5, Table 1 unless it says otherwise.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Box</th><th>What it is</th><th>Sample</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">Delivery</td></tr>
+      <tr><td><b>Development cost to complete</b></td><td>What development will still cost from today. Money already spent is not in it.</td><td class="n">$4M / $5M / $7.5M</td></tr>
+      <tr><td><b>Duration to complete</b></td><td>Weeks from now to delivery. The page turns weeks into months at about 4.35 weeks a month. The later the delivery, the less the product is worth.</td><td class="n">70 / 80 / 100 weeks</td></tr>
+      <tr class="grp"><td colspan="3">Market</td></tr>
+      <tr><td><b>Addressable market</b></td><td>The whole market at the peak month, in the unit chosen in the next box. Table 1 prints $200, meaning $200 million: type 200M.</td><td class="n">$200M</td></tr>
+      <tr><td><b>Market unit</b></td><td>Whether the market is stated in dollars or in units.</td><td>dollars</td></tr>
+      <tr><td><b>Penetration basis</b></td><td>Whether peak penetration is a share of the market's revenue or of its units.</td><td>share of revenue</td></tr>
+      <tr><td><b>Selling ends at month</b></td><td>The month, counted from now, when the product stops selling: Table 1's sales life end.</td><td class="n">120</td></tr>
+      <tr><td><b>Peak month from delivery</b></td><td>How many months after the expected delivery sales reach their peak.</td><td class="n">36</td></tr>
+      <tr><td><b>Revenue curve</b></td><td>The shape of sales: they rise from delivery to the peak, then fall to nothing, either at the end of the sales life or at year 6.</td><td>decay to zero at sales-life end</td></tr>
+      <tr><td><b>Peak penetration</b></td><td>Your share of the market at the peak month, in per cent.</td><td class="n">28 / 35 / 38.5%</td></tr>
+      <tr><td><b>Market average price</b></td><td>The market's price, not yours. Needed only when the market unit and the penetration basis differ, to turn one into the other. Leave it blank otherwise.</td><td>blank</td></tr>
+      <tr class="grp"><td colspan="3">Unit economics</td></tr>
+      <tr><td><b>Selling price</b></td><td>What one unit sells for.</td><td class="n">$3,000 / $3,750 / $4,500</td></tr>
+      <tr><td><b>Cost of sales per unit</b></td><td>What it costs to sell one unit.</td><td class="n">$900</td></tr>
+      <tr><td><b>COGS per unit</b></td><td>What it costs to make one unit.</td><td class="n">$2,200</td></tr>
+      <tr><td><b>Operations cost per unit</b></td><td>Support, warranty and hosting for one unit.</td><td class="n">$450 / $563 / $731</td></tr>
+      <tr><td><b>Operations cost basis</b></td><td>What the operations cost is charged on: the units sold each month; a share of the price on every unit still supported; or nothing at all.</td><td>units sold in the period</td></tr>
+      <tr><td><b>Support cost, share of price</b></td><td>Used only with the share-of-price basis: the share of the price charged each month on every unit still supported. 5% for 3 months is 15% of the price, which is Table 1's $563 on a $3,750 unit.</td><td class="n">5% a month</td></tr>
+      <tr><td><b>Support window</b></td><td>Used only with the share-of-price basis: how many months a unit is supported after it is sold.</td><td class="n">3 months</td></tr>
+      <tr><td><b>Price–operations exposure</b></td><td>From −1 to 1. Above 0 when a dearer unit also costs more to support; 0 treats the two as unrelated. It moves only the unit margins in the panel beside the sheet, not the reading.</td><td class="n">0</td></tr>
+      <tr class="grp"><td colspan="3">Targets</td></tr>
+      <tr><td><b>Discount rate</b></td><td>Per cent a year, applied a twelfth each month (Appendix 3). Table 1 has none.</td><td class="n">0%</td></tr>
+      <tr><td><b>Option confidence</b></td><td>The confidence the reading is taken at: the value is the one this share of outcomes reaches or beats. It must lie between 5% and 99%.</td><td class="n">85%</td></tr>
+      <tr><td><b>Budget confidence</b></td><td>From Chapter 5, Table 3. Kept with the sheet; nothing on the page reads it yet.</td><td class="n">85%</td></tr>
+      <tr><td><b>Duration confidence</b></td><td>From Chapter 5, Table 3. Kept with the sheet; nothing on the page reads it yet.</td><td class="n">80%</td></tr>
+    </tbody>
+  </table></div>
+  <p>The market unit, penetration basis, revenue curve and operations cost basis are choices Table 1 does not state. The sample sets them as shown, so that it reads as the book does. A new project leaves them blank, and the page will not take a reading until you choose, because a per-unit operations cost means nothing until you say what it is charged on, and a market figure means nothing without its unit.</p>
+</section>
+
+<section id="panel">
+  <h2>7. What the sheet implies</h2>
+  <p>The panel beside the sheet shows what your figures work out to before any valuation. You do not type anything here; the reading is built from these. Read it every time you change the sheet. Most mistakes show here first: a price a thousand times too small, a market in the wrong unit, a peak that makes no sense.</p>
+  <p>Where a row says <i>80% confident</i>, it means 4 times in 5 the figure is at or below the one shown.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Row</th><th>What it tells you</th><th>Sample</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">Margin on each unit sold</td></tr>
+      <tr><td>Before operations: average</td><td>What a typical unit earns over what it costs to make and sell.</td><td class="n">$649</td></tr>
+      <tr><td>Before operations: low / middle / high</td><td>5 in 100 units earn less than the first figure, half less than the second, 95 in 100 less than the third.</td><td class="n">$139 / $650 / $1,160</td></tr>
+      <tr><td>Before operations: chance of a loss</td><td>How often a unit sells for less than it costs to make and sell.</td><td class="n">0.91%</td></tr>
+      <tr><td>After operations: average, low / middle / high, chance of a loss</td><td>The same, once support, warranty and hosting are paid. The row is outlined in amber when more than a fifth of units lose money.</td><td class="n">$68; −$450 / $67 / $583; 41.46%</td></tr>
+      <tr class="grp"><td colspan="3">Timing and volume</td></tr>
+      <tr><td>Units sold a month at the peak</td><td>Market × penetration ÷ price, at the expected penetration and price. $200M × 35% ÷ $3,750.</td><td class="n">18,667</td></tr>
+      <tr><td>Development time: average</td><td>The duration estimate, in months.</td><td class="n">19.18 months</td></tr>
+      <tr><td>Sales start month</td><td>The month sales begin: an early delivery, reached one time in four.</td><td class="n">18.10</td></tr>
+      <tr><td>Peak sales month</td><td>The expected development time plus the peak month from delivery.</td><td class="n">54.41</td></tr>
+      <tr class="grp"><td colspan="3">Development cost and delay</td></tr>
+      <tr><td>Development cost, 80% confident</td><td>4 times in 5 development costs this or less.</td><td class="n">$6.2M</td></tr>
+      <tr><td>Margin lost per month of delay</td><td>Half the peak month's units at the average margin after operations: what each month of slip gives up.</td><td class="n">$640,900</td></tr>
+    </tbody>
+  </table></div>
+  <p>When the sheet cannot yet be worked out, the panel lists instead the boxes still to fill in (outlined in amber) or the entries it cannot use (outlined in red).</p>
+</section>
+
+<section id="reading">
+  <h2>8. The reading</h2>
+  <h3>The headline</h3>
+  <p>The large figure is the real option value: what the investment is worth at the confidence on the sheet. At 85%, 85 of every 100 outcomes are worth at least this once the cost to complete is paid. It turns red when it is below zero.</p>
+  <h3>The four figures beside it</h3>
+  <ul>
+    <li><b>Return on the money still to spend.</b> Profit divided by the development cost still to spend, read at the same confidence. 1 would mean the investment doubles its money.</li>
+    <li><b>Average value.</b> The value averaged over every outcome. Read the headline against it: the headline can rise while the average barely moves, which means the project has become more certain rather than more valuable.</li>
+    <li><b>Chance it makes money.</b> How often the value is above zero.</li>
+    <li><b>Chance a unit loses money.</b> How often one unit sold costs more than it earns, after operations costs. It is the same figure as the last margin row of the panel beside the sheet.</li>
+  </ul>
+  <h3>Value against delivery delay</h3>
+  <p>The chart shows what the investment would be worth, at the same confidence, if delivery slipped by 3, 6, 9, 12, 18 or 24 months. On the sample it falls from $19.5M on time to $14.3M a year late and $9.2M two years late. The slope is the price of lateness, which is the decision this model exists to inform: whether to ship sooner with less, or later with more.</p>
+  <h3>The confidence slider</h3>
+  <p>Drag it to read the value at any confidence from 5% to 98%. The headline, the return, the chart and the pictures below all follow. The slider does not change the sheet; the next time you open the project it reads at the confidence you typed there.</p>
+</section>
+
+<section id="figures">
+  <h2>9. The figures</h2>
+  <p>Under the controls on the Reading tab, and on their own on the Figures tab, are seven pictures of how the outcomes spread. Each title begins with the project's name, so a saved picture says which project it came from. Each has a <span class="kbd">Save as PNG</span> button that saves it as a picture file.</p>
+  <ol>
+    <li><b>Units a month over the sales life.</b> The sales curve: rising from delivery to the peak and falling to the end of the sales life, with the total units sold and the peak month's units. On the sample, 951,059 units in total, peaking at 18,667 a month.</li>
+    <li><b>Revenue over the sales life.</b> How total revenue spreads across the outcomes.</li>
+    <li><b>Gross margin on what is sold.</b> Revenue less what it costs to make and sell.</li>
+    <li><b>Cost of supporting what is sold.</b> The operations cost over the sales life.</li>
+    <li><b>Development cost.</b> The cost to complete, as your estimate spreads it.</li>
+    <li><b>Net present value.</b> The spread of the value itself, with the chance it loses money and the chance it makes money, and the option value marked at your confidence.</li>
+    <li><b>Return on the development spend.</b> The spread of the return, with the return at your confidence marked.</li>
+  </ol>
+  <p>Moving the confidence slider redraws the last two with the new mark.</p>
+</section>
+
+<section id="nonumber">
+  <h2>10. When there is no number</h2>
+  <p>The page will not guess. If the sheet cannot be valued as it stands, the Reading tab says why and lists what to fix, with an <span class="kbd">Open the sheet</span> button.</p>
+  <ul>
+    <li><b>Boxes with no value.</b> <i>No reading yet</i>, followed by the boxes still to fill in. A new project opens with fourteen of them. Choosing a market in units while the penetration basis is a share of revenue adds one more, <i>Market average price</i>, because the page needs the market's price to turn units into revenue.</li>
+    <li><b>Entries the page cannot read.</b> Each is quoted with the fix. Typing 0.85 as the option confidence gives <i>Option confidence reads "0.85", a fraction; the box takes per cent: type 85 or 85%.</i></li>
+    <li><b>Entries that contradict themselves or lie outside their range.</b> An estimate whose low is above its high, or a confidence of 100, which gives <i>Option confidence is 100, outside 5 to 99 per cent.</i> A confidence of 100% would be the single worst outcome, which means nothing as a value.</li>
+  </ul>
+</section>
+
+<section id="own">
+  <h2>11. Building your own business case</h2>
+  <h3>Starting</h3>
+  <ol>
+    <li>Press <span class="kbd">New project</span>, give it a name, and press <span class="kbd">Create</span>. The empty sheet opens with every required box in amber.</li>
+    <li>Fill in the delivery group: what development will still cost, and how many weeks it will still take.</li>
+    <li>Fill in the market. Choose its unit and the penetration basis first, then type the market and the peak penetration.</li>
+    <li>Fill in the unit economics, and choose what the operations cost is charged on.</li>
+    <li>Set the confidence you want the value at. Leave the discount rate at 0 to match the book, or type your rate a year.</li>
+    <li>Read the panel beside the sheet, then take a reading.</li>
+  </ol>
+  <p>A quicker start is to change the sample. Its figures are all in place, so change one thing at a time and watch what moves. <span class="kbd">Restore the book sample</span> on the Projects tab puts it back.</p>
+  <h3>Checking it</h3>
+  <p>Four checks catch most mistakes:</p>
+  <ol>
+    <li><b>Read the panel back.</b> Is the development time in months what you meant in weeks? Is the peak month where you expect it?</li>
+    <li><b>Check the units at the peak.</b> Market × penetration ÷ price. If that figure is wrong, nothing after it can be right.</li>
+    <li><b>Move a box you think matters and watch the value.</b> A box that changes nothing may be one the current choices do not use: the support share, for instance, counts only when operations are charged on a share of the price.</li>
+    <li><b>Compare operations cost with price.</b> Support costing a large share of the price, or more than the price, is the usual sign of a figure in the wrong unit.</li>
+  </ol>
+  <h3>What moves the value: worked examples on the sample</h3>
+  <p>Each of these starts from the sample as the book prints it, with one change.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Change</th><th>Value at 85%</th><th>Return</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>None (the sample)</td><td class="n">$19.5M</td><td class="n">3.49</td><td>Chapter 5, Table 1.</td></tr>
+      <tr><td>Discount rate 5% a year</td><td class="n">$13.5M</td><td class="n">2.42</td><td>Sales years away are worth less today.</td></tr>
+      <tr><td>Sales end at year 6</td><td class="n">$272,852</td><td class="n">0.04</td><td>Four years of sales are lost; the value barely clears zero.</td></tr>
+      <tr><td>Operations cost excluded</td><td class="n">$554.9M</td><td class="n">92.34</td><td>Support is most of what a unit costs after it is sold.</td></tr>
+      <tr><td>Market typed as 53,333 units, market average price $3,750</td><td class="n">$19.5M</td><td class="n">3.49</td><td>The same $200M market stated in units; the reading does not change.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The operations cost is the figure to watch. On the sample, a typical unit earns $649 before operations and $68 after, and 41.5% of units lose money once support is paid.</p>
+</section>
+
+<section id="keeping">
+  <h2>12. Keeping your work</h2>
+  <ul>
+    <li><b>Where projects live.</b> In this browser, on this computer. Another browser, or another computer, starts with only the sample. Clearing your browser's stored site data deletes them.</li>
+    <li><b>Saving.</b> <span class="kbd">Save sheet</span> keeps the sheet. Taking a reading, or moving to another project, saves it too. Each save that changes something keeps the sheet it replaced; the <i>Revisions</i> column on the Projects tab counts them.</li>
+    <li><b>Export and Import.</b> Export writes every project on this page, with its revisions, to a file you keep. Import reads such a file back: a project the page does not have is added, and one it already has, exported from it earlier, is replaced by the copy in the file. Export before clearing your browser, before moving to another computer, and before restoring the sample.</li>
+    <li><b>Restore the book sample.</b> On the Projects tab. It puts RSonic back as the book prints it and discards anything you have changed or added, after asking you to confirm.</li>
+  </ul>
+</section>
+
+<section id="quoting">
+  <h2>13. Before you quote a number</h2>
+  <p>Four things to know about the figures this page gives.</p>
+  <h3>The reading repeats exactly, but it is one draw of many</h3>
+  <p>Each project keeps its own 20,000 scenarios, the same every time, so the same sheet always gives the same reading and a change you make is the only thing that moves it. Drawn afresh, Table 1's value runs from about $18M to $21M and its return from about 3.4 to 3.9. The return is the less steady of the two, because it divides one uncertain figure by another. Quote the value to two figures and the return to one decimal place, or quote the range.</p>
+  <h3>The market's uncertainty averages itself away</h3>
+  <p>The selling price, the penetration and the operations cost are drawn afresh for every month of the sales life, about a hundred months. Drawn that way, a high month and a low month cancel, and the spread of the value is narrow. If instead the market turned out high or low for the product's whole life, the spread would be many times wider with the same average, and the value at 85% on Table 1 would be below zero. The positive value on the sample holds because the months are independent. If a decision turns on the value being positive, weigh how far your market's months really are independent of each other.</p>
+  <h3>The peak month moves the value only through discounting</h3>
+  <p>With no discount rate, the units sold over the sales life are the same wherever the peak falls, so moving the peak barely changes the value: 24 months gives $19.5M and 48 months $19.4M on the sample. With a discount rate, a later peak is worth less, because its sales come later.</p>
+  <h3>Chapter 5's later tables do not reproduce</h3>
+  <p>Table 1, the sample, reproduces, and so does Table 3. Typed in from the chapter, Tables 5 and 6 read about $122M and $213M at 85%, against the $156M and $272M the book prints, about a fifth apart in both.</p>
+</section>
+
+<p style="margin-top:2rem"><a class="open" href="real-option.html">Open Real option value</a> &nbsp; <a href="index.html">Back to Project Desk</a></p>
+
+</main>
+
+<footer>
+  <p>The method is from the book: the option value of Chapters 2 and 5, with the economics of Appendix 3. This guide is for v0.13.3 of the page.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+</div>
+</body>
+</html>

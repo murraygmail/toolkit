@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bid price: the model — Murray Cantor</title>
+<meta name="description" content="Bid price: what to charge for work wanted by a fixed date, for the return you require at the confidence you state, and how the figure is used from the decision to bid to delivery.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   The user guide pages: additive styles over site.css, as the model pages
+   are. Nothing added to the palette.
+   ---------------------------------------------------------------------- */
+.wrap{max-width:54rem}
+.guide h2{margin-top:0}
+.guide h3{margin:1.8rem 0 .6rem;color:var(--indigo)}
+.guide section{padding:2.2rem 0}
+.guide ol,.guide ul{max-width:38rem;padding-left:1.3rem}
+.guide li{margin:.3rem 0}
+.guide .lead{font-size:1em}
+.toc{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1rem 1.35rem;margin:0 0 1rem}
+.toc .lbl{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--garnet);font-weight:700;margin-bottom:.4rem}
+.toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem;font-size:.95rem;max-width:none}
+.toc li{margin:.15rem 0;break-inside:avoid}
+@media (max-width:40rem){.toc ol{columns:1}}
+.open{display:inline-block;margin:.2rem 0 0;font-size:.82rem;font-weight:600;color:#fff;
+  background:var(--indigo);border:1.5px solid var(--indigo);border-radius:3px;
+  padding:.34rem .8rem;text-decoration:none}
+.open:hover{background:var(--garnet);border-color:var(--garnet)}
+.open:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.25rem}
+table.g{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45;background:#fff;
+  border:1.5px solid var(--rule)}
+table.g th,table.g td{text-align:left;vertical-align:top;padding:.5rem .7rem;
+  border-top:1px solid var(--rule)}
+table.g thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+table.g td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+table.g td b{font-weight:600}
+table.g tr.grp td{background:var(--paper);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.screen{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0 1.25rem;font-size:.95rem;max-width:40rem}
+.screen .big{font-family:var(--serif);font-size:1.9rem;color:var(--indigo);line-height:1.15}
+.screen .say{color:var(--muted);font-size:.9rem}
+.screen dl{display:grid;grid-template-columns:auto auto;gap:.2rem 1.2rem;margin:.7rem 0 0;
+  justify-content:start}
+.screen dt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;align-self:center}
+.screen dd{margin:0;font-variant-numeric:tabular-nums}
+.warnbox{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0;max-width:40rem;font-size:.95rem}
+.kbd{font-weight:600;color:var(--indigo)}
+@media (max-width:34rem){
+  .screen dl{grid-template-columns:1fr}
+  table.g{font-size:.84rem}
+  table.g th,table.g td{padding:.45rem .5rem}
+}
+.actions{margin:1.1rem 0 0;display:flex;gap:.6rem;flex-wrap:wrap}
+.open.quiet{background:#fff;color:var(--indigo);border-color:var(--rule)}
+.open.quiet:hover{background:#fff;color:var(--garnet);border-color:var(--garnet-pale)}
+.formula{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.7rem 1.1rem;margin:1rem 0 1.25rem;max-width:40rem}
+.formula p{margin:.25rem 0;font-family:var(--serif);color:var(--indigo);font-size:1rem}
+.onpage{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--moss);
+  border-radius:3px;padding:.75rem 1.1rem;margin:1.25rem 0 0;max-width:40rem;font-size:.95rem}
+.onpage .lbl{display:block;margin:0 0 .3rem;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--moss);font-weight:700}
+.onpage p{margin:0}
+.src{font-size:.85rem;font-style:italic;color:var(--muted)}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html">Home</a>
+  <a href="real-option-model.html">Real option value</a>
+  <a href="fixed-bid-model.html" aria-current="page">Bid price</a>
+</nav>
+<header class="masthead family">
+  <p class="eyebrow">The model and its pages</p>
+  <h1>Bid price</h1>
+  <p class="standfirst">What to charge for work a client wants by a fixed date, for the return you require at the confidence you are willing to act on, and how the same arithmetic follows the job from the decision to bid to delivery.</p>
+  <nav class="modeltabs" aria-label="The pages of Bid price">
+    <a href="fixed-bid-model.html" aria-current="page">About the model</a>
+    <a href="fixed-bid.html">Run the model</a>
+    <a href="fixed-bid-guide.html">User guide</a>
+  </nav>
+</header>
+
+<main class="guide">
+
+<nav class="toc" aria-label="Contents">
+  <span class="lbl">Contents</span>
+  <ol>
+    <li><a href="#for">What the model is for</a></li>
+    <li><a href="#wager">The wager</a></li>
+    <li><a href="#price">From the wager to a price</a></li>
+    <li><a href="#read">Reading the bid</a></li>
+    <li><a href="#lifecycle">Through the lifecycle</a></li>
+    <li><a href="#ideation">Ideation</a></li>
+    <li><a href="#chartering">Chartering</a></li>
+    <li><a href="#controlling">Controlling</a></li>
+    <li><a href="#release">Release</a></li>
+    <li><a href="#limits">Before relying on a bid</a></li>
+  </ol>
+</nav>
+
+<section id="for">
+  <h2>1. What the model is for</h2>
+  <p class="lead">Some work is wanted by a date that cannot move: a system for a broadcast of the Olympics, a float for a parade, a lander that must make a launch window. The client pays a fixed amount if the work is delivered on time, a share of it if it is a little late, and nothing after a final date.</p>
+  <p>Taking on such a job is a wager. The team bets that its planning, execution and risk management are good enough to absorb whatever goes wrong and still make a profit. The model answers two questions about that wager. Before the contract, what should we bid? After it, is the job still returning what we need?</p>
+  <p class="src">Chapter 2, "Embarking on a Contracted Bid"; Appendix 8; Chapters 4 and 6.</p>
+</section>
+
+<section id="wager">
+  <h2>2. The wager</h2>
+  <p>The expected value of a wager is the chance of winning times the net winnings, less the chance of losing times the stake. Its return is the expected value over the stake:</p>
+  <div class="formula">
+    <p>EV = P(win) × (payoff − stake) − P(lose) × stake</p>
+    <p>Return = EV ÷ stake</p>
+  </div>
+  <p>At a roulette table every term is known. A dollar on red wins with a chance of 18 in 38, and its expected value is about five cents lost. A bid maps onto the same terms:</p>
+  <ul>
+    <li><b>The stake</b> is the cost to complete the work.</li>
+    <li><b>The payoff</b> is the bid, paid if the work is delivered on time.</li>
+    <li><b>The chance of winning</b> is the chance of delivering by the deadline, read off the estimate of how long the work will take.</li>
+  </ul>
+  <p>A contract with a late share and a drop-dead date has more than one payoff. Delivered by the deadline, the full price is paid. Delivered after it but by the drop-dead date, a share of the price is paid. Delivered later still, nothing is paid, and the whole cost is lost.</p>
+  <p class="src">Chapter 2, Equations 5 to 8.</p>
+</section>
+
+<section id="price">
+  <h2>3. From the wager to a price</h2>
+  <p>On a bid, neither the stake nor the chance of winning is known. Both come from estimates, so the expected value and the return are uncertain as well. There is no single bid that earns a given return. There is a bid that earns it in a given share of outcomes.</p>
+  <p>So the model needs one more figure: the confidence of receiving the return, which is the organization's appetite for risk. Given the required return and that confidence, it finds the bid. It plays the job out many times, each with its own duration and cost, pays each outcome according to when it is delivered, and finds the price at which the required return is reached in the share of outcomes asked for.</p>
+  <p>Because the date cannot move, the team will spend what it takes to meet it. Work that runs longer costs more, at the same rate per period.</p>
+  <p class="src">Appendix 8, the bid-price algorithm.</p>
+</section>
+
+<section id="read">
+  <h2>4. Reading the bid</h2>
+  <p>The reading is the bid at which the return you require is reached with the confidence you ask for. Beside it are the cost to complete at your cost confidence and the chance of delivery by the deadline.</p>
+  <p>There is also a quick estimate that can be checked by hand: the confident cost, times one plus the required return, divided by the chance of delivery on time. It counts nothing for a late delivery, so it asks a slightly different question from the bid.</p>
+  <h3>The tension in every bid</h3>
+  <p>A lower bid is more likely to be accepted, and it earns less. Pressed far enough this becomes a race to the bottom. An organization settles it one of two ways: by finding the bid that fits its appetite for risk, or the bid likely to meet its required return. It may accept a lower return, or a higher risk, to build a capability or a presence in a market. That choice belongs to the organization. The model shows what each choice costs.</p>
+</section>
+
+<section id="lifecycle">
+  <h2>5. Through the lifecycle</h2>
+  <p>The book's lifecycle has four phases, and each exists for one decision. Chapter 6 follows one bid through all four. QNAV, a firm experienced in NASA missions, is deciding whether to answer a request for proposals to build the entry, descent and landing system for a revived Mars sample return mission. The lander must be ready for a launch window that will not wait.</p>
+  <div class="tablewrap">
+  <table class="g">
+    <thead><tr><th>Phase</th><th>The decision</th><th>What the model is given</th></tr></thead>
+    <tbody>
+      <tr><td><b>Ideation</b></td><td>Should we prepare a response at all?</td><td>Three-point estimates of cost and duration from the work breakdown, and the dates the mission sets.</td></tr>
+      <tr><td><b>Chartering</b></td><td>What do we bid?</td><td>Cost and duration rolled up from a task-level plan built on a model of the system.</td></tr>
+      <tr><td><b>Controlling</b></td><td>Is the job on track to succeed by the date, and is it still worth carrying on?</td><td>The signed price, the money spent, and the cost and time still to go at each review.</td></tr>
+      <tr><td><b>Release</b></td><td>Is the confidence high enough to launch, and what must be spent to get there?</td><td>The cost of the actions that would raise the confidence in time.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">Chapter 4, "The Lifecycle"; Chapter 6 throughout.</p>
+</section>
+
+<section id="ideation">
+  <h2>6. Ideation</h2>
+  <p class="lead">Two things decide whether to prepare a response. Is it probable that the deadline can be met? If so, can we propose a bid that is competitive and likely to be accepted?</p>
+  <p>Even with efficient commercial practice, the lander needs four and a half years of work. With the award expected in June 2026 it is ready no earlier than December 2030, and the next launch window to Mars opens in March and April 2031. Allowing two months of margin, the deadline is 56 months, the drop-dead date 58, and the best case 54.</p>
+  <p>The estimating team works from the system's work breakdown and gives a best, an expected and a worst case for cost and duration. QNAV reads the bid needed for a return of 1.5 across a range of confidences. Given its strategic mission and that ballpark figure, it decides to prepare a proposal.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Type the three-point cost and duration, the deadline, the drop-dead period, the share paid if late, and the return you want. The chart of bid against confidence on the Reading tab is the bid graph of this step.</p>
+  </div>
+</section>
+
+<section id="chartering">
+  <h2>7. Chartering</h2>
+  <p class="lead">To set the bid, the team plans the work in enough detail to stand behind the price.</p>
+  <p>It builds a model of the system: the subsystems, their interfaces and the performance each must deliver. That model does three jobs. It shapes the team structure, one team to a subsystem. It carries the system's performance requirements down to each subsystem. And it is the design of the digital twin that the later phases will rely on.</p>
+  <p>Each subsystem team gives a low, a base and a high duration for its tasks, and the plan is rolled up through its dependencies. The base durations add up to 48 months, but the average of the rolled-up duration is about 53. Most tasks have more room to overrun than to finish early.</p>
+  <p>The tighter estimates are Table 2 of Chapter 6: a deadline of 56 periods and a drop-dead of 58, a duration averaging 52.55 with a standard deviation of 1.70, half the price paid if late, and a cost averaging $1.80B with a standard deviation of $0.56B. Management decides to bid for 80% confidence of a return of 1.0, rather than the 1.5 first hoped for. The chapter puts that bid at about $4.2B. When the client pushes back on price, the team keeps its 80% confidence and accepts a return of 0.75, which brings the bid to about $3.7B.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Bid price opens on this case, with Table 2's figures in place. It reads <b>$4.174B</b> for a return of 1.00 at 80% confidence. With the required return set to 0.75 it reads <b>$3.671B</b>.</p>
+  </div>
+</section>
+
+<section id="controlling">
+  <h2>8. Controlling</h2>
+  <p class="lead">A job with a hard date is hard to control. Several systems must all succeed, the date is fixed, and a complete test of the whole system is impossible.</p>
+  <p>The objective is the probability of mission success, and the job is accepted when that probability clears an agreed threshold, say 95%. When the system's components are independent, the probability of success is the product of theirs. With six components and a 95% threshold, each must be at least 99.14% likely to work, and its parts more likely still.</p>
+  <p>At each review the digital twin is run many times, with each component's behavior drawn from its estimate, and later from its test results. The confidence of mission success that comes out, review after review, plays the part percent complete plays in ordinary project control. The difference is that it comes from an explicit model whose assumptions can be checked.</p>
+  <p>Confidence gets harder to raise as it approaches 100%. A confidence of 99.9% can cost much more than 99%, perhaps needing dearer components or more redundancy, and getting from 93% to 95% may not fit before the deadline. Chapter 6 shows three histories. A project well on track reaches its goal inside the deadline with margin. One just in time finishes slightly past it, with the late penalty. One slipping stands at 85% by the seventh review and may feel on track, but it may be as much as five periods late. Its managers should take drastic action. The forecasting method is Appendix 7's.</p>
+  <p>The money side of each review is the wager again, now with the price known. The money already spent is gone whichever way the decision goes, so what matters is the return on the work still to do.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Once the job is signed, type the price agreed in <i>Contracted payment</i> and what has been spent in <i>Cost to date</i>, and change the cost and duration to what is still to go. The reading becomes the return on the work still to do, with the chance of reaching the return you require. Signed at $4.2B with nothing yet spent, the sample reads a mean return of <b>1.65</b> on the work left, and an <b>81%</b> chance of reaching 1.00.</p>
+  </div>
+</section>
+
+<section id="release">
+  <h2>9. Release</h2>
+  <p class="lead">As test results arrive, the subsystem probabilities are revised and the digital twin is run again. Management gets a forecast that improves with the evidence, rather than a fixed estimate.</p>
+  <p>If the forecast confidence of mission success is below the threshold for the launch date, failure to deliver is not an option. Management can add testing, move resources, change the order of integration, add reserves, reduce scope or change the plan. The launch window is not a second objective competing with mission success. It is a limit on what is possible, and the task is to meet the threshold within it at the least cost.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Each of those actions has a cost. Add it to the cost still to spend, and change the duration if it moves the work, then read the return on what is left and the chance of delivery by the deadline. Together they show what holding the date is costing the job.</p>
+  </div>
+</section>
+
+<section id="limits">
+  <h2>10. Before relying on a bid</h2>
+  <p>The contract terms can move the bid more than the cost does. A deadline a few periods earlier, or a late delivery that pays nothing, changes the chance of being paid at all. Check the deadline, the drop-dead date and the late share against the request for proposals.</p>
+  <p>The chance of delivery by the deadline comes from the duration estimate alone. An estimate that is too narrow makes an on-time delivery look certain and the bid too low. When the spread is in doubt, read the bid with a wider one as well.</p>
+  <p>The <a href="fixed-bid-guide.html#quoting">user guide</a> says what else to know before quoting a figure from the page.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>The method is from the book: the bid-price algorithm of Appendix 8, with the wager model of Chapter 2.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+</div>
+</body>
+</html>

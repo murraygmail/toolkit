@@ -1,0 +1,82 @@
+Project Desk v0.13.3
+built 2026-09-30
+
+A page per model: real-option.html and fixed-bid.html. Each shows this version
+at the left of its toolbar, under the masthead. If a page does not say v0.13.3,
+your browser is serving a cached copy: reload it with Shift held down
+(Cmd-Shift-R on a Mac).
+
+New in v0.13.3: the two buttons under the home page's opening paragraph are
+  removed. Nothing else changes. Test plan r21.
+v0.13.2: index.html is a landing page. It says what the models are
+  for, why there are two (how a project's value responds to its delivery date),
+  the three pages of each model, the lifecycle both follow, and where in the
+  book the methods are. Every page says "the book" rather than "my book".
+  No figure is computed differently. Test plan r20.
+v0.13.1: each model's three pages read as one set. The model's name
+  heads all three, with tabs under it (About the model, Run the model, User
+  guide) in the same place on every one, and the home page shows each model's
+  three pages the same way. No figure is computed differently. Test plan r19.
+v0.13.0: a standalone site. A page describing each model,
+  real-option-model.html and fixed-bid-model.html: what it is for, how it is
+  read, and how it is used through Ideation, Chartering, Controlling and
+  Release, following Chapter 5's RSonic and Chapter 6's QNAV, with what to type
+  on the page at each phase. index.html is the site's home. Every page carries
+  the same navigation (Home, Real option value, Bid price, and under a model
+  its description, its page and its guide), and no link leaves the folder
+  except murraycantor.com in the footer. The bid pages now cite the wager
+  model to Chapter 2, where its equations are. No figure is computed
+  differently. Test plan r18.
+v0.12.0: a user guide for each model, real-option-guide.html and
+  fixed-bid-guide.html, each opened by the User guide button on its model's
+  toolbar and linked from index.html. Each walks the page from the book's
+  sample: every tab, every box with the sample's value, every row of the
+  panel, the reading, the figures, what the page refuses and why, worked
+  changes with the figure each gives, and what to know before quoting a
+  number. A reading is now always of the sheet on screen: opening Reading or
+  Figures, or moving to another project, saves unsaved changes first. No
+  figure is computed differently. Test plan r17.
+v0.11.0: the Reading screen in plain words. The headline says what the
+  figure means (85 times in 100 the value is at least this; the bid that gives an
+  80% chance of the return), each figure beside it has a plain name, confidences
+  and chances print as per cents, and no code or file name appears anywhere on
+  the pages. Every row of the panel beside the sheet has a line saying what it
+  is. No figure is computed differently. Test plan r16.
+v0.10.2: the Sheet screen's right-hand panel, Derived, is now called
+  What the sheet implies. Its figures sit in groups under plain names (margin on
+  each unit sold; timing and volume; development cost and delay; when it is
+  delivered; cost at completion), each with a line saying how it is worked out.
+  The figures themselves are as in v0.10.1. Test plan r15.
+v0.10.1: the Sheet tabs read plainly. Each estimate box has its name
+  above it (low / expected / high, or mean / std dev, as your input sheets
+  name them); the notes under each label say what the figure is and how to
+  type it; the code names (x, n, a, con, confid) are gone. The bid page's
+  boxes are called Deadline, Drop-dead period and Share paid if late. The
+  sheet's Budget and Duration confidence boxes say that nothing reads them
+  yet, and the price-operations exposure that it moves only the Derived
+  card. No calculation changed; every reading is as in v0.10.0. Test plan r14.
+v0.10.0: the bid page's calculation is a port of your qnav-fixed-bid-v1.8.0
+  package, function for function: the cost is spent as a velocity over the
+  duration drawn (cost ÷ due periods), the value is the blend of the three
+  regions, the bid is solved backwards on RoiSurface. QNAV reads $4.175B,
+  was $4.587B. Cost to date and Contracted payment boxes for a job under way;
+  the cost–duration exposure box is gone. real-option.html unchanged but for
+  the version. Test plan r13.
+v0.9.1: the plots your Spyder packages draw are on the Reading screen,
+  under the reading, at its controls; moving a slider redraws them with the
+  reading. The Figures tab stays. No figure moved. Test plan r12.
+v0.9.0: the calculation is a port of your rsonic-real-option-v1.7.0
+  package, function for function, the sheet feeding it directly. Every box
+  takes the unit printed beside it, keeps exactly what you typed, and is never
+  rescaled on load; a box in per cent takes 85 or 85% and refuses a fraction
+  with the fix named. The two defects you reported are gone: the discount
+  rate you typed as 5 is 5, and the support share you typed as 10 is 10.
+  Table 1 reads $19.5M and 3.49 at 85% confidence, was $20.2M and 3.63; the
+  bid page reads $4.587B, was $4.591B. Test plan r11.
+v0.8.2: the units that carry the operations cost are drawn apart from the
+  units that carry the margin, as your npvPDF has it.
+v0.8.1: the RSonic sample opens reading, its four choices preset to what your
+  script reads (dollars, share of revenue, decay to zero at the end of the
+  sales life, units sold in the period).
+v0.8.0: a Figures tab on each page, and the peak month counted from the
+  expected delivery, as Table 1 labels it.

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bid price: user guide — Murray Cantor</title>
+<meta name="description" content="User guide to Bid price: fill in a fixed-deadline bid, take a reading, and read what to bid for a return you require at a confidence you state.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   The user guide pages: additive styles over site.css, as the model pages
+   are. Nothing added to the palette.
+   ---------------------------------------------------------------------- */
+.wrap{max-width:54rem}
+.guide h2{margin-top:0}
+.guide h3{margin:1.8rem 0 .6rem;color:var(--indigo)}
+.guide section{padding:2.2rem 0}
+.guide ol,.guide ul{max-width:38rem;padding-left:1.3rem}
+.guide li{margin:.3rem 0}
+.guide .lead{font-size:1em}
+.toc{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1rem 1.35rem;margin:0 0 1rem}
+.toc .lbl{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--garnet);font-weight:700;margin-bottom:.4rem}
+.toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem;font-size:.95rem;max-width:none}
+.toc li{margin:.15rem 0;break-inside:avoid}
+@media (max-width:40rem){.toc ol{columns:1}}
+.open{display:inline-block;margin:.2rem 0 0;font-size:.82rem;font-weight:600;color:#fff;
+  background:var(--indigo);border:1.5px solid var(--indigo);border-radius:3px;
+  padding:.34rem .8rem;text-decoration:none}
+.open:hover{background:var(--garnet);border-color:var(--garnet)}
+.open:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.25rem}
+table.g{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45;background:#fff;
+  border:1.5px solid var(--rule)}
+table.g th,table.g td{text-align:left;vertical-align:top;padding:.5rem .7rem;
+  border-top:1px solid var(--rule)}
+table.g thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+table.g td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+table.g td b{font-weight:600}
+table.g tr.grp td{background:var(--paper);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.screen{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0 1.25rem;font-size:.95rem;max-width:40rem}
+.screen .big{font-family:var(--serif);font-size:1.9rem;color:var(--indigo);line-height:1.15}
+.screen .say{color:var(--muted);font-size:.9rem}
+.screen dl{display:grid;grid-template-columns:auto auto;gap:.2rem 1.2rem;margin:.7rem 0 0;
+  justify-content:start}
+.screen dt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;align-self:center}
+.screen dd{margin:0;font-variant-numeric:tabular-nums}
+.warnbox{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0;max-width:40rem;font-size:.95rem}
+.kbd{font-weight:600;color:var(--indigo)}
+@media (max-width:34rem){
+  .screen dl{grid-template-columns:1fr}
+  table.g{font-size:.84rem}
+  table.g th,table.g td{padding:.45rem .5rem}
+}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html">Home</a>
+  <a href="real-option-model.html">Real option value</a>
+  <a href="fixed-bid-model.html" aria-current="true">Bid price</a>
+</nav>
+<header class="masthead family">
+  <p class="eyebrow">The model and its pages</p>
+  <h1>Bid price</h1>
+  <p class="standfirst">How to fill in a bid, take a reading and understand what it says, and how to read the return on a job already signed. Every figure quoted here is what the page prints for the book's own sample, so you can follow along on screen.</p>
+  <p style="margin:1.1rem 0 0"><a class="open" href="fixed-bid.html">Open Bid price</a></p>
+  <nav class="modeltabs" aria-label="The pages of Bid price">
+    <a href="fixed-bid-model.html">About the model</a>
+    <a href="fixed-bid.html">Run the model</a>
+    <a href="fixed-bid-guide.html" aria-current="page">User guide</a>
+  </nav>
+</header>
+
+<main class="guide">
+
+<nav class="toc" aria-label="Contents">
+  <span class="lbl">Contents</span>
+  <ol>
+    <li><a href="#what">What the page does</a></li>
+    <li><a href="#layout">Finding your way around</a></li>
+    <li><a href="#first">Your first reading</a></li>
+    <li><a href="#typing">Typing figures</a></li>
+    <li><a href="#estimates">Estimates</a></li>
+    <li><a href="#sheet">The sheet, box by box</a></li>
+    <li><a href="#panel">What the sheet implies</a></li>
+    <li><a href="#reading">The reading for a bid</a></li>
+    <li><a href="#job">The reading for a job under way</a></li>
+    <li><a href="#figures">The figures</a></li>
+    <li><a href="#nonumber">When there is no number</a></li>
+    <li><a href="#own">Building your own bid</a></li>
+    <li><a href="#keeping">Keeping your work</a></li>
+    <li><a href="#quoting">Before you quote a number</a></li>
+  </ol>
+</nav>
+
+<section id="what">
+  <h2>1. What the page does</h2>
+  <p class="lead">This page prices work the client wants by a fixed date. Delivered by the deadline, the full price is paid. Delivered late but by a drop-dead period, a share of it is paid. Delivered after that, nothing is paid. Taking on such a job is a wager, and the page answers one question: what should you bid to earn the return you require, with the confidence you require?</p>
+  <p>You describe the job on a parameter sheet: what the work will cost and how long it will take, each as an estimate rather than a single number; the deadline, the drop-dead period and the share paid if late; and the return and confidence you want. The page plays the job out 20,000 times. In each, the work takes as long as it takes, costs more the longer it runs, and is paid according to when it is delivered.</p>
+  <p>The reading is the bid at which the return you require is reached in the share of outcomes you ask for: 80 in 100, if 80% is your return confidence. Beside it the page gives the quick estimate of Appendix 8, a markup on the cost that you can check by hand.</p>
+  <p>For a job already signed, type the price agreed and the page reads instead the return on the work still to do: the number that decides whether to carry on.</p>
+  <p>The method is Appendix 8 of <i>Project Economics Under Uncertainty: From Concept to Realization</i>, with the wager model of Chapter 2. The sample project, QNAV, is Chapter 6's bid for the entry, descent and landing system of the Mars Sample Return, with the values of its Table 2.</p>
+</section>
+
+<section id="layout">
+  <h2>2. Finding your way around</h2>
+  <p>Under the page title is a toolbar. At its left is the version of the page, v0.13.3. If the page you are looking at shows an earlier number, your browser is showing an old copy: reload it (hold Shift while reloading, or press Cmd-Shift-R on a Mac).</p>
+  <p>The rest of the toolbar works on your projects:</p>
+  <ul>
+    <li><span class="kbd">Project</span> picks the project you are working on.</li>
+    <li><span class="kbd">New project</span> asks for a name and opens an empty sheet.</li>
+    <li><span class="kbd">Export</span> saves every project on this page to a file on your computer. <span class="kbd">Import</span> reads such a file back.</li>
+    <li><span class="kbd">User guide</span> opens this guide.</li>
+  </ul>
+  <p>Below the toolbar are four tabs.</p>
+  <ul>
+    <li><span class="kbd">Projects</span> lists your projects. Click one to open its sheet.</li>
+    <li><span class="kbd">Sheet</span> is where you type the job in. Beside it is a panel, <i>What the sheet implies</i>, showing what your figures work out to.</li>
+    <li><span class="kbd">Reading</span> gives the bid, the figures beside it, a chart of the bid against confidence, three sliders, and the pictures of how the outcomes spread.</li>
+    <li><span class="kbd">Figures</span> shows the same pictures on their own.</li>
+  </ul>
+  <p>Everything is worked out inside the page. Nothing you type leaves your computer, and the page works the same whether you open it from a folder or from the website.</p>
+</section>
+
+<section id="first">
+  <h2>3. Your first reading</h2>
+  <p>The page opens on the book's sample. Follow these steps to see a reading before typing anything of your own.</p>
+  <ol>
+    <li>On the <span class="kbd">Projects</span> tab, click <b>QNAV</b>. Its sheet opens.</li>
+    <li>Read down the sheet. The cost to complete averages $1.80B with a standard deviation of $0.56B; the duration averages 52.55 months with a standard deviation of 1.70; the deadline is month 56 and the drop-dead period month 58, with half the price paid in between. The required return is 1.00, a price twice the cost, at 80% confidence.</li>
+    <li>Look at the panel beside the sheet. Delivery by the deadline has a 97.88% chance, and the cost at completion is $2.133B or less 4 times in 5.</li>
+    <li>Press <span class="kbd">Take a reading</span> at the foot of that panel, or click the <span class="kbd">Reading</span> tab.</li>
+  </ol>
+  <p>You should see this:</p>
+  <div class="screen">
+    <div class="big">$4.174B</div>
+    <div class="say">is the bid that gives a 80% chance of a return of at least 1.00 (profit over cost), counting the chances of late delivery and of delivery past drop-dead.</div>
+    <dl>
+      <dt>Cost, 80% confident</dt><dd>$2.133B</dd>
+      <dt>Chance of delivery by the deadline</dt><dd>97.9%</dd>
+      <dt>Quick estimate</dt><dd>$4.358B</dd>
+    </dl>
+  </div>
+  <p>Now drag the <span class="kbd">Return confidence</span> slider to 70%. The bid falls to $3.927B; at 90% it rises to $4.514B. That is the price of certainty on this job. Drag it back to 80%. The sliders only change what you are reading; the sheet stays as you typed it.</p>
+</section>
+
+<section id="typing">
+  <h2>4. Typing figures</h2>
+  <p>Every box takes the unit printed beside it, and keeps exactly what you type. The page never rescales a figure behind your back.</p>
+  <ul>
+    <li><b>Money</b> may carry a dollar sign and thousands commas. A K, M or B after the number means thousands, millions or billions. The sample states money in billions, so its boxes are marked $B and take <b>1.8</b> for $1.8 billion. A new project states money in dollars, so type <b>1.8B</b> or <b>1,800,000,000</b>.</li>
+    <li><b>Per cent boxes</b> (those marked %) take the per cent as written. Type <b>80</b> or <b>80%</b> for 80%. A fraction such as <b>0.8</b> is refused, with the fix named, because it could only mean less than one per cent.</li>
+    <li><b>Share paid if late</b> is the exception: it is a share from 0 to 1, so half the price is <b>0.5</b>.</li>
+    <li><b>Periods</b> are whatever unit you choose, months in the sample. Use the same unit for the duration, the deadline and the drop-dead period.</li>
+    <li>A comma that is not a thousands comma, as in <b>1,50</b>, is refused rather than guessed at.</li>
+  </ul>
+  <p>A box that still needs a value is outlined in amber. A box holding something the page cannot use is outlined in red, and the panel beside the sheet says why in words, quoting what you typed.</p>
+  <p>When you change anything, the foot of the sheet says <i>unsaved changes</i> and the <span class="kbd">Save sheet</span> button lights. Taking a reading saves the sheet for you, and so does moving to another project, so a reading is always of the sheet you see.</p>
+</section>
+
+<section id="estimates">
+  <h2>5. Estimates</h2>
+  <p>Two boxes hold an estimate rather than a single figure: the cost to complete and the duration to complete. A small menu at the left of each lets you state it one of four ways.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Form</th><th>What you type</th><th>The spread it gives</th></tr></thead>
+    <tbody>
+      <tr><td><b>low, expected, high</b></td><td>Three figures, in that order: the low case, the one you expect, the high case.</td><td>A triangle from low to high, peaking at the expected figure. Out of order, the estimate is refused with its name.</td></tr>
+      <tr><td><b>mean and std dev</b></td><td>The average and the standard deviation.</td><td>A normal curve.</td></tr>
+      <tr><td><b>percentile table</b></td><td>One line per point: a probability between 0 and 1, then the value. For example <b>0.05 1.0</b>, <b>0.50 1.8</b>, <b>0.95 2.8</b>.</td><td>A curve through your points.</td></tr>
+      <tr><td><b>pasted values</b></td><td>A list of outcomes, separated by spaces or commas, such as the output of a schedule simulation.</td><td>Your values, as they fall.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The sample uses mean and standard deviation, as Table 2 does. Changing the form empties that box, so type the new figures straight after.</p>
+</section>
+
+<section id="sheet">
+  <h2>6. The sheet, box by box</h2>
+  <p>The sheet has three groups. The right-hand column gives the sample's value, from Chapter 6, Table 2.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Box</th><th>What it is</th><th>Sample</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">Delivery</td></tr>
+      <tr><td><b>Cost to complete</b></td><td>What the work will cost if it finishes at the deadline. Work that runs longer costs more at the same rate per period (Appendix 8 §2).</td><td class="n">mean $1.80B, std dev $0.56B</td></tr>
+      <tr><td><b>Duration to complete</b></td><td>Periods from now to delivery, in the same periods as the deadline.</td><td class="n">mean 52.55, std dev 1.70</td></tr>
+      <tr><td><b>Cost to date</b></td><td>What a job under way has already spent; 0 for a new bid. It is added to the cost at completion, and it does not change the decision to carry on.</td><td class="n">0</td></tr>
+      <tr class="grp"><td colspan="3">Contract</td></tr>
+      <tr><td><b>Deadline</b></td><td>Delivered by this period, the full price is paid.</td><td class="n">56</td></tr>
+      <tr><td><b>Drop-dead period</b></td><td>Delivered after this period, nothing is paid. Leave it blank to make it the deadline, so that a late delivery pays nothing.</td><td class="n">58</td></tr>
+      <tr><td><b>Share paid if late</b></td><td>The share of the price paid for delivery between the deadline and the drop-dead period: 0.5 pays half, 0 nothing, 1 the full price.</td><td class="n">0.5</td></tr>
+      <tr><td><b>Contracted payment</b></td><td>Leave it blank to price a bid. For a signed job, type the price agreed, and the reading becomes the return on the work still to do (section 9).</td><td>blank</td></tr>
+      <tr class="grp"><td colspan="3">Targets</td></tr>
+      <tr><td><b>Required return</b></td><td>Profit over cost, from 0 to 5. 1 asks for a price twice the cost. For a job under way, the reading gives the chance of reaching it.</td><td class="n">1.00</td></tr>
+      <tr><td><b>Cost confidence</b></td><td>The share of outcomes whose cost the quick estimate covers.</td><td class="n">80%</td></tr>
+      <tr><td><b>Return confidence</b></td><td>The chance the bid gives of reaching the required return. This is the confidence the bid is read at.</td><td class="n">80%</td></tr>
+    </tbody>
+  </table></div>
+  <p>A bid needs three things before the page will price it: the cost to complete, the duration to complete and the deadline. The other boxes have values to begin with (a drop-dead period equal to the deadline, nothing paid if late, a return of 1.00 at 80%), which you change as the contract and your targets require.</p>
+</section>
+
+<section id="panel">
+  <h2>7. What the sheet implies</h2>
+  <p>The panel beside the sheet shows what your figures work out to before any price is set. You do not type anything here; the reading is built from these. Read it every time you change the sheet. The chance of delivery by the deadline, above all, decides the price.</p>
+  <p>Where a row says <i>80% confident</i>, it means 4 times in 5 the figure is at or below the one shown.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Row</th><th>What it tells you</th><th>Sample</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">When it is delivered</td></tr>
+      <tr><td>Chance of delivery by the deadline</td><td>Paid the full price.</td><td class="n">97.88%</td></tr>
+      <tr><td>Chance of late delivery</td><td>After the deadline but by the drop-dead period: paid the late share.</td><td class="n">2.05%</td></tr>
+      <tr><td>Chance of delivery past drop-dead</td><td>Paid nothing.</td><td class="n">0.07%</td></tr>
+      <tr><td>Duration: average</td><td>The duration estimate's average.</td><td class="n">52.55 periods</td></tr>
+      <tr><td>Duration: 80% confident</td><td>4 times in 5 the work is done by then.</td><td class="n">53.98 periods</td></tr>
+      <tr class="grp"><td colspan="3">Cost at completion (EAC)</td></tr>
+      <tr><td>Average</td><td>The cost to date plus the work, costed at the planned rate per period for as long as it takes. Work that runs past the drop-dead period is not counted.</td><td class="n">$1.688B</td></tr>
+      <tr><td>50% confident</td><td>Half the time the cost is this or less.</td><td class="n">$1.685B</td></tr>
+      <tr><td>80% confident</td><td>4 times in 5 the cost is this or less.</td><td class="n">$2.133B</td></tr>
+      <tr><td>95% confident</td><td>19 times in 20 the cost is this or less.</td><td class="n">$2.562B</td></tr>
+    </tbody>
+  </table></div>
+  <p>For a job under way, the second group is <i>Cost still to spend</i>: the work left, without what has already been spent.</p>
+  <p>When the sheet cannot yet be worked out, the panel lists instead the boxes still to fill in (outlined in amber) or the entries it cannot use (outlined in red).</p>
+</section>
+
+<section id="reading">
+  <h2>8. The reading for a bid</h2>
+  <h3>The headline</h3>
+  <p>The large figure is the bid. At that price, the return you require is reached with the chance you asked for, counting every way the job can end: on time and paid in full, late and paid the late share, or past drop-dead and paid nothing.</p>
+  <h3>The figures beside it</h3>
+  <ul>
+    <li><b>Cost, 80% confident.</b> The cost at completion at your cost confidence.</li>
+    <li><b>Chance of delivery by the deadline.</b> As on the panel beside the sheet.</li>
+    <li><b>Quick estimate.</b> Appendix 8's markup: the 80%-confident cost × (1 + required return) ÷ the chance of delivery by the deadline. On the sample, $2.133B × 2 ÷ 0.9788 = $4.358B. It counts nothing for a late delivery, so it differs from the bid. Use it as a check you can do by hand.</li>
+  </ul>
+  <h3>Bid price against confidence</h3>
+  <p>The chart shows two lines across confidences from 50% to 90%. The solid line is the bid, with the confidence read as the chance of reaching the required return; the bid at your return confidence is circled. The dashed grey line is the quick estimate, with the confidence applied to the cost.</p>
+  <h3>The three sliders</h3>
+  <ul>
+    <li><b>Required return</b>, from 0 to 3, sets the return the bid must reach.</li>
+    <li><b>Return confidence</b>, from 5% to 98%, sets the bid.</li>
+    <li><b>Cost confidence</b>, from 5% to 98%, sets the cost shown and the quick estimate.</li>
+  </ul>
+  <p>The headline, the chart and the pictures below follow the sliders. The sheet does not change; the next time you open the project it reads at what you typed there.</p>
+  <h3>No bid</h3>
+  <p>Sometimes no price reaches the required return at the confidence you asked for: too many outcomes pay nothing, whatever the price. The page then says <b>No bid</b> in place of a price, with the chances of delivery on time and late, what late delivery pays, and what the quick estimate would have said. No bid is an answer, not a fault: the job cannot earn what you ask at the certainty you ask. Lower the confidence or the return, or change the contract, and read again.</p>
+</section>
+
+<section id="job">
+  <h2>9. The reading for a job under way</h2>
+  <p>Once a job is signed, the question is no longer what to bid but whether to carry on. Type the price agreed in <b>Contracted payment</b>, update the cost and duration to what is left, and type what has been spent so far in <b>Cost to date</b>.</p>
+  <p>The line under the title then reads <i>A job under way</i>, and the headline is the average return on the work still to do, at the contracted payment. Money already spent is left out of it, because it is gone whichever way the decision goes. Signing the sample at $4.2B, with nothing yet spent, gives:</p>
+  <div class="screen">
+    <div class="big">1.65</div>
+    <div class="say">the mean return on what is left, at the contracted payment of $4.200B: the number that decides whether to carry on.</div>
+    <dl>
+      <dt>Value of carrying on</dt><dd>$2.351B</dd>
+      <dt>Cost still to spend, 80% confident</dt><dd>$2.133B</dd>
+      <dt>Return, 80% confident</dt><dd>0.996</dd>
+      <dt>Chance of delivery by the deadline</dt><dd>97.9%</dd>
+    </dl>
+  </div>
+  <p>Below it, a block headed <i>Return on what is left</i> gives the average return (1.648), the middle (1.401), the low and high at 20% and 80% (0.996 and 2.005), the chance of breaking even (99.9%) and the chance of reaching the required return (80.8%). When money has already been spent, a second block gives the same for the return on everything invested, spending to date included. That is the figure for judging the job as a whole; the first is the one for deciding what to do next.</p>
+  <p>The sliders here are <b>Target return</b>, which sets the chance of reaching it, and the two confidences, which set the return and the cost still to spend shown above.</p>
+</section>
+
+<section id="figures">
+  <h2>10. The figures</h2>
+  <p>Under the controls on the Reading tab, and on their own on the Figures tab, are pictures of how the outcomes spread. Each title begins with the project's name, so a saved picture says which project it came from. Each has a <span class="kbd">Save as PNG</span> button that saves it as a picture file.</p>
+  <ol>
+    <li><b>Estimated time to complete.</b> The spread of the duration, with the chance of delivery on time and the chance of lateness.</li>
+    <li><b>Estimated cost at completion.</b> The spread of the cost against what the work was planned at ($1.8B on the sample), with the chance of coming in under plan (opportunity) and over it (risk). For a job under way this is the cost still to spend.</li>
+    <li><b>Expected value.</b> What the job is worth across the outcomes, at the bid, or at the contracted payment for a job under way.</li>
+    <li><b>Return on the work.</b> The spread of the return at that price, with break-even marked.</li>
+    <li><b>Bid for a given return.</b> For a bid only: the price needed for each required return from 0 to 2, at 70%, 80% and 90% confidence.</li>
+  </ol>
+  <p>Moving a slider redraws them.</p>
+</section>
+
+<section id="nonumber">
+  <h2>11. When there is no number</h2>
+  <p>The page will not guess. If the sheet cannot be priced as it stands, the Reading tab says why and lists what to fix, with an <span class="kbd">Open the sheet</span> button.</p>
+  <ul>
+    <li><b>Boxes with no value.</b> <i>No reading yet</i>, followed by the boxes still to fill in. A new project opens with three: the cost to complete, the duration to complete and the deadline.</li>
+    <li><b>Entries the page cannot read.</b> Each is quoted with the fix. Typing 0.8 as the return confidence gives <i>Return confidence reads "0.8", a fraction; the box takes per cent: type 80 or 80%.</i></li>
+    <li><b>Entries that contradict themselves or lie outside their range.</b> An estimate whose low is above its high, a share paid if late above 1, or a confidence of 100.</li>
+    <li><b>A job that can never be paid.</b> If the duration estimate cannot finish by the drop-dead period at all, the page says so: there is no cost at completion to speak of, because the engagement never completes.</li>
+  </ul>
+</section>
+
+<section id="own">
+  <h2>12. Building your own bid</h2>
+  <h3>Starting</h3>
+  <ol>
+    <li>Press <span class="kbd">New project</span>, give it a name, and press <span class="kbd">Create</span>. The empty sheet opens with its three required boxes in amber.</li>
+    <li>Type the cost to complete and the duration to complete, each as an estimate. Choose one unit of time and keep to it.</li>
+    <li>Type the deadline from the RFP, then the drop-dead period and the share paid if late, if the contract has them.</li>
+    <li>Set the required return and the two confidences.</li>
+    <li>Read the panel beside the sheet, then take a reading.</li>
+  </ol>
+  <p>A quicker start is to change the sample. Its figures are all in place, so change one thing at a time and watch what moves. <span class="kbd">Restore the book sample</span> on the Projects tab puts it back.</p>
+  <h3>Checking it</h3>
+  <ol>
+    <li><b>Read the chance of delivery by the deadline.</b> If it is far from what you believe, the duration or the deadline is in the wrong unit, or the estimate is too narrow or too wide.</li>
+    <li><b>Read the cost at completion.</b> The cost to complete is the cost at the deadline, spent at a steady rate, so the average cost at completion is roughly that cost × the average duration ÷ the deadline. On the sample, $1.80B × 52.55 ÷ 56 is $1.689B, and the panel shows $1.688B. Far from your own figure means a box is not saying what you meant.</li>
+    <li><b>Check the quick estimate by hand.</b> Cost at your confidence × (1 + required return) ÷ chance of delivery by the deadline. If your arithmetic and the page's differ, a box is not saying what you meant.</li>
+    <li><b>Move a box you think matters and watch the bid.</b> The deadline and the late terms usually matter more than the cost.</li>
+  </ol>
+  <h3>What moves the bid: worked examples on the sample</h3>
+  <p>Each of these starts from the sample as the book prints it, with one change.</p>
+  <div class="tablewrap"><table class="g">
+    <thead><tr><th>Change</th><th>Bid</th><th>Quick estimate</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>None (the sample)</td><td class="n">$4.174B</td><td class="n">$4.358B</td><td>Chapter 6, Table 2. Delivery by the deadline has a 97.9% chance.</td></tr>
+      <tr><td>Return confidence 70%</td><td class="n">$3.927B</td><td class="n">$4.358B</td><td>Less certainty asked for, a lower price.</td></tr>
+      <tr><td>Return confidence 90%</td><td class="n">$4.514B</td><td class="n">$4.358B</td><td>More certainty, a higher price. The quick estimate reads the cost confidence, so it does not move.</td></tr>
+      <tr><td>Deadline 52, no drop-dead period, nothing paid if late</td><td class="n">$11.125B</td><td class="n">$11.897B</td><td>Delivery by the deadline falls to a 37.3% chance, and a late delivery pays nothing.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The last row is the wager at its plainest. The work is the same; only the date and what lateness costs have changed, and the price more than doubles.</p>
+</section>
+
+<section id="keeping">
+  <h2>13. Keeping your work</h2>
+  <ul>
+    <li><b>Where projects live.</b> In this browser, on this computer. Another browser, or another computer, starts with only the sample. Clearing your browser's stored site data deletes them.</li>
+    <li><b>Saving.</b> <span class="kbd">Save sheet</span> keeps the sheet. Taking a reading, or moving to another project, saves it too. Each save that changes something keeps the sheet it replaced; the <i>Revisions</i> column on the Projects tab counts them.</li>
+    <li><b>Export and Import.</b> Export writes every project on this page, with its revisions, to a file you keep. Import reads such a file back: a project the page does not have is added, and one it already has, exported from it earlier, is replaced by the copy in the file. Export before clearing your browser, before moving to another computer, and before restoring the sample.</li>
+    <li><b>Restore the book sample.</b> On the Projects tab. It puts QNAV back as the book prints it and discards anything you have changed or added, after asking you to confirm.</li>
+  </ul>
+</section>
+
+<section id="quoting">
+  <h2>14. Before you quote a number</h2>
+  <h3>The bid and the quick estimate are different questions</h3>
+  <p>The bid asks for a chance of reaching the return, counting what a late delivery pays. The quick estimate marks up a confident cost and divides by the chance of delivery on time, counting nothing for lateness. On the sample they are $4.174B and $4.358B. Quote the one whose question you are answering, and say which.</p>
+  <h3>The reading repeats exactly, but it is one draw of many</h3>
+  <p>Each project keeps its own 20,000 scenarios, the same every time, so the same sheet always gives the same bid and a change you make is the only thing that moves it. Drawn afresh, the sample's bid runs from about $4.17B to $4.19B. Quote it to three figures.</p>
+  <h3>The contract terms can matter more than the cost</h3>
+  <p>The price depends on the chance of delivery by the deadline at least as much as on the cost. A deadline a few periods earlier, or a late delivery that pays nothing, can move the bid further than any change to the cost estimate. Check the deadline, the drop-dead period and the late share against the RFP before quoting.</p>
+  <h3>A duration estimate that is too narrow is the costliest mistake</h3>
+  <p>The chance of delivery by the deadline comes entirely from the duration estimate. A standard deviation that is too small makes an on-time delivery look certain and the bid too low. If you are unsure of the spread, read the bid with a wider one as well.</p>
+</section>
+
+<p style="margin-top:2rem"><a class="open" href="fixed-bid.html">Open Bid price</a> &nbsp; <a href="index.html">Back to Project Desk</a></p>
+
+</main>
+
+<footer>
+  <p>The method is from the book: the bid-price algorithm of Appendix 8, with the wager model of Chapter 2. This guide is for v0.13.3 of the page.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+</div>
+</body>
+</html>

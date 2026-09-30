@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Real option value: the model — Murray Cantor</title>
+<meta name="description" content="Real option value: what a project whose delivery date is yours to choose is worth, at the confidence you state, and how the figure is used from ideation to release.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   The user guide pages: additive styles over site.css, as the model pages
+   are. Nothing added to the palette.
+   ---------------------------------------------------------------------- */
+.wrap{max-width:54rem}
+.guide h2{margin-top:0}
+.guide h3{margin:1.8rem 0 .6rem;color:var(--indigo)}
+.guide section{padding:2.2rem 0}
+.guide ol,.guide ul{max-width:38rem;padding-left:1.3rem}
+.guide li{margin:.3rem 0}
+.guide .lead{font-size:1em}
+.toc{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1rem 1.35rem;margin:0 0 1rem}
+.toc .lbl{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--garnet);font-weight:700;margin-bottom:.4rem}
+.toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem;font-size:.95rem;max-width:none}
+.toc li{margin:.15rem 0;break-inside:avoid}
+@media (max-width:40rem){.toc ol{columns:1}}
+.open{display:inline-block;margin:.2rem 0 0;font-size:.82rem;font-weight:600;color:#fff;
+  background:var(--indigo);border:1.5px solid var(--indigo);border-radius:3px;
+  padding:.34rem .8rem;text-decoration:none}
+.open:hover{background:var(--garnet);border-color:var(--garnet)}
+.open:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.25rem}
+table.g{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45;background:#fff;
+  border:1.5px solid var(--rule)}
+table.g th,table.g td{text-align:left;vertical-align:top;padding:.5rem .7rem;
+  border-top:1px solid var(--rule)}
+table.g thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+table.g td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+table.g td b{font-weight:600}
+table.g tr.grp td{background:var(--paper);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.screen{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0 1.25rem;font-size:.95rem;max-width:40rem}
+.screen .big{font-family:var(--serif);font-size:1.9rem;color:var(--indigo);line-height:1.15}
+.screen .say{color:var(--muted);font-size:.9rem}
+.screen dl{display:grid;grid-template-columns:auto auto;gap:.2rem 1.2rem;margin:.7rem 0 0;
+  justify-content:start}
+.screen dt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;align-self:center}
+.screen dd{margin:0;font-variant-numeric:tabular-nums}
+.warnbox{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:.8rem 1.1rem;margin:1rem 0;max-width:40rem;font-size:.95rem}
+.kbd{font-weight:600;color:var(--indigo)}
+@media (max-width:34rem){
+  .screen dl{grid-template-columns:1fr}
+  table.g{font-size:.84rem}
+  table.g th,table.g td{padding:.45rem .5rem}
+}
+.actions{margin:1.1rem 0 0;display:flex;gap:.6rem;flex-wrap:wrap}
+.open.quiet{background:#fff;color:var(--indigo);border-color:var(--rule)}
+.open.quiet:hover{background:#fff;color:var(--garnet);border-color:var(--garnet-pale)}
+.formula{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--indigo);
+  border-radius:3px;padding:.7rem 1.1rem;margin:1rem 0 1.25rem;max-width:40rem}
+.formula p{margin:.25rem 0;font-family:var(--serif);color:var(--indigo);font-size:1rem}
+.onpage{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--moss);
+  border-radius:3px;padding:.75rem 1.1rem;margin:1.25rem 0 0;max-width:40rem;font-size:.95rem}
+.onpage .lbl{display:block;margin:0 0 .3rem;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--moss);font-weight:700}
+.onpage p{margin:0}
+.src{font-size:.85rem;font-style:italic;color:var(--muted)}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html">Home</a>
+  <a href="real-option-model.html" aria-current="page">Real option value</a>
+  <a href="fixed-bid-model.html">Bid price</a>
+</nav>
+<header class="masthead family">
+  <p class="eyebrow">The model and its pages</p>
+  <h1>Real option value</h1>
+  <p class="standfirst">What a project is worth when its delivery date is yours to choose, read at the confidence you are willing to act on, and how that one figure guides the project from the first idea to release.</p>
+  <nav class="modeltabs" aria-label="The pages of Real option value">
+    <a href="real-option-model.html" aria-current="page">About the model</a>
+    <a href="real-option.html">Run the model</a>
+    <a href="real-option-guide.html">User guide</a>
+  </nav>
+</header>
+
+<main class="guide">
+
+<nav class="toc" aria-label="Contents">
+  <span class="lbl">Contents</span>
+  <ol>
+    <li><a href="#for">What the model is for</a></li>
+    <li><a href="#worth">What an unfinished project is worth</a></li>
+    <li><a href="#case">The business case</a></li>
+    <li><a href="#read">Reading the value</a></li>
+    <li><a href="#lifecycle">Through the lifecycle</a></li>
+    <li><a href="#ideation">Ideation</a></li>
+    <li><a href="#chartering">Chartering</a></li>
+    <li><a href="#controlling">Controlling</a></li>
+    <li><a href="#release">Release</a></li>
+    <li><a href="#limits">What the value leaves out</a></li>
+  </ol>
+</nav>
+
+<section id="for">
+  <h2>1. What the model is for</h2>
+  <p class="lead">Some projects have no date set from outside. The product can ship earlier with less in it or later with more, and what it earns falls the later it reaches the market. The delivery date is a decision, and so is nearly everything else about the project.</p>
+  <p>The model answers one question, and it asks it at every step: what is the investment worth now, at the confidence the organization is willing to act on? The answer is a single figure. The cost, the schedule, the market and the product's qualities all enter it, so none of them has to be traded against the others by judgment alone.</p>
+  <p>That is what lets the figure steer a project. At each review there is one answer to whether things got better. A change of scope, a slip, a new market forecast or a cheaper way to support the product each shows up as a change in the same number.</p>
+  <p class="src">Chapters 2, 4 and 5 of <i>Project Economics Under Uncertainty: From Concept to Realization</i>, with the economics of Appendix 3.</p>
+</section>
+
+<section id="worth">
+  <h2>2. What an unfinished project is worth</h2>
+  <p>A project is worth something before it ships. Imagine a buyer offered the project as it stands. They are not buying a finished product, and they are not committing to finish one. They are buying the right, but not the obligation, to complete it and receive its benefits. If the market softens or the costs grow, they can slow it, restructure it or walk away.</p>
+  <p>What that buyer would pay depends on their appetite for risk, applied to the spread of what the completed project could be worth. A cautious buyer values it at a low point of that spread. A bolder buyer values it higher and pays more.</p>
+  <p>The real option value is that point. It is the investment that returns the target at the confidence you state, read off the distribution of the project's net present value. At 85% confidence it is the value that 85 outcomes in 100 reach or beat.</p>
+  <p class="src">Chapter 2, "Option Value".</p>
+</section>
+
+<section id="case">
+  <h2>3. The business case</h2>
+  <p>The value is built from a business case. For a product it has three streams:</p>
+  <div class="formula">
+    <p>NPV of the product = NPV of net revenue − NPV of operations − NPV of the development cost to complete</p>
+    <p>Return on the money still to spend = NPV of the product ÷ NPV of the development cost to complete</p>
+  </div>
+  <ul>
+    <li><b>Net revenue</b> is the units sold times the profit on each. The units depend on the market, the share of it you reach at the peak, when the peak comes, and how many months the product is on sale. The months on sale depend on when it is delivered. The profit on a unit is its price less the cost of selling it and the cost of making it.</li>
+    <li><b>Operations</b> is what each unit costs after it is sold: support, warranty and hosting.</li>
+    <li><b>Development</b> is what the work still costs and how long it still takes. Money already spent is not in it.</li>
+  </ul>
+  <p>Most of these figures are uncertain when they are first given. Each is stated as an estimate, such as a low, an expected and a high case, rather than a single number. The value is then uncertain too. It is worked out by playing the project out many times, each time drawing every estimate afresh, and reading the spread of the results.</p>
+  <h3>Where the product's qualities enter</h3>
+  <p>The operations cost is where the qualities of the product become money. Support cost per unit prices usability and reliability. Warranty cost prices reliability. Hosting cost prices efficiency and scalability.</p>
+  <p>A team that gives up a quality to hold a date has moved money out of development, where it is spent once, and into operations, where it recurs for every unit over the life of the product. The business case shows that move for what it costs.</p>
+  <h3>Why a late delivery hurts twice</h3>
+  <p>A slip costs sales, because the product arrives later in a market whose life is fixed. It also costs development, because the work runs longer. Both fall on the value, and together they fall hardest on the return.</p>
+  <p class="src">Chapter 5, Equations 1 and 2 and the list that follows them.</p>
+</section>
+
+<section id="read">
+  <h2>4. Reading the value</h2>
+  <p>A reading gives three figures.</p>
+  <ul>
+    <li><b>The value at your confidence.</b> The real option value: what the investment is worth, reached or beaten in that share of outcomes.</li>
+    <li><b>The return on the money still to spend</b>, read at the same confidence. A return of 1 means the investment doubles the money still to be put in.</li>
+    <li><b>The chance the investment makes money at all.</b></li>
+  </ul>
+  <p>The confidence is a statement of risk appetite, and it belongs to the people making the decision. Chapter 5 reads the RSonic case at 85%.</p>
+  <p>The return grows without limit as the money still to spend falls toward nothing. That is as it should be. Stopping a project that is nearly finished rarely makes sense, and the return says so.</p>
+</section>
+
+<section id="lifecycle">
+  <h2>5. Through the lifecycle</h2>
+  <p>The book's lifecycle has four phases, and each exists for one decision. The model answers each of them, with better estimates every time. Chapter 5 follows one product through all four: the RSonic Terra System, an outdoor audio and landscape lighting system that a maker of wireless speakers is considering.</p>
+  <div class="tablewrap">
+  <table class="g">
+    <thead><tr><th>Phase</th><th>The decision</th><th>What the model is given</th></tr></thead>
+    <tbody>
+      <tr><td><b>Ideation</b></td><td>Is the product promising enough to invest in detailed planning?</td><td>Rough estimates from each part of the business, with wide ranges.</td></tr>
+      <tr><td><b>Chartering</b></td><td>Do the plans support assigning the people and money to deliver it?</td><td>The cost and duration rolled up from a task-level plan, and a refined business case.</td></tr>
+      <tr><td><b>Controlling</b></td><td>Given the progress and the market, should the project continue or stop?</td><td>The cost and time still to go, updated from progress at each review, and any new market figures.</td></tr>
+      <tr><td><b>Release</b></td><td>Is it worth releasing now and taking on the support costs and liabilities?</td><td>The operations cost as testing has left it, and what another month of work would cost and buy.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">Chapter 4, "The Lifecycle"; Chapter 5 throughout.</p>
+</section>
+
+<section id="ideation">
+  <h2>6. Ideation</h2>
+  <p class="lead">The question is whether the idea is worth planning in detail. The estimates can be rough, but they must be stated.</p>
+  <p>RSonic's marketing team aims for a large share of the outdoor market by the third year of sales, with revenue rising to a peak and falling away as the product ages. Each part of the business supplies its estimates. Marketing gives the market, the peak share and the price, each as a pessimistic, an expected and an optimistic case. Support gives the operations cost per unit. Development gives the cost and duration: $4M, $5M or $7.5M, and 70, 80 or 100 weeks. Finance sets the confidence at 85%. These are Table 1 of Chapter 5.</p>
+  <p>The ranges are wide, and that is expected at this stage. The reading shows whether a plausible path to value exists and which uncertainties dominate it. For Terra the executives could be 85% confident of a return of about 3.4, with considerable upside, and they decided to go on to chartering.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Real option value opens on this case, with Table 1's figures in place. It reads <b>$19.5M</b> at 85% confidence, with a return of <b>3.49</b> on the money still to spend. Played out afresh, the value runs from about $18M to $21M and the return from about 3.4 to 3.9.</p>
+  </div>
+</section>
+
+<section id="chartering">
+  <h2>7. Chartering</h2>
+  <p class="lead">The question is whether to commit people and money. Once the commitment is made, other parts of the business begin to plan around it, so the estimates must be firm enough to plan on.</p>
+  <p>The teams plan the work in enough detail to define the project. Chapter 5 asks five things of that plan. It delays irreversible decisions until there is evidence for them. It breaks the system down so that each uncertainty sits in one place, where evidence can bear on it. It integrates and validates continuously, while change is still cheap. It prepares documentation, packaging and manufacturing alongside the engineering. And it moves from phase to phase on evidence rather than on dates.</p>
+  <p>Each team estimates its own tasks, with a low, a base and a high duration. Rolling those estimates up through the task dependencies gives the project's cost and duration as distributions. Two things stand out.</p>
+  <ul>
+    <li>The average cost and duration are well above the plan's base figures, because most tasks have more room to overrun than to finish early. A plan built on the base figures has almost no chance of finishing on time and on budget.</li>
+    <li>The spread is much narrower than at ideation. The sum of many estimates is steadier than any one of them.</li>
+  </ul>
+  <p>The rolled-up cost and duration replace the rough development figures, and the business case is refined with them (Chapter 5, Table 3). With these estimates the option value rose to about $75M and the return to about 4.7. No new information about the market had arrived. The work of planning, by itself, made the project more valuable.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Choose <i>mean and std dev</i> for the development cost and the duration, and type the plan's rolled-up figures. Typed as Table 3 gives them, Terra reads about <b>$77M</b> at 85%, with a return of about <b>4.9</b>. The chapter counts four weeks to a month, where the page counts about 4.35, so the same weeks are a little less time on the page and the value a little higher.</p>
+  </div>
+</section>
+
+<section id="controlling">
+  <h2>8. Controlling</h2>
+  <p class="lead">The question, asked at every review, is whether what has been learned still justifies the investment.</p>
+  <p>This is a control loop in the engineering sense. At each review the team observes what it can: progress on the work, money spent, and any new word from the market. It updates its estimates with that evidence, recomputes the value, and asks whether the chance of meeting the goal is improving. If it is not, the team finds the cause and deals with it, or decides to stop.</p>
+  <p>The value is the one objective. The delivery date, the development cost and the product's qualities are not competing goals. Each is a figure inside the value, so the loop always has one answer to whether things got better. The return on the money still to spend is tracked beside it, because it speaks to the decision to carry on.</p>
+  <p>Progress updates the estimates through the velocity learning of Appendix 2. The team's pace so far, set against its original estimates, gives a fresh estimate of the time and cost still to go.</p>
+  <p>Chapter 5 looks at four versions of Terra two-thirds of the way through its planned duration. A project tracking its plan has raised both its value and its return before delivering anything. One ahead of plan has created more value still. One slipping has created little. One far behind has lost value and is a candidate for shutting down.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>At each review, change the development cost and the duration to what is still to go, leaving out what has been spent, and change any market figures that have been revised. Then take a reading and set it beside the last one. Export the projects before you change them, so each review's sheet is kept.</p>
+  </div>
+</section>
+
+<section id="release">
+  <h2>9. Release</h2>
+  <p class="lead">The question is whether releasing now does more for the value than further work, a later launch, or stopping.</p>
+  <p>After function freeze, the time left before shipping is one of the cheapest chances the team will have to add value. Not by adding features, but by driving down what the product will cost to support. A defect caught in beta costs hours to fix. The same defect in a customer's hands brings support calls, field triage, a hurried fix, regression testing and an update to every unit.</p>
+  <p>Reliability here is the coefficient of the warranty and support terms in the business case, and this is the last inexpensive chance to change it. Every reduction in operations cost per unit is multiplied by every unit sold over the life of the product.</p>
+  <p>The release decision weighs the next increment of work. One more month or one more round of testing is worth doing if it adds more to the value than it costs, including what the delay costs in lost sales. If it adds less, release is the better decision.</p>
+  <div class="onpage">
+    <p class="lbl">On the page</p>
+    <p>Type the operations cost per unit as testing now puts it. To weigh another month, add it to the duration and its cost to the development cost, and compare the two readings. The chart of value against delivery delay on the Reading tab shows what each month of delay costs the value.</p>
+  </div>
+</section>
+
+<section id="limits">
+  <h2>10. What the value leaves out</h2>
+  <p>The value is the organization's best estimate from what it knows, the known unknowns. It is not a firm prediction. Events nobody has put in the estimates are outside it: a competitor entering the market, or a key supplier failing and a dearer one taking its place.</p>
+  <p>The market figures are drawn afresh for each month of the sales life, and drawn that way a high month and a low month cancel. If the market instead ran high or low for the product's whole life, the outcomes would spread many times wider, and the value at 85% on Terra's first estimates would fall below zero. Where a decision turns on the value being positive, weigh how far the months of your market really are independent of each other.</p>
+  <p>The <a href="real-option-guide.html#quoting">user guide</a> says what else to know before quoting a figure from the page.</p>
+  <p class="src">Chapter 5, "The Chartering Phase", on known and unknown unknowns.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>The method is from the book: the option value of Chapters 2 and 5, with the economics of Appendix 3.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+</div>
+</body>
+</html>

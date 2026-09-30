@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Desk — Murray Cantor</title>
+<meta name="description" content="Two models from the book for valuing a project under uncertainty: real option value when the delivery date is yours to choose, and bid price when someone else sets it. Each with a description, a page that takes a reading, and a user guide.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   Project Desk — additive styles over site.css.
+
+   Everything here uses the tokens and the type already set in site.css and
+   adds nothing to the palette. The one colour written out is #F7E3C6 on
+   #7A4A12, which is site.css's own .tk marker, reused for a field that has
+   not been stated yet — the same meaning it carries on the rest of the site.
+
+   This page and calculators.html are the only pages on the site that carry
+   their own styles and their own JavaScript.
+   ---------------------------------------------------------------------- */
+
+/* A tool page rather than a prose page, so the measure is wider than the
+   site's 50rem. The type inside it still sets at the site's measure: p is
+   capped at 38rem and .standfirst at 36rem by site.css. */
+.wrap{max-width:62rem}
+
+/* The app's own token names, aliased onto site.css's palette. The chart code
+   asks for --accent and --ink-faint; these are what it gets. */
+:root{--accent:var(--indigo);--ink-soft:var(--muted);--ink-faint:var(--muted)}
+
+[hidden]{display:none!important}
+button,input,select,textarea{font-family:var(--sans);color:var(--ink)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* --- the toolbar under the masthead --- */
+.toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:0 0 1.5rem}
+.toolbar .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700}
+.toolbar .bar-sp{flex:1 1 auto}
+select.top{font-size:.95rem;color:var(--ink);background:#fff;
+  border:1.5px solid var(--rule);border-radius:3px;padding:.32rem .5rem;max-width:22rem}
+
+.btn{font-size:.82rem;font-weight:600;color:var(--indigo);background:#fff;
+  border:1.5px solid var(--rule);border-radius:3px;padding:.34rem .8rem;cursor:pointer}
+.btn:hover{border-color:var(--garnet-pale)}
+.btn.pri{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn.pri:hover{background:var(--garnet);border-color:var(--garnet)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.tab:focus-visible,select:focus-visible,input:focus-visible,
+textarea:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* --- the three screens, in the language of .sitenav --- */
+.tabs{display:flex;flex-wrap:wrap;gap:1.4rem;margin:0 0 1.75rem;padding-bottom:.6rem;
+  border-bottom:1px solid var(--rule)}
+.tab{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+  color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;
+  padding:0 0 .15rem;cursor:pointer}
+.tab:hover{color:var(--indigo)}
+.tab[aria-selected="true"]{color:var(--indigo);border-bottom-color:var(--garnet)}
+
+/* --- panels --- */
+.card{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px}
+.pad{padding:1.1rem 1.25rem}
+h2{font-size:1.45rem;margin:0 0 .3rem}
+.sub{margin:0 0 1.25rem;font-size:1rem;color:var(--muted);max-width:38rem}
+/* the Projects screen puts a button and its explanation in one .sub */
+.sub:has(> .btn){display:flex;align-items:center;gap:.8rem;max-width:none;flex-wrap:wrap}
+.sub:has(> .btn) > span{margin-left:0!important;max-width:38rem}
+h3{margin:2rem 0 .7rem;font-family:var(--sans);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.cols{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:1.5rem;
+  align-items:start}
+@media (max-width:52rem){.cols{grid-template-columns:1fr}}
+
+/* --- tables --- */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:.55rem .9rem .55rem 0;border-top:1px solid var(--rule);
+  font-size:.95rem}
+thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.72rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;
+  white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--paper)}
+td.r,th.r{text-align:right;white-space:nowrap;padding-right:0}
+
+/* --- state marks: text and a rule, no fills, as elsewhere on the site --- */
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;padding:.12rem .45rem;border:1px solid currentColor;border-radius:2px;
+  white-space:nowrap}
+.pill.case{color:var(--indigo)}
+.pill.ok{color:var(--moss)}
+.pill.warn{color:#7A4A12}
+.pill.bad{color:var(--garnet)}
+
+/* --- the sheet --- */
+.grp{border-top:1px solid var(--rule)}
+.grp:first-child{border-top:0}
+.ghead{padding:.9rem 1.25rem .35rem;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.frow{display:grid;grid-template-columns:minmax(10.5rem,1fr) auto;gap:.9rem;align-items:center;
+  padding:.4rem 1.25rem .5rem}
+.frow:hover{background:var(--paper)}
+.flab{font-size:.95rem;min-width:0}
+.flab .hint{display:block;font-size:.76rem;color:var(--muted);letter-spacing:.03em}
+.flab .why{display:block;font-size:.8rem;color:var(--muted);max-width:34ch}
+.fval{display:flex;gap:.3rem;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.fval input,.fval select,.fval textarea{background:#fff;border:1.5px solid var(--rule);
+  border-radius:3px;padding:.24rem .45rem;font-size:.92rem;text-align:right;
+  font-variant-numeric:tabular-nums}
+.fval input.t{width:5rem}
+.fval select{text-align:left;max-width:15rem;font-variant-numeric:normal}
+.fval select.form{font-size:.76rem;color:var(--muted);width:6rem;text-align:left}
+.fval textarea{width:15rem;height:3.6rem;text-align:left;font-size:.82rem}
+.fval .unit{font-size:.78rem;color:var(--muted);min-width:2.8rem;text-align:left}
+/* A field with nothing in it yet is site.css's .tk, in its own colours. */
+.unset input,.unset select.val,.unset textarea{border-color:var(--amber);background:#F7E3C6}
+.needs{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  color:#7A4A12}
+
+/* --- the derived block --- */
+.drow{display:flex;justify-content:space-between;gap:.9rem;padding:.4rem 1.25rem;
+  font-size:.92rem;border-top:1px solid var(--rule)}
+.drow:first-of-type{border-top:0}
+.drow .v{font-variant-numeric:tabular-nums;white-space:nowrap}
+.drow.alert{border-left:3px solid var(--amber);margin-left:-3px}
+.drow.alert .v,.drow.alert .k{color:#7A4A12;font-weight:600}
+.note{padding:.8rem 1.25rem 1rem;border-top:1px solid var(--rule);font-size:.9rem;
+  color:var(--muted);max-width:38rem}
+
+/* --- the reading --- */
+.big{font-family:var(--serif);font-size:2.9rem;line-height:1.1;color:var(--indigo);
+  font-variant-numeric:tabular-nums;font-weight:400}
+.big.neg{color:var(--garnet)}
+.bigsub{margin-top:.45rem;font-size:.97rem;color:var(--muted);max-width:38rem}
+.kv{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));
+  margin-top:1.5rem}
+.kv .v{font-family:var(--serif);font-size:1.45rem;line-height:1.15;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.kv .k{display:block;margin-top:.15rem;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+.ctrl{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;font-size:.92rem;
+  margin:.5rem 0}
+.ctrl label{min-width:11rem;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:700}
+.ctrl input[type=range]{width:15rem;accent-color:var(--indigo)}
+.ctrl .v{min-width:5.5rem;font-variant-numeric:tabular-nums}
+
+/* --- charts, in the same hand as calculators.html --- */
+svg.chart{display:block;width:100%;max-width:48rem;margin:1.25rem auto 0;height:auto;
+  color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:1.1rem;margin:.6rem 0 0;font-size:.78rem;
+  color:var(--muted)}
+.legend i{display:inline-block;width:15px;height:2px;vertical-align:.25em;margin-right:.4rem}
+
+/* --- refusal, blocked, error: the site's left-border idiom --- */
+.refusal{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1.25rem}
+.refusal .big{color:var(--garnet);font-size:2.1rem}
+.blocked{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:1.25rem}
+.blocked ul{margin:.6rem 0 0;padding-left:1.2rem;font-size:.95rem}
+.err{margin-bottom:1.25rem;padding:.7rem .95rem;background:#fff;color:var(--garnet);
+  border:1.5px solid var(--rule);border-left:4px solid var(--garnet);border-radius:3px;
+  font-size:.95rem}
+
+.savebar{display:flex;gap:.7rem;align-items:center;padding:.8rem 1.25rem;font-size:.9rem;
+  border-top:1px solid var(--rule);background:var(--paper)}
+.dirty{color:#7A4A12;font-weight:600}
+
+dialog{border:1.5px solid var(--rule);border-left:4px solid var(--garnet);border-radius:3px;
+  background:#fff;color:var(--ink);padding:0;max-width:32rem;width:calc(100% - 2rem);
+  font-family:var(--sans);font-size:19px;line-height:1.55}
+dialog::backdrop{background:rgba(34,37,42,.45)}
+.dlg-h{padding:1rem 1.25rem .3rem;font-family:var(--serif);font-size:1.25rem;color:var(--indigo)}
+.dlg-b{padding:.5rem 1.25rem 1.25rem}
+.dlg-f{padding:.8rem 1.25rem;border-top:1px solid var(--rule);display:flex;
+  justify-content:flex-end;gap:.6rem}
+.pick{display:grid;gap:.6rem;margin-top:.7rem}
+.pick label{border:1.5px solid var(--rule);border-radius:3px;padding:.65rem .8rem;cursor:pointer;
+  display:flex;gap:.6rem;align-items:flex-start;font-size:.95rem}
+.pick label:has(input:checked){border-left:4px solid var(--garnet);padding-left:calc(.8rem - 2.5px)}
+.pick input{accent-color:var(--indigo);margin-top:.35rem;flex:0 0 auto}
+.pick small{display:block;color:var(--muted);font-size:.85rem}
+.dlg-b input[type=text]{width:100%;background:#fff;border:1.5px solid var(--rule);
+  border-radius:3px;padding:.4rem .55rem;margin-top:.35rem;font-size:.95rem}
+.lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  font-weight:700}
+.foot{margin-top:2rem;font-size:.85rem;color:var(--muted)}
+
+@media (max-width:34rem){
+  /* the spacer pushes PROJECT onto a line of its own at this width */
+  .toolbar .bar-sp{display:none}
+  .toolbar{gap:.5rem}
+  /* the projects table scrolls inside its panel rather than setting one word
+     per line; the page itself still has no sideways scroll */
+  .tablewrap table{min-width:32rem}
+  th,td{padding-right:.7rem;font-size:.9rem}
+  .big{font-size:2.2rem}
+  .refusal .big{font-size:1.7rem}
+  .kv .v{font-size:1.25rem}
+  .ctrl label{min-width:0}
+  .ctrl input[type=range]{width:100%}
+  .frow{grid-template-columns:1fr}
+  .fval{justify-content:flex-start}
+}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+<style id="landing">
+/* The landing page: its sections, the two cases, the model cards and their tabs. */
+.home section{padding:2.2rem 0}
+.home .lead{font-size:1.05em}
+.open{display:inline-block;font-size:.82rem;font-weight:600;color:#fff;background:var(--indigo);
+  border:1.5px solid var(--indigo);border-radius:3px;padding:.38rem .9rem;text-decoration:none}
+.open:hover{background:var(--garnet);border-color:var(--garnet)}
+.open.quiet{background:#fff;color:var(--indigo);border-color:var(--rule)}
+.open.quiet:hover{color:var(--garnet);border-color:var(--garnet-pale)}
+.open:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.cases{display:grid;gap:1.25rem;margin:1.25rem 0 1.25rem}
+.case{background:#fff;border:1.5px solid var(--rule);border-top:4px solid var(--indigo);border-radius:3px;padding:1.1rem 1.4rem}
+.case .lbl{margin:0 0 .25rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--garnet);font-weight:700}
+.case h3,.model h3{font-family:var(--serif);text-transform:none;letter-spacing:0;font-weight:400}
+.case h3{margin:0 0 .6rem;font-size:1.35rem;color:var(--indigo)}
+.case p{font-size:.98rem}
+.case p:last-child{margin-bottom:0}
+.phases{max-width:38rem;padding-left:1.3rem}
+.phases li{margin:.35rem 0}
+@media(min-width:44rem){.cases{grid-template-columns:1fr 1fr}}
+.models{display:grid;gap:1.25rem;margin:0 0 2rem}
+.model{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  padding:1.3rem 1.5rem;display:flex;flex-direction:column}
+.model h3{margin:0 0 .4rem;font-size:1.25rem}
+.model h3 a{color:var(--indigo);text-decoration:none}
+.model h3 a:hover{color:var(--garnet)}
+.model p{margin:0 0 1rem;font-size:1rem;color:var(--muted);max-width:44rem;flex:1 1 auto}
+.modeltabs.home{margin:0;grid-template-columns:repeat(3,1fr);justify-content:stretch}
+.modeltabs.home a{padding:.5rem .4rem;font-size:.7rem;letter-spacing:.06em;display:flex;align-items:center;justify-content:center}
+.modeltabs.home a{border-bottom:1.5px solid var(--rule);border-radius:3px}
+.modeltabs.home a:hover{background:var(--indigo);border-color:var(--indigo);color:#fff}
+@media(min-width:44rem){.models{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html" aria-current="page">Home</a>
+  <a href="real-option-model.html">Real option value</a>
+  <a href="fixed-bid-model.html">Bid price</a>
+</nav>
+
+<header class="masthead">
+  <p class="eyebrow">Project economics</p>
+  <h1>Project Desk</h1>
+  <p class="standfirst">Working versions of the algorithms introduced in the book <i>Project Economics Under Uncertainty: From Concept to Realization</i>. Each runs here, on your own figures, and opens on the book's worked example.</p>
+</header>
+
+<main class="home">
+
+<section id="purpose">
+  <h2>What this site is for</h2>
+  <p class="lead">The book introduces its methods with worked examples and the mathematics behind them. This site turns them into working tools, so a reader can apply them to a real project rather than only follow the examples.</p>
+  <p>Two are here now. Real option value, from Chapters 2 and 5 with Appendix 3, says what a project whose delivery date is yours to choose is worth at the confidence you state. The bid-price algorithm of Appendix 8 says what to charge for work wanted by a fixed date. Each opens on the book's own example, and each has a page explaining the model and a user guide.</p>
+  <p>The book sets out two more algorithms for tools to carry: completion velocity learning (Appendix 2) and the quality confidence model (Appendix 7). They are not on the site yet.</p>
+</section>
+
+<section id="idea">
+  <h2>Manage a project as an investment</h2>
+  <p class="lead">A project spends money now for a benefit later. Its cost, its schedule and what it will earn are all uncertain when the money is committed, and they stay uncertain until it is done.</p>
+  <p>The book rests on three principles. Embrace uncertainty: treat every forecast of cost, schedule and value as a spread of outcomes, not a single number. Think like an investor: a project succeeds when it earns the return it was undertaken for. Think in systems: the qualities of what is delivered, such as its reliability and usability, carry money for as long as it is in use.</p>
+  <p>Put together, they give one figure for what a project is worth, read at a stated confidence. Because it is recomputed from the current estimates, the same figure can steer the project at every review, from the first idea to release.</p>
+</section>
+
+<section id="why">
+  <h2>Why there are two models</h2>
+  <p class="lead">What a project is worth depends on how its value responds to the delivery date. There are two cases, and each has its own model.</p>
+  <div class="cases">
+    <div class="case">
+      <p class="lbl">The date is yours to choose</p>
+      <h3>Real option value</h3>
+      <p>A product ships when the organization decides it is ready. It can ship earlier with less in it or later with more, and what it earns falls the later it reaches the market. The delivery date is one more decision.</p>
+      <p>The project is worth what a buyer would pay for the right, but not the obligation, to finish it: the value its net present value reaches or beats at the confidence you state. Chapter 5 follows the RSonic Terra System, an outdoor audio and lighting product, from idea to release.</p>
+    </div>
+    <div class="case">
+      <p class="lbl">Someone else sets the date</p>
+      <h3>Bid price</h3>
+      <p>A client wants the work by a date that cannot move: a contract deadline, an event, a launch window. The full price is paid for delivery on time, a share of it for a short delay, and nothing after a final date.</p>
+      <p>Taking the job is a wager. The stake is the cost to complete, the payoff is the price, and the chance of winning is the chance of delivering in time. The model finds the price that earns the return you require at the confidence you state. Chapter 6 follows QNAV bidding to build the landing system for a Mars sample return mission.</p>
+    </div>
+  </div>
+  <p>To choose, ask who sets the delivery date and what happens to the value when it passes.</p>
+</section>
+
+<section id="models">
+  <h2>The models</h2>
+  <p>Each model is a set of three pages. <b>About the model</b> says what it is for and follows the book's worked example through the life of a project. <b>Run the model</b> takes a reading: it opens on the book's example, so there is a figure on screen before you type anything. The <b>user guide</b> walks through it box by box.</p>
+  <div class="models">
+    <div class="model">
+      <h3><a href="real-option-model.html">Real option value</a></h3>
+      <p>The delivery date is yours to choose and the value decays with it. Read what the investment is worth at a confidence you state, and the return on the money still to spend. Chapters 2 and 5, with Appendix 3.</p>
+      <nav class="modeltabs home" aria-label="The pages of Real option value">
+        <a href="real-option-model.html">About the model</a>
+        <a href="real-option.html">Run the model</a>
+        <a href="real-option-guide.html">User guide</a>
+      </nav>
+    </div>
+    <div class="model">
+      <h3><a href="fixed-bid-model.html">Bid price</a></h3>
+      <p>The client sets the date and the payment collapses at it, so the engagement is a wager. Read what to bid for a return you require, at a confidence you state. Chapter 2 and Appendix 8.</p>
+      <nav class="modeltabs home" aria-label="The pages of Bid price">
+        <a href="fixed-bid-model.html">About the model</a>
+        <a href="fixed-bid.html">Run the model</a>
+        <a href="fixed-bid-guide.html">User guide</a>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<section id="lifecycle">
+  <h2>Through the life of a project</h2>
+  <p>The book's lifecycle has four phases, and each exists to support one decision. Both models answer each of them, with better estimates every time.</p>
+  <ol class="phases">
+    <li><b>Ideation.</b> Is the idea promising enough to invest in detailed planning?</li>
+    <li><b>Chartering.</b> Do the plans support assigning the people and the money?</li>
+    <li><b>Controlling.</b> Given the progress so far, should the project continue or stop?</li>
+    <li><b>Release.</b> Is it worth delivering now and taking on what follows?</li>
+  </ol>
+  <p>Each About the model page takes its example through the four, and says at each what to type into Run the model.</p>
+</section>
+
+<section id="use">
+  <h2>Using the pages</h2>
+  <p>Run the model works entirely in your browser. Nothing you type is uploaded or shared, and each model keeps its own projects on this computer. Export writes them to a file you keep; Import reads them back.</p>
+  <p>Every page here is v0.13.3. Run the model prints its version at the left of its toolbar. If it shows an earlier one, your browser is showing an old copy: reload the page.</p>
+</section>
+
+<section id="book">
+  <h2>The book</h2>
+  <p>Every method on these pages is from the book <i>Project Economics Under Uncertainty: From Concept to Realization</i>. Chapter 1 treats estimates as uncertain quantities. Chapter 2 sets out the two investment cases. Chapter 4 lays out the lifecycle, and Chapters 5 and 6 work one example of each case through it. The arithmetic is in Appendix 3, and the bid-price algorithm in Appendix 8.</p>
+</section>
+
+</main>
+<footer>
+  <p>The methods are from the book: the option value of Chapters 2 and 5 with the economics of Appendix 3, and the bid-price algorithm of Appendix 8 with the wager model of Chapter 2.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+
+</div>
+
+</body>
+</html>

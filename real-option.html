@@ -1,0 +1,3483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Real option value — Murray Cantor</title>
+<meta name="description" content="A project is a parameter sheet, not a plan. Fill it in and take a reading: a bid price on a fixed-deadline job, or the NPV at a stated confidence on a business case. Runs in your browser.">
+<meta name="theme-color" content="#33306B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%2333306B'/%3E%3Cpath d='M6 23 L13 15 L19 19 L26 9' fill='none' stroke='%23FBF9F5' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<style>
+/* ----------------------------------------------------------------------
+   Project Desk — additive styles over site.css.
+
+   Everything here uses the tokens and the type already set in site.css and
+   adds nothing to the palette. The one colour written out is #F7E3C6 on
+   #7A4A12, which is site.css's own .tk marker, reused for a field that has
+   not been stated yet — the same meaning it carries on the rest of the site.
+
+   This page and calculators.html are the only pages on the site that carry
+   their own styles and their own JavaScript.
+   ---------------------------------------------------------------------- */
+
+/* A tool page rather than a prose page, so the measure is wider than the
+   site's 50rem. The type inside it still sets at the site's measure: p is
+   capped at 38rem and .standfirst at 36rem by site.css. */
+.wrap{max-width:62rem}
+
+/* The app's own token names, aliased onto site.css's palette. The chart code
+   asks for --accent and --ink-faint; these are what it gets. */
+:root{--accent:var(--indigo);--ink-soft:var(--muted);--ink-faint:var(--muted)}
+
+[hidden]{display:none!important}
+button,input,select,textarea{font-family:var(--sans);color:var(--ink)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* --- the toolbar under the masthead --- */
+.toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:0 0 1.5rem}
+.toolbar .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700}
+.toolbar .bar-sp{flex:1 1 auto}
+select.top{font-size:.95rem;color:var(--ink);background:#fff;
+  border:1.5px solid var(--rule);border-radius:3px;padding:.32rem .5rem;max-width:22rem}
+
+.btn{font-size:.82rem;font-weight:600;color:var(--indigo);background:#fff;
+  border:1.5px solid var(--rule);border-radius:3px;padding:.34rem .8rem;cursor:pointer}
+.btn:hover{border-color:var(--garnet-pale)}
+.btn.pri{background:var(--indigo);border-color:var(--indigo);color:#fff}
+a.btn{display:inline-block;text-decoration:none;line-height:1.3}
+.btn.pri:hover{background:var(--garnet);border-color:var(--garnet)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.tab:focus-visible,select:focus-visible,input:focus-visible,
+textarea:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* --- the three screens, in the language of .sitenav --- */
+.tabs{display:flex;flex-wrap:wrap;gap:1.4rem;margin:0 0 1.75rem;padding-bottom:.6rem;
+  border-bottom:1px solid var(--rule)}
+.tab{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+  color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;
+  padding:0 0 .15rem;cursor:pointer}
+.tab:hover{color:var(--indigo)}
+.tab[aria-selected="true"]{color:var(--indigo);border-bottom-color:var(--garnet)}
+
+/* --- panels --- */
+.card{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px}
+.pad{padding:1.1rem 1.25rem}
+h2{font-size:1.45rem;margin:0 0 .3rem}
+.sub{margin:0 0 1.25rem;font-size:1rem;color:var(--muted);max-width:38rem}
+/* the Projects screen puts a button and its explanation in one .sub */
+.sub:has(> .btn){display:flex;align-items:center;gap:.8rem;max-width:none;flex-wrap:wrap}
+.sub:has(> .btn) > span{margin-left:0!important;max-width:38rem}
+h3{margin:2rem 0 .7rem;font-family:var(--sans);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.cols{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:1.5rem;
+  align-items:start}
+@media (max-width:52rem){.cols{grid-template-columns:1fr}}
+
+/* --- tables --- */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:.55rem .9rem .55rem 0;border-top:1px solid var(--rule);
+  font-size:.95rem}
+thead th{border-top:0;border-bottom:1.5px solid var(--rule);font-size:.72rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;
+  white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--paper)}
+td.r,th.r{text-align:right;white-space:nowrap;padding-right:0}
+
+/* --- state marks: text and a rule, no fills, as elsewhere on the site --- */
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;padding:.12rem .45rem;border:1px solid currentColor;border-radius:2px;
+  white-space:nowrap}
+.pill.case{color:var(--indigo)}
+.pill.ok{color:var(--moss)}
+.pill.warn{color:#7A4A12}
+.pill.bad{color:var(--garnet)}
+
+/* --- the sheet --- */
+.grp{border-top:1px solid var(--rule)}
+.grp:first-child{border-top:0}
+.ghead{padding:.9rem 1.25rem .35rem;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garnet);font-weight:700}
+.frow{display:grid;grid-template-columns:minmax(10.5rem,1fr) auto;gap:.9rem;align-items:center;
+  padding:.4rem 1.25rem .5rem}
+.frow:hover{background:var(--paper)}
+.flab{font-size:.95rem;min-width:0}
+.flab .hint{display:block;font-size:.76rem;color:var(--muted);letter-spacing:.03em}
+.flab .why{display:block;font-size:.8rem;color:var(--muted);max-width:34ch}
+.fval{display:flex;gap:.3rem;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.fval input,.fval select,.fval textarea{background:#fff;border:1.5px solid var(--rule);
+  border-radius:3px;padding:.24rem .45rem;font-size:.92rem;text-align:right;
+  font-variant-numeric:tabular-nums}
+.fval input.t{width:5.6rem}
+.fval input.t.wide{width:8.4rem}
+.fval.dist{flex-direction:column;align-items:flex-end;gap:.25rem}
+.fval .boxes{display:flex;gap:.3rem;align-items:flex-end;justify-content:flex-end}
+.fval label.box{display:flex;flex-direction:column;align-items:flex-end}
+.fval label.box .cap{font-size:.68rem;color:var(--muted);letter-spacing:.03em;padding-right:.1rem}
+.fval select{text-align:left;max-width:15rem;font-variant-numeric:normal}
+.fval select.form{font-size:.76rem;color:var(--muted);width:auto;text-align:left}
+.fval textarea{width:15rem;height:3.6rem;text-align:left;font-size:.82rem}
+.fval .unit{font-size:.78rem;color:var(--muted);min-width:2.8rem;text-align:left}
+/* A field with nothing in it yet is site.css's .tk, in its own colours. */
+.unset input,.unset select.val,.unset textarea{border-color:var(--amber);background:#F7E3C6}
+.notnum input,.notnum textarea{border-color:var(--garnet);background:#F6E3E8}
+.needs{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  color:#7A4A12}
+
+/* --- the derived block --- */
+.drow{display:flex;justify-content:space-between;gap:.9rem;padding:.4rem 1.25rem;
+  font-size:.92rem;border-top:1px solid var(--rule)}
+.drow:first-of-type{border-top:0}
+.drow .v{font-variant-numeric:tabular-nums;white-space:nowrap}
+.drow.alert{border-left:3px solid var(--amber);margin-left:-3px}
+.rnote{margin:.7rem 0 0;font-size:.82rem;color:var(--ink-soft);max-width:62ch}
+.drow .k .why,.dgroup .why{display:block;font-size:.76rem;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-top:.1rem}
+.dgroup{padding:.7rem 1.25rem .2rem;font-size:.8rem;font-weight:700;color:var(--ink);border-top:1px solid var(--rule)}
+.drow.alert .v,.drow.alert .k{color:#7A4A12;font-weight:600}
+.note{padding:.8rem 1.25rem 1rem;border-top:1px solid var(--rule);font-size:.9rem;
+  color:var(--muted);max-width:38rem}
+
+/* --- the reading --- */
+.big{font-family:var(--serif);font-size:2.9rem;line-height:1.1;color:var(--indigo);
+  font-variant-numeric:tabular-nums;font-weight:400}
+.big.neg{color:var(--garnet)}
+.bigsub{margin-top:.45rem;font-size:.97rem;color:var(--muted);max-width:38rem}
+.kv{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));
+  margin-top:1.5rem}
+.kv .v{font-family:var(--serif);font-size:1.45rem;line-height:1.15;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.kv .k{display:block;margin-top:.15rem;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+.ctrl{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;font-size:.92rem;
+  margin:.5rem 0}
+.ctrl label{min-width:11rem;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:700}
+.ctrl input[type=range]{width:15rem;accent-color:var(--indigo)}
+.ctrl .v{min-width:5.5rem;font-variant-numeric:tabular-nums}
+
+/* --- charts, in the same hand as calculators.html --- */
+svg.chart{display:block;width:100%;max-width:48rem;margin:1.25rem auto 0;height:auto;
+  color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:1.1rem;margin:.6rem 0 0;font-size:.78rem;
+  color:var(--muted)}
+.legend i{display:inline-block;width:15px;height:2px;vertical-align:.25em;margin-right:.4rem}
+
+/* --- the figures his packages draw, one card each --- */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(21rem,100%),1fr));gap:1rem;margin-top:1rem}
+.fig{background:#fff;border:1.5px solid var(--rule);border-radius:3px;padding:.6rem .6rem .4rem}
+.fig svg{display:block;width:100%;height:auto}
+.figbar{display:flex;justify-content:flex-end;gap:.5rem;padding:.35rem .2rem 0}
+.figbar .btn{font-size:.78rem;padding:.2rem .6rem}
+
+/* --- refusal, blocked, error: the site's left-border idiom --- */
+.refusal{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--garnet);
+  border-radius:3px;padding:1.25rem}
+.refusal .big{color:var(--garnet);font-size:2.1rem}
+.blocked{background:#fff;border:1.5px solid var(--rule);border-left:4px solid var(--amber);
+  border-radius:3px;padding:1.25rem}
+.blocked ul{margin:.6rem 0 0;padding-left:1.2rem;font-size:.95rem}
+.err{margin-bottom:1.25rem;padding:.7rem .95rem;background:#fff;color:var(--garnet);
+  border:1.5px solid var(--rule);border-left:4px solid var(--garnet);border-radius:3px;
+  font-size:.95rem}
+
+.savebar{display:flex;gap:.7rem;align-items:center;padding:.8rem 1.25rem;font-size:.9rem;
+  border-top:1px solid var(--rule);background:var(--paper)}
+.dirty{color:#7A4A12;font-weight:600}
+
+dialog{border:1.5px solid var(--rule);border-left:4px solid var(--garnet);border-radius:3px;
+  background:#fff;color:var(--ink);padding:0;max-width:32rem;width:calc(100% - 2rem);
+  font-family:var(--sans);font-size:19px;line-height:1.55}
+dialog::backdrop{background:rgba(34,37,42,.45)}
+.dlg-h{padding:1rem 1.25rem .3rem;font-family:var(--serif);font-size:1.25rem;color:var(--indigo)}
+.dlg-b{padding:.5rem 1.25rem 1.25rem}
+.dlg-f{padding:.8rem 1.25rem;border-top:1px solid var(--rule);display:flex;
+  justify-content:flex-end;gap:.6rem}
+.pick{display:grid;gap:.6rem;margin-top:.7rem}
+.pick label{border:1.5px solid var(--rule);border-radius:3px;padding:.65rem .8rem;cursor:pointer;
+  display:flex;gap:.6rem;align-items:flex-start;font-size:.95rem}
+.pick label:has(input:checked){border-left:4px solid var(--garnet);padding-left:calc(.8rem - 2.5px)}
+.pick input{accent-color:var(--indigo);margin-top:.35rem;flex:0 0 auto}
+.pick small{display:block;color:var(--muted);font-size:.85rem}
+.dlg-b input[type=text]{width:100%;background:#fff;border:1.5px solid var(--rule);
+  border-radius:3px;padding:.4rem .55rem;margin-top:.35rem;font-size:.95rem}
+.lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  font-weight:700}
+.foot{margin-top:2rem;font-size:.85rem;color:var(--muted)}
+
+@media (max-width:34rem){
+  /* the spacer pushes PROJECT onto a line of its own at this width */
+  .toolbar .bar-sp{display:none}
+  .toolbar{gap:.5rem}
+  /* the projects table scrolls inside its panel rather than setting one word
+     per line; the page itself still has no sideways scroll */
+  .tablewrap table{min-width:32rem}
+  th,td{padding-right:.7rem;font-size:.9rem}
+  .big{font-size:2.2rem}
+  .refusal .big{font-size:1.7rem}
+  .kv .v{font-size:1.25rem}
+  .ctrl label{min-width:0}
+  .ctrl input[type=range]{width:100%}
+  .frow{grid-template-columns:1fr}
+  .fval{justify-content:flex-start}
+}
+.frow .oldnote,.oldnotes{color:#8a3b00;font-weight:600}
+.oldnotes li{margin:.15rem 0}
+</style>
+<style id="sitenav-local">
+/* The site's navigation, kept inside this folder: Home and one entry per
+   model, and under a model its three pages. site.css styles the current page;
+   this marks the model a page belongs to the same way. */
+.sitenav a[aria-current="true"]{color:var(--indigo);border-bottom:2px solid var(--garnet)}
+/* A model's three pages are one set: its name heads each of them, with these
+   tabs under it, sitting on the masthead's rule in the same place on all three. */
+.masthead.family{padding-bottom:0}
+.modeltabs{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:.35rem;margin:1.6rem 0 0}
+.modeltabs a{display:block;padding:.55rem 1.05rem .5rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-decoration:none;color:var(--muted);
+  background:#fff;border:1.5px solid var(--rule);border-bottom:0;border-radius:3px 3px 0 0}
+.modeltabs a:hover{color:var(--indigo);border-color:var(--garnet-pale)}
+.modeltabs a[aria-current="page"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.modeltabs a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.modeltabs a{text-align:center}
+@media (max-width:34rem){.modeltabs{grid-template-columns:repeat(3,1fr)}.modeltabs a{padding:.5rem .35rem .45rem;font-size:.68rem;letter-spacing:.05em;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="sitenav" aria-label="Site">
+  <a href="index.html">Home</a>
+  <a href="real-option-model.html" aria-current="true">Real option value</a>
+  <a href="fixed-bid-model.html">Bid price</a>
+</nav>
+
+<header class="masthead family">
+  <p class="eyebrow">The model and its pages</p>
+  <h1>Real option value</h1>
+  <p class="standfirst">A business case is a parameter sheet, not a plan. Fill it in and read what the investment is worth at a confidence you state, with the return on the money still to spend beside it. It runs here in your browser. Nothing is uploaded.</p>
+  <nav class="modeltabs" aria-label="The pages of Real option value">
+    <a href="real-option-model.html">About the model</a>
+    <a href="real-option.html" aria-current="page">Run the model</a>
+    <a href="real-option-guide.html">User guide</a>
+  </nav>
+</header>
+
+<div class="toolbar">
+  <span class="lbl" id="verlbl"><span id="ver"></span></span>
+  <span class="bar-sp"></span>
+  <label class="lbl" for="proj">Project</label>
+  <select id="proj" class="top"></select>
+  <button class="btn pri" id="newbtn">New project</button>
+  <button class="btn" id="exportbtn" title="Write every project to a JSON file you keep">Export</button>
+  <button class="btn" id="importbtn" title="Read projects back from a JSON file">Import</button>
+  <input type="file" id="importfile" accept="application/json,.json" hidden>
+  <a class="btn" id="guidebtn" href="real-option-guide.html">User guide</a>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-screen="projects" aria-selected="true">Projects</button>
+  <button class="tab" role="tab" data-screen="sheet" aria-selected="false">Sheet</button>
+  <button class="tab" role="tab" data-screen="reading" aria-selected="false">Reading</button>
+  <button class="tab" role="tab" data-screen="figures" aria-selected="false">Figures</button>
+</div>
+
+<main><div id="err"></div><div id="screen"></div>
+  <div class="foot" id="foot"></div>
+</main>
+
+<footer>
+  <p>The method is from the book: the option value of Chapters 2 and 5, with the economics of Appendix 3.
+  Project Desk v0.13.3 · © 2026 Cantor Consulting LLC · <a href="https://murraycantor.com/">murraycantor.com</a></p>
+</footer>
+
+</div>
+
+<dialog id="newdlg"><form method="dialog">
+  <div class="dlg-h">New project</div>
+  <div class="dlg-b">
+    <label class="lbl" for="nm">Name</label>
+    <input type="text" id="nm" value="Untitled project" autocomplete="off">
+  </div>
+  <div class="dlg-f"><button class="btn" value="cancel">Cancel</button>
+    <button class="btn pri" value="create">Create</button></div>
+</form></dialog>
+<script>
+/* pd-core.js — the arithmetic behind Project Desk, for the browser.
+ *
+ * A port of the Python package of the same name, seam for seam, which is in
+ * turn written against Distributions.py. Every distribution supplies cdf(x)
+ * and invCdf(p) and nothing else; percentile(p) takes p in [0, 1].
+ *
+ * Nothing here touches the DOM, so it runs in node as well as in a browser,
+ * which is how it is checked against the Python figure by figure.
+ */
+var PD = (function () {
+  'use strict';
+
+
+  /* ==================================================================== *
+   *  The standard normal                                                 *
+   * ==================================================================== */
+
+  /* Hart 1968, accurate to about 1e-15. */
+  function Phi(z) {
+    var a = Math.abs(z), p, e, b, c;
+    if (a > 37) { p = 0; }
+    else {
+      e = Math.exp(-a * a / 2);
+      if (a < 7.071067811865475) {
+        b = 3.52624965998911e-02 * a + 0.700383064443688;
+        b = b * a + 6.37396220353165;
+        b = b * a + 33.912866078383;
+        b = b * a + 112.079291497871;
+        b = b * a + 221.213596169931;
+        b = b * a + 220.206867912376;
+        c = 8.83883476483184e-02 * a + 1.75566716318264;
+        c = c * a + 16.064177579207;
+        c = c * a + 86.7807322029461;
+        c = c * a + 296.564248779674;
+        c = c * a + 637.333633378831;
+        c = c * a + 793.826512519948;
+        c = c * a + 440.413735824752;
+        p = e * b / c;
+      } else {
+        b = a + 0.65;
+        b = a + 4 / b; b = a + 3 / b; b = a + 2 / b; b = a + 1 / b;
+        p = e / (b * 2.506628274631);
+      }
+    }
+    return z > 0 ? 1 - p : p;
+  }
+
+  /* Acklam plus one Halley step — the construction PhiInv uses in the module. */
+  var A = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+           1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00],
+      B = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+           6.680131188771972e+01, -1.328068155288572e+01],
+      C = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+           -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00],
+      D = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+           3.754408661907416e+00],
+      P_LOW = 0.02425;
+
+  function PhiInv(p) {
+    var q, r, x, e, u;
+    if (p <= 0) return -Infinity;
+    if (p >= 1) return Infinity;
+    if (p < P_LOW) {
+      q = Math.sqrt(-2 * Math.log(p));
+      x = (((((C[0] * q + C[1]) * q + C[2]) * q + C[3]) * q + C[4]) * q + C[5]) /
+          ((((D[0] * q + D[1]) * q + D[2]) * q + D[3]) * q + 1);
+    } else if (p > 1 - P_LOW) {
+      q = Math.sqrt(-2 * Math.log(1 - p));
+      x = -(((((C[0] * q + C[1]) * q + C[2]) * q + C[3]) * q + C[4]) * q + C[5]) /
+           ((((D[0] * q + D[1]) * q + D[2]) * q + D[3]) * q + 1);
+    } else {
+      q = p - 0.5; r = q * q;
+      x = (((((A[0] * r + A[1]) * r + A[2]) * r + A[3]) * r + A[4]) * r + A[5]) * q /
+          (((((B[0] * r + B[1]) * r + B[2]) * r + B[3]) * r + B[4]) * r + 1);
+    }
+    e = Phi(x) - p;
+    u = e * Math.sqrt(2 * Math.PI) * Math.exp(x * x / 2);
+    return x - u / (1 + x * u / 2);
+  }
+
+  /* ==================================================================== *
+   *  Sample statistics                                                   *
+   * ==================================================================== */
+
+  /* numpy's default quantile: linear interpolation on the (n-1) grid.
+     Uses a partition rather than a full sort, as np.quantile does, because a
+     confidence slider asks for this thousands of times. */
+  function quantile(values, q) {
+    var n = values.length;
+    if (n === 0) return NaN;
+    if (q <= 0) return minOf(values);
+    if (q >= 1) return maxOf(values);
+    var pos = q * (n - 1), k = Math.floor(pos), f = pos - k;
+    var a = Float64Array.from(values);
+    var lo = select(a, k);
+    if (f === 0) return lo;
+    var hi = minFrom(a, k + 1);          /* select() leaves a[k+1..] ≥ a[k] */
+    return lo + f * (hi - lo);
+  }
+
+  /* Quickselect, in place. Returns the k-th smallest and partitions around it. */
+  function select(a, k) {
+    var lo = 0, hi = a.length - 1, i, j, p, t;
+    while (lo < hi) {
+      p = a[(lo + hi) >> 1];
+      i = lo; j = hi;
+      while (i <= j) {
+        while (a[i] < p) i++;
+        while (a[j] > p) j--;
+        if (i <= j) { t = a[i]; a[i] = a[j]; a[j] = t; i++; j--; }
+      }
+      if (k <= j) hi = j; else if (k >= i) lo = i; else return a[k];
+    }
+    return a[k];
+  }
+
+  function minFrom(a, from) {
+    var m = Infinity, i;
+    for (i = from; i < a.length; i++) if (a[i] < m) m = a[i];
+    return m;
+  }
+  function minOf(a) { var m = Infinity, i; for (i = 0; i < a.length; i++) if (a[i] < m) m = a[i]; return m; }
+  function maxOf(a) { var m = -Infinity, i; for (i = 0; i < a.length; i++) if (a[i] > m) m = a[i]; return m; }
+  function meanOf(a) { var s = 0, i; for (i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+  function shareBelow(a, x) { var c = 0, i; for (i = 0; i < a.length; i++) if (a[i] < x) c++; return c / a.length; }
+
+  /* The value this sample exceeds with probability `confidence`. */
+  function atConfidence(values, confidence) { return quantile(values, 1 - confidence); }
+
+  /* A density from draws, for a figure: a fine histogram smoothed with a
+     Gaussian kernel at Silverman's bandwidth, sampled on `points` x's from the
+     lowest draw to the highest, the way his Empirical_PDF draws one. Every
+     probability on a figure is read off the draws themselves, never off this
+     curve. A set of draws that are all one figure is reported as such rather
+     than drawn as a spike. */
+  /* An estimate the sheet states in a known form is drawn from its formula,
+     the way his figures draw a Triangular_PDF: a three-point estimate is a
+     triangle with its apex at the expected value, not a smoothed histogram of
+     draws of one. Null where the form is unknown or has no width, and the
+     draws are smoothed instead. */
+  function exactDensity(payload, a, P) {
+    if (!payload) return null;
+    var lo, hi, f, i, x, xs = [], ys = [], s, m, v;
+    if (payload.form === 'triple') {
+      lo = +payload.low; m = +payload.base; hi = +payload.high;
+      if (!(isFinite(lo) && isFinite(m) && isFinite(hi) && lo <= m && m <= hi && hi > lo)) return null;
+      f = function (x) {
+        if (x < lo || x > hi) return 0;
+        if (x < m) return 2 * (x - lo) / ((hi - lo) * (m - lo));
+        if (x > m) return 2 * (hi - x) / ((hi - lo) * (hi - m));
+        return 2 / (hi - lo);
+      };
+    } else if (payload.form === 'normal') {
+      m = +payload.mean; s = +payload.sd;
+      if (!(isFinite(m) && s > 0)) return null;
+      lo = quantile(a, 0.001); hi = quantile(a, 0.999);
+      if (!(hi > lo)) return null;
+      f = function (x) { return Math.exp(-0.5 * (x - m) * (x - m) / (s * s)) / (s * Math.sqrt(2 * Math.PI)); };
+    } else if (payload.form === 'lognormal') {
+      m = +payload.mu; s = +payload.sigma;
+      if (!(isFinite(m) && s > 0)) return null;
+      lo = Math.max(1e-12, quantile(a, 0.001)); hi = quantile(a, 0.999);
+      if (!(hi > lo)) return null;
+      f = function (x) { var z = (Math.log(x) - m) / s; return Math.exp(-0.5 * z * z) / (x * s * Math.sqrt(2 * Math.PI)); };
+    } else if (payload.form === 'uniform') {
+      lo = +payload.start; hi = +payload.end;
+      if (!(isFinite(lo) && isFinite(hi) && hi > lo)) return null;
+      f = function (x) { return (x < lo || x > hi) ? 0 : 1 / (hi - lo); };
+    } else return null;
+    /* the apex of a triangle sits on the grid, so it is drawn at its height */
+    for (i = 0; i < P; i++) { x = lo + (hi - lo) * i / (P - 1); xs.push(x); }
+    if (payload.form === 'triple') {
+      m = +payload.base;
+      for (i = 1; i < P; i++) if (xs[i - 1] < m && m < xs[i]) { xs.splice(i, 0, m); break; }
+    }
+    for (i = 0; i < xs.length; i++) { v = f(xs[i]); ys.push(isFinite(v) ? v : 0); }
+    return { xs: xs, ys: ys };
+  }
+
+  function densityOf(a, points, payload) {
+    var n = a.length, i, s = 0, s2 = 0, kept = 0;
+    for (i = 0; i < n; i++) s += a[i];
+    var mean = s / n;
+    for (i = 0; i < n; i++) s2 += (a[i] - mean) * (a[i] - mean);
+    var exact = exactDensity(payload, a, points || 300);
+    if (exact) {
+      return { lo: exact.xs[0], hi: exact.xs[exact.xs.length - 1], mean: mean,
+               sd: Math.sqrt(s2 / Math.max(1, n - 1)), p50: quantile(a, 0.5),
+               exact: true, xs: exact.xs, ys: exact.ys };
+    }
+    /* The curve spans the middle 99.8% of the draws, and no further than eight
+       interquartile ranges from the median. A model that clamps a non-positive
+       cost draw leaves a handful of draws at a return of a billion, and drawn
+       to those the picture is a spike; the probabilities on it are still read
+       off every draw. */
+    var q1 = quantile(a, 0.25), p50 = quantile(a, 0.5), q3 = quantile(a, 0.75),
+        span = q3 - q1 > 0 ? 8 * (q3 - q1) : Infinity,
+        lo = Math.max(quantile(a, 0.001), p50 - span), hi = Math.min(quantile(a, 0.999), p50 + span),
+        sd = Math.sqrt(s2 / Math.max(1, n - 1)),
+        out = { lo: lo, hi: hi, mean: mean, sd: sd, p50: p50 };
+    if (!(hi - lo > 1e-9 * Math.max(1, Math.abs(lo), Math.abs(hi))) || !(sd > 0)) {
+      out.degenerate = true; out.xs = [lo]; out.ys = [1];
+      return out;
+    }
+    var P = points || 300, B = 600, width = (hi - lo) / B, sdIn = 0, meanIn = 0;
+    for (i = 0; i < n; i++) if (a[i] >= lo && a[i] <= hi) { kept++; meanIn += a[i]; }
+    meanIn /= kept;
+    for (i = 0; i < n; i++) if (a[i] >= lo && a[i] <= hi) sdIn += (a[i] - meanIn) * (a[i] - meanIn);
+    sdIn = Math.sqrt(sdIn / Math.max(1, kept - 1));
+    var h = 1.06 * sdIn * Math.pow(kept, -0.2), hb = Math.max(0.5, h / width),
+        reach = Math.min(B, Math.ceil(4 * hb)),
+        hist = new Float64Array(B + 1), kern = [], ksum = 0, j, b, v, q;
+    for (i = 0; i < n; i++) {
+      if (a[i] < lo || a[i] > hi) continue;
+      b = Math.floor((a[i] - lo) / width); if (b > B) b = B; hist[b]++;
+    }
+    n = kept;
+    for (j = -reach; j <= reach; j++) { v = Math.exp(-0.5 * (j / hb) * (j / hb)); kern.push(v); ksum += v; }
+    var smooth = new Float64Array(B + 1);
+    for (b = 0; b <= B; b++) {
+      v = 0;
+      for (j = -reach; j <= reach; j++) { q = b + j; if (q >= 0 && q <= B) v += hist[q] * kern[j + reach]; }
+      smooth[b] = v / (ksum * n * width);
+    }
+    var xs = [], ys = [], step = B / (P - 1), t, f;
+    for (i = 0; i < P; i++) {
+      t = i * step; b = Math.floor(t); f = t - b;
+      xs.push(lo + t * width);
+      ys.push(b >= B ? smooth[B] : smooth[b] * (1 - f) + smooth[b + 1] * f);
+    }
+    out.xs = xs; out.ys = ys;
+    return out;
+  }
+
+  /* ==================================================================== *
+   *  Distributions.py, class for class                                   *
+   *                                                                      *
+   *  His module builds each distribution's plotting grid, cdf and       *
+   *  inverse cdf the same way every time, and the numbers the model     *
+   *  reads come off those constructions rather than off closed forms:   *
+   *  a Triangular_PDF's inverse is a linear interpolation of its cdf on  *
+   *  a 300-point grid, an Empirical_PDF's is read off a Freedman-        *
+   *  Diaconis histogram of the draws. They are reproduced here so that   *
+   *  a percentile the page prints is the percentile his package prints.  *
+   *  Every object carries mean, std, x (the grid), pdf(x), cdf(x),       *
+   *  invCdf(p) and quantile(p) = invCdf(p) with p in [0, 1].             *
+   * ==================================================================== */
+
+  /* numpy.linspace: i * step + start, the last point set to stop. */
+  function linspace(a, b, n) {
+    var out = new Float64Array(n), i, step;
+    if (n === 1) { out[0] = a; return out; }
+    step = (b - a) / (n - 1);
+    for (i = 0; i < n; i++) out[i] = i * step + a;
+    out[n - 1] = b;
+    return out;
+  }
+
+  /* scipy.interpolate.interp1d(x, y, kind='linear') on a non-decreasing
+     table: searchsorted(x, xn) picks the segment, so a value on a flat run
+     of x reads at the start of the run. `fill` is (below, above) for a
+     table with bounds_error=False, or 'extrapolate'. */
+  function interp1d(x, y, fill) {
+    var L = x.length;
+    return function (xn) {
+      var lo = 0, hi = L, m, i, x0, x1, y0, y1;
+      if (xn !== xn) return NaN;
+      if (fill !== 'extrapolate') {
+        if (xn < x[0]) return fill[0];
+        if (xn > x[L - 1]) return fill[1];
+      }
+      while (lo < hi) { m = (lo + hi) >> 1; if (x[m] < xn) lo = m + 1; else hi = m; }
+      i = lo < 1 ? 1 : (lo > L - 1 ? L - 1 : lo);
+      x0 = x[i - 1]; x1 = x[i]; y0 = y[i - 1]; y1 = y[i];
+      if (x1 === x0) return y0;
+      return (y1 - y0) / (x1 - x0) * (xn - x0) + y0;
+    };
+  }
+
+  /* numpy.round: half to even. */
+  function npRound(v) {
+    var f = Math.floor(v), d = v - f;
+    if (d > 0.5) return f + 1;
+    if (d < 0.5) return f;
+    return (f % 2 === 0) ? f : f + 1;
+  }
+
+  function PayloadError(msg) { var e = new Error(msg); e.name = 'PayloadError'; return e; }
+
+  /* An estimate with no spread at all: a normal with a zero standard
+     deviation, or a uniform from a number to itself. His module divides by
+     zero there; the page reads it as the one number it is. */
+  function Point(x) {
+    var v = +x;
+    return {
+      kind: 'point', mean: v, std: 0, x: Float64Array.from([v]),
+      pdf: function (y) { return y === v ? Infinity : 0; },
+      cdf: function (y) { return y < v ? 0 : 1; },
+      invCdf: function () { return v; },
+      quantile: function () { return v; }
+    };
+  }
+
+  /* Triangular_PDF(low, expected, high). A degenerate end is nudged by a
+     thousandth, as his constructor nudges it (0.999 x low, 1.001 x high);
+     the mean and standard deviation are of the figures as stated. The
+     inverse is his: the cdf on linspace(low, high, 300), interpolated. */
+  function Triangular(low, expected, high) {
+    var l = +low, e = +expected, h = +high;
+    if (!(isFinite(l) && isFinite(e) && isFinite(h))) throw PayloadError('expects three numbers');
+    if (!(h >= e && e >= l)) throw PayloadError('expects low ≤ expected ≤ high');
+    var a = (l === e) ? (l >= 0 ? 0.999 * l : 1.001 * l) : l,
+        b = (e === h) ? (h >= 0 ? 1.001 * h : 0.999 * h) : h;
+    if (!(b > a)) return Point(e);
+    var std = Math.sqrt((h * h + e * e + l * l - h * l - h * e - l * e) / 18),
+        mean = (l + e + h) / 3, c = e;
+    function pdf(x) {
+      if (x < a || x > b) return 0;
+      if (x < c) return 2 * (x - a) / ((b - a) * (c - a));
+      if (x > c) return 2 * (b - x) / ((b - a) * (b - c));
+      return 2 / (b - a);
+    }
+    function cdf(x) {
+      if (x < a) return 0;
+      if (x < c) return (x - a) * (x - a) / ((b - a) * (c - a));
+      if (x <= b) return 1 - (b - x) * (b - x) / ((b - a) * (b - c));
+      return 1;
+    }
+    var x = linspace(a, b, 300), cy = new Float64Array(300), i;
+    for (i = 0; i < 300; i++) cy[i] = cdf(x[i]);
+    var inv = interp1d(cy, x, 'extrapolate');
+    return { kind: 'triangular', mean: mean, std: std, low: a, expected: e, high: b, x: x,
+             pdf: pdf, cdf: cdf, invCdf: inv, quantile: inv };
+  }
+
+  /* Normal_PDF(mean, std): closed forms; the grid runs from the 0.1th to the
+     99.9th percentile in 100 points. */
+  function Normal(mean, sd) {
+    var mu = +mean, s = +sd;
+    if (s < 0) throw PayloadError('a standard deviation cannot be negative');
+    if (!(s >= 0) || !isFinite(mu)) throw PayloadError('a standard deviation has to be a number');
+    if (s === 0) return Point(mu);
+    function invCdf(p) { return mu + s * PhiInv(p); }
+    function cdf(x) { return Phi((x - mu) / s); }
+    function pdf(x) { var z = (x - mu) / s; return Math.exp(-0.5 * z * z) / (s * Math.sqrt(2 * Math.PI)); }
+    return { kind: 'normal', mean: mu, std: s, x: linspace(invCdf(0.001), invCdf(0.999), 100),
+             pdf: pdf, cdf: cdf, invCdf: invCdf, quantile: invCdf };
+  }
+
+  /* Lognormal_PDF(mu, sigma): mu and sigma of log X; the grid runs from
+     0.001 to the 99th percentile in 100 points, as his does. */
+  function Lognormal(mu, sigma) {
+    var m = +mu, s = +sigma;
+    if (!(s > 0)) throw PayloadError('sigma must be positive');
+    var mean = Math.exp(m + s * s / 2), std = mean * Math.sqrt(Math.exp(s * s) - 1);
+    function invCdf(p) { return Math.exp(m + s * PhiInv(p)); }
+    function cdf(x) { return x > 0 ? Phi((Math.log(x) - m) / s) : 0; }
+    function pdf(x) { if (!(x > 0)) return 0; var z = (Math.log(x) - m) / s; return Math.exp(-0.5 * z * z) / (x * s * Math.sqrt(2 * Math.PI)); }
+    return { kind: 'lognormal', mean: mean, std: std, x: linspace(1e-3, invCdf(0.99), 100),
+             pdf: pdf, cdf: cdf, invCdf: invCdf, quantile: invCdf };
+  }
+
+  /* Uniform_PDF(start, end): closed forms. */
+  function Uniform(start, end) {
+    var a = +start, b = +end;
+    if (!(b >= a)) throw PayloadError('end must not be below start');
+    if (b === a) return Point(a);
+    function invCdf(p) { return a + p * (b - a); }
+    function cdf(x) { return Math.min(Math.max((x - a) / (b - a), 0), 1); }
+    function pdf(x) { return (x < a || x > b) ? 0 : 1 / (b - a); }
+    return { kind: 'uniform', mean: (a + b) / 2, std: Math.sqrt((b - a) * (b - a) / 12),
+             x: linspace(a, b, 100), pdf: pdf, cdf: cdf, invCdf: invCdf, quantile: invCdf };
+  }
+
+  /* Empirical_PDF(array): np.histogram(array, bins='fd', density=True); the
+     pdf interpolated through the bin centres with zero at the outer edges;
+     the cdf the running area of the bins, clipped to 0 below the first
+     centre and 1 above the last; the inverse read off that cdf on a
+     2,000-point grid between the two centres. The mean and standard
+     deviation are the draws' own (population sd, numpy's default). */
+  function Empirical(values, nbins) {
+    var a = Float64Array.from(values), n = a.length, i, k, f;
+    if (n < 2) throw PayloadError('need at least two draws');
+    var first = minOf(a), last = maxOf(a);
+    if (!(isFinite(first) && isFinite(last))) throw PayloadError('draws must be finite numbers');
+    if (first === last) { first = first - 0.5; last = last + 0.5; }
+    /* Freedman–Diaconis: 2 x IQR x n^(-1/3); no spread at all means one bin. */
+    var iqr = quantile(a, 0.75) - quantile(a, 0.25),
+        width = 2.0 * iqr * Math.pow(n, -1.0 / 3.0),
+        nb = nbins ? (nbins | 0) : (width ? Math.ceil((last - first) / width) : 1);
+    if (nb < 1) nb = 1;
+    var edges = linspace(first, last, nb + 1), counts = new Float64Array(nb);
+    for (i = 0; i < n; i++) {
+      f = (a[i] - first) / (last - first) * nb;
+      k = Math.trunc(f);
+      if (k === nb) k = nb - 1;
+      if (a[i] < edges[k]) k -= 1;                          /* the ulp corrections numpy makes */
+      if (a[i] >= edges[k + 1] && k !== nb - 1) k += 1;
+      counts[k] += 1;
+    }
+    var heights = new Float64Array(nb), centers = new Float64Array(nb);
+    for (k = 0; k < nb; k++) {
+      heights[k] = counts[k] / (edges[k + 1] - edges[k]) / n;
+      centers[k] = 0.5 * (edges[k] + edges[k + 1]);
+    }
+    var tx = new Float64Array(nb + 2), ty = new Float64Array(nb + 2);
+    tx[0] = edges[0]; ty[0] = 0;
+    for (k = 0; k < nb; k++) { tx[k + 1] = centers[k]; ty[k + 1] = heights[k]; }
+    tx[nb + 1] = edges[nb]; ty[nb + 1] = 0;
+    var pdf = interp1d(tx, ty, 'extrapolate'),
+        x = linspace(centers[0], centers[nb - 1], 100),
+        cum = new Float64Array(nb + 1), s = 0;
+    cum[0] = 0;
+    for (k = 0; k < nb; k++) { s += heights[k] * (edges[k + 1] - edges[k]); cum[k + 1] = s; }
+    var cdfIn = interp1d(edges, cum, [0, 1]), xmin = x[0], xmax = x[99];
+    function cdf(v) {
+      if (v <= xmin) return 0;
+      if (v >= xmax) return 1;
+      return cdfIn(v);
+    }
+    var grid = linspace(xmin, xmax, 2000), cg = new Float64Array(2000);
+    for (k = 0; k < 2000; k++) cg[k] = cdf(grid[k]);
+    var inv = interp1d(cg, grid, [grid[0], grid[1999]]);
+    var mean = 0, sq = 0;
+    for (i = 0; i < n; i++) mean += a[i];
+    mean /= n;
+    for (i = 0; i < n; i++) sq += (a[i] - mean) * (a[i] - mean);
+    return { kind: 'empirical', n: n, mean: mean, std: Math.sqrt(sq / n), median: inv(0.5),
+             x: x, edges: edges, heights: heights, pdf: pdf, cdf: cdf, invCdf: inv, quantile: inv };
+  }
+
+  /* A table of (p, value) pairs, the form a scheduling or costing tool
+     exports; not one of his classes. Interpolation runs against the normal
+     quantile of p, in log space when every value is positive, and the outer
+     segments are extended rather than clipped. */
+  function QuantileTable(points) {
+    var pts = points.map(function (t) { return [+t[0], +t[1]]; })
+                    .sort(function (x, y) { return x[0] - y[0]; });
+    if (pts.length < 2) throw PayloadError('need at least two (probability, value) rows');
+    var i;
+    for (i = 0; i < pts.length; i++)
+      if (!(pts[i][0] > 0 && pts[i][0] < 1))
+        throw PayloadError('probabilities must lie strictly inside 0 and 1');
+    for (i = 1; i < pts.length; i++) {
+      if (pts[i][0] <= pts[i - 1][0]) throw PayloadError('probabilities must strictly increase');
+      if (pts[i][1] < pts[i - 1][1]) throw PayloadError('values must not decrease as the probability rises');
+    }
+    var z = pts.map(function (t) { return PhiInv(t[0]); }),
+        v = pts.map(function (t) { return t[1]; }),
+        log = v.every(function (x) { return x > 0; }),
+        w = log ? v.map(Math.log) : v,
+        L = z.length;
+    function wAt(zz) {
+      var k, s;
+      if (zz <= z[0]) { s = (w[1] - w[0]) / (z[1] - z[0]); return w[0] + s * (zz - z[0]); }
+      if (zz >= z[L - 1]) { s = (w[L - 1] - w[L - 2]) / (z[L - 1] - z[L - 2]); return w[L - 1] + s * (zz - z[L - 1]); }
+      for (k = 1; k < L; k++) if (zz <= z[k]) break;
+      var f = (zz - z[k - 1]) / (z[k] - z[k - 1]);
+      return w[k - 1] + f * (w[k] - w[k - 1]);
+    }
+    var TINY = 1e-12;
+    function invCdf(p) {
+      var ww = wAt(PhiInv(Math.min(Math.max(p, TINY), 1 - TINY)));
+      return log ? Math.exp(ww) : ww;
+    }
+    function cdf(x) {                                       /* by bisection on invCdf */
+      var lo = TINY, hi = 1 - TINY, m, k;
+      for (k = 0; k < 60; k++) { m = 0.5 * (lo + hi); if (invCdf(m) < x) lo = m; else hi = m; }
+      return 0.5 * (lo + hi);
+    }
+    var xg = linspace(invCdf(0.001), invCdf(0.999), 100), h = (xg[99] - xg[0]) / 1e4 || 1e-9,
+        mean = 0, sq = 0, q;
+    for (i = 0; i < 2000; i++) { q = invCdf((i + 0.5) / 2000); mean += q; }
+    mean /= 2000;
+    for (i = 0; i < 2000; i++) { q = invCdf((i + 0.5) / 2000); sq += (q - mean) * (q - mean); }
+    return { kind: 'quantiles', mean: mean, std: Math.sqrt(sq / 2000), x: xg,
+             pdf: function (x) { return Math.max(0, (cdf(x + h) - cdf(x - h)) / (2 * h)); },
+             cdf: cdf, invCdf: invCdf, quantile: invCdf };
+  }
+
+  /* X + delta and k X, for the margin per unit (his margin_per_unit shifts
+     the price by the cost of making and selling one) and for a duration in
+     weeks read in months. A shift or a positive scale leaves his grid
+     constructions exactly where they would be built on the shifted or
+     scaled figures, so these are the same objects his Case builds. */
+  function Shifted(d, delta) {
+    if (delta === 0) return d;
+    return { kind: d.kind, mean: d.mean + delta, std: d.std,
+             x: d.x.map(function (v) { return v + delta; }),
+             pdf: function (v) { return d.pdf(v - delta); },
+             cdf: function (v) { return d.cdf(v - delta); },
+             invCdf: function (p) { return d.invCdf(p) + delta; },
+             quantile: function (p) { return d.invCdf(p) + delta; } };
+  }
+  function Scaled(d, k) {
+    if (k === 1) return d;
+    if (!(k > 0)) throw new Error('a scale must be positive');
+    return { kind: d.kind, mean: d.mean * k, std: d.std * k,
+             x: d.x.map(function (v) { return v * k; }),
+             pdf: function (v) { return d.pdf(v / k) / k; },
+             cdf: function (v) { return d.cdf(v / k); },
+             invCdf: function (p) { return d.invCdf(p) * k; },
+             quantile: function (p) { return d.invCdf(p) * k; } };
+  }
+
+  /* A stored estimate, its boxes already read as numbers, becomes one of
+     the objects above. */
+  function toDistribution(payload, name) {
+    name = name || 'this field';
+    if (!payload) throw PayloadError(name + ' has no value');
+    var f = payload.form, need = function (k) {
+      if (payload[k] === undefined || payload[k] === null || payload[k] === '')
+        throw PayloadError(name + ': a ' + f + ' estimate still needs ' + k);
+      return +payload[k];
+    };
+    try {
+      if (f === 'draws') return Empirical(payload.values || []);
+      if (f === 'quantiles') return QuantileTable(payload.points || []);
+      if (f === 'normal') return Normal(need('mean'), need('sd'));
+      if (f === 'lognormal') return Lognormal(need('mu'), need('sigma'));
+      if (f === 'triple') return Triangular(need('low'), need('base'), need('high'));
+      if (f === 'uniform') return Uniform(need('start'), need('end'));
+    } catch (e) {
+      throw (e.name === 'PayloadError' && e.message.indexOf(name) === 0)
+        ? e : PayloadError(name + ': ' + e.message);
+    }
+    throw PayloadError(name + ': unknown estimate form ' + JSON.stringify(f));
+  }
+
+  /* The figure an estimate STATES: the expected of a three-point, the mean of
+     a normal, the median otherwise. */
+  function statedValue(payload, dist) {
+    if (payload) {
+      if (payload.form === 'triple' && isFinite(+payload.base)) return +payload.base;
+      if (payload.form === 'normal' && isFinite(+payload.mean)) return +payload.mean;
+      if (payload.form === 'lognormal' && isFinite(+payload.mu)) return Math.exp(+payload.mu);
+      if (payload.form === 'uniform' && isFinite(+payload.start) && isFinite(+payload.end))
+        return (+payload.start + +payload.end) / 2;
+    }
+    return dist.quantile(0.5);
+  }
+
+  /* The curve his density_figure draws: the pdf on 400 points from one end
+     of the object's own grid to the other. */
+  function curveOf(dist) {
+    if (dist.kind === 'point') {
+      return { lo: dist.mean, hi: dist.mean, mean: dist.mean, sd: 0, p50: dist.mean,
+               degenerate: true, xs: [dist.mean], ys: [1] };
+    }
+    var lo = minOf(dist.x), hi = maxOf(dist.x), xs = [], ys = [], g = linspace(lo, hi, 400), i, y;
+    for (i = 0; i < 400; i++) { xs.push(g[i]); y = dist.pdf(g[i]); ys.push(isFinite(y) ? y : 0); }
+    return { lo: lo, hi: hi, mean: dist.mean, sd: dist.std, p50: dist.quantile(0.5), xs: xs, ys: ys };
+  }
+
+  /* ==================================================================== *
+   *  curve.py — the sales volume curve                                   *
+   * ==================================================================== */
+
+  /* peak_curve(e, start, end, peak): units a period, rising from `start` to
+     `peak` at month `e` along a quintic smoothstep and falling to zero at
+     `end` along another. A peak month outside the window is put at its
+     midpoint, as his is. The area is peak x (end - start) / 2 whatever the
+     peak month, which is what total_units states. */
+  function peakCurve(e, start, end, peak) {
+    if (!(start < e && e < end)) e = (start + end) / 2;
+    if (peak < 0) throw new Error('Require peak >= 0.');
+    function smoothstep(u) { return ((6 * u - 15) * u + 10) * u * u * u; }
+    return function (x) {
+      if (Math.abs(x - e) <= 1e-8 + 1e-5 * Math.abs(e)) return peak;   /* np.isclose */
+      if (x > start && x < e) return peak * smoothstep((x - start) / (e - start));
+      if (x > e && x < end) return peak * smoothstep((end - x) / (end - e));
+      return 0;
+    };
+  }
+  function totalUnits(start, end, peak) { return peak * (end - start) / 2.0; }
+
+  /* ==================================================================== *
+   *  The scenario set                                                    *
+   * ==================================================================== */
+
+  var CRC = (function () {
+    var t = new Int32Array(256), c, n, k;
+    for (n = 0; n < 256; n++) {
+      c = n;
+      for (k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c;
+    }
+    return t;
+  })();
+
+  function crc32(s) {
+    var c = 0 ^ (-1), i, ch, bytes = [];
+    for (i = 0; i < s.length; i++) {                       /* UTF-8 */
+      ch = s.charCodeAt(i);
+      if (ch < 0x80) bytes.push(ch);
+      else if (ch < 0x800) bytes.push(0xC0 | (ch >> 6), 0x80 | (ch & 63));
+      else bytes.push(0xE0 | (ch >> 12), 0x80 | ((ch >> 6) & 63), 0x80 | (ch & 63));
+    }
+    for (i = 0; i < bytes.length; i++) c = (c >>> 8) ^ CRC[(c ^ bytes[i]) & 0xFF];
+    return (c ^ (-1)) >>> 0;
+  }
+
+  /* One uniform stream per (seed, key): xoshiro128**, its four state words
+     taken from a splitmix32 walk started at the seed mixed with the key's
+     crc32, so two keys' streams sit far apart on the generator's 2^128
+     cycle. (Up to v0.8.2 the streams were mulberry32, whose starting points
+     all lie on one 2^32 cycle, so two keys' streams could overlap by chance.)
+     A draw is (r + 0.5) / 2^32, never exactly 0 or 1. */
+  function splitmix32(a) {
+    a = a >>> 0;
+    return function () {
+      a = (a + 0x9E3779B9) | 0;
+      var t = a ^ (a >>> 16); t = Math.imul(t, 0x21F0AAAD);
+      t = t ^ (t >>> 15); t = Math.imul(t, 0x735A2D97);
+      return (t ^ (t >>> 15)) >>> 0;
+    };
+  }
+  function streamFor(seed, key) {
+    var sm = splitmix32((Math.imul(seed, 0x9E3779B1) ^ crc32(key)) >>> 0),
+        s0 = sm(), s1 = sm(), s2 = sm(), s3 = sm();
+    if ((s0 | s1 | s2 | s3) === 0) s0 = 1;
+    return function () {
+      var r = Math.imul(s1, 5), t = s1 << 9;
+      r = Math.imul((r << 7) | (r >>> 25), 9) >>> 0;
+      s2 ^= s0; s3 ^= s1; s1 ^= s2; s0 ^= s3;
+      s2 ^= t;
+      s3 = (s3 << 11) | (s3 >>> 21);
+      return (r + 0.5) / 4294967296;
+    };
+  }
+
+  /* One per project. Every reading uses it, so the difference between two
+     readings is a distribution rather than the gap between two unrelated runs.
+     A field's uniform stream is keyed on its name rather than drawn in
+     sequence, so adding a field leaves every other column bit-identical. */
+  function ScenarioSet(draws, seed) {
+    var n = Math.max(2, draws | 0), s = seed | 0, cache = {};
+
+    function stream(key) {
+      if (!cache[key]) {
+        var r = streamFor(s, key), a = new Float64Array(n), i;
+        for (i = 0; i < n; i++) a[i] = r();
+        cache[key] = a;
+      }
+      return cache[key];
+    }
+
+    return {
+      draws: n, seed: s,
+      uniform: function (key) { return stream('u::' + key); },
+      draw: function (dist, key) {
+        var u = this.uniform(key), a = new Float64Array(n), i;
+        for (i = 0; i < n; i++) a[i] = dist.invCdf(u[i]);
+        return a;
+      },
+      /* A draw on a key that will be used once and never asked for again — one
+         month of a sales life, say. Same stream as draw() would give for that
+         key, but nothing is kept, because a hundred months of three fields
+         would hold half a gigabyte of uniforms for no gain. */
+      drawOnce: function (dist, key) {
+        var r = streamFor(s, 'u::' + key), a = new Float64Array(n), i;
+        for (i = 0; i < n; i++) a[i] = dist.invCdf(r());
+        return a;
+      },
+      /* y = a·z_partner + √(1−a²)·e_own,  u = Φ(y),  value = F⁻¹(u).
+         Exposure 0 reproduces an independent draw exactly, and it is signed,
+         so a shared driver can push a cost up while it pushes a benefit down. */
+      drawCoupled: function (dist, key, partnerKey, exposure) {
+        var a = +exposure || 0;
+        if (a === 0) return this.draw(dist, key);
+        a = Math.max(-1, Math.min(1, a));
+        var up = this.uniform(partnerKey), uo = this.uniform(key),
+            rest = Math.sqrt(Math.max(0, 1 - a * a)),
+            out = new Float64Array(n), i, y;
+        for (i = 0; i < n; i++) {
+          y = a * PhiInv(up[i]) + rest * PhiInv(uo[i]);
+          out[i] = dist.invCdf(Phi(y));
+        }
+        return out;
+      }
+    };
+  }
+
+  /* ==================================================================== *
+   *  The sheet — the field specs are the single source of truth           *
+   * ==================================================================== */
+
+  var DIST = 'dist', SCALAR = 'scalar', CHOICE = 'choice';
+  var OPS_BASIS_WITHOUT_DOLLARS = { 'excluded': 1,
+        'a share of price, over the last n periods': 1 };
+  /* True when the penetration basis is stated in the other unit from the market,
+     which is the only case that needs the market's own price. */
+  function crossedBasis(sheet) {
+    var u = sheet.choice('market_unit'), p = sheet.choice('penetration_basis');
+    if (!u || !p) return false;
+    return (u === 'units') === (p === 'share of revenue');
+  }
+
+  function f(key, label, kind, group, kw) {
+    var s = { key: key, label: label, kind: kind, group: group }, k;
+    for (k in (kw || {})) s[k] = kw[k];
+    return s;
+  }
+
+  /* One rule for every box that takes a percentage (`pct: true`): the box
+     takes per cent, as the book prints the figure beside it. 85 and 85%
+     are both eighty-five per cent; 0.85 is refused with the fix named,
+     because a fraction typed into a per-cent box is the one mistake the
+     page cannot tell from a figure of nought point eight five per cent.
+     Every other box refuses a % sign. */
+  var PCT_NOTE = 'In per cent: type 85 for 85%.';
+
+  var RFP_FIELDS = [
+    f('cost_to_complete', 'Cost to complete', DIST, 'Delivery',
+      { unit: '$', money: true, source: 'Ch 6 Table 1',
+        note: 'The cost of the work if it finishes at the deadline. Work that runs longer '
+            + 'costs more at the same rate per period (Appendix 8 §2).' }),
+    f('duration_to_complete', 'Duration to complete', DIST, 'Delivery',
+      { unit: 'periods', source: 'Ch 6 Table 1', note: 'Periods from now, the same periods as the deadline.' }),
+    f('cost_to_date', 'Cost to date', SCALAR, 'Delivery',
+      { unit: '$', money: true, optional: true, def: 0, source: 'App 8 §2',
+        note: 'What a job under way has already spent; 0 for a new bid. It is added to the '
+            + 'cost at completion and does not change the decision to carry on.' }),
+
+    f('due_periods', 'Deadline', SCALAR, 'Contract',
+      { unit: 'periods from now', integer: true, source: 'App 8 §2',
+        note: 'Delivered by this period, the full price is paid.' }),
+    f('drop_dead_periods', 'Drop-dead period', SCALAR, 'Contract',
+      { unit: 'periods from now', integer: true, optional: true, source: 'App 8 §2',
+        note: 'Delivered after this period, nothing is paid. Leave blank to make it the deadline.' }),
+    f('penalty_if_late', 'Share paid if late', SCALAR, 'Contract',
+      { lo: 0, hi: 1, step: 0.05, def: 0, unit: '0 to 1', source: 'App 8 §4',
+        note: 'The share of the price paid for delivery between the deadline and the drop-dead '
+            + 'period: 0.5 pays half, 0 nothing, 1 the full price.' }),
+    f('contracted_payment', 'Contracted payment', SCALAR, 'Contract',
+      { unit: '$', money: true, optional: true, source: 'Ch 6',
+        note: 'Leave blank to price a bid. For a signed job, type the price agreed; the reading '
+            + 'is then the return on the work still to do.' }),
+
+    f('required_roi', 'Required return', SCALAR, 'Targets',
+      { lo: 0, hi: 5, step: 0.05, def: 1.0, unit: 'ROI', source: 'App 8 §3',
+        note: 'Profit over cost: 1 asks for a price twice the cost. For a job under way, the '
+            + 'reading gives the chance of reaching it.' }),
+    f('cost_confidence', 'Cost confidence', SCALAR, 'Targets',
+      { lo: 5, hi: 99, step: 1, def: 80, unit: '%', pct: true, source: 'App 8 §3',
+        note: 'The cost percentile the closed-form price covers. In per cent: type 80 for 80%.' }),
+    f('return_confidence', 'Return confidence', SCALAR, 'Targets',
+      { lo: 5, hi: 99, step: 1, def: 80, unit: '%', pct: true, source: 'App 8 §5',
+        note: 'The bid gives this chance of reaching the required return. In per cent: type 80 for 80%.' })
+  ];
+
+  var MARKET_UNIT = ['dollars', 'units'],
+      PENETRATION_BASIS = ['share of revenue', 'share of units'],
+      REVENUE_CURVE = ['ramp to peak, decay to zero at sales-life end',
+                       'ramp to peak, decay to zero at year 6'],
+      OPS_BASIS = ['units sold in the period', 'a share of price, over the last n periods',
+                   'excluded'];
+
+  var BUSINESS_FIELDS = [
+    f('dev_cost_to_complete', 'Development cost to complete', DIST, 'Delivery',
+      { unit: '$', source: 'Ch 5 Table 1' }),
+    f('duration_to_complete', 'Duration to complete', DIST, 'Delivery',
+      { unit: 'weeks', source: 'Ch 5 Table 1',
+        note: 'Weeks from now to delivery. The later the delivery, the less the product is worth.' }),
+
+    f('addressable_market', 'Addressable market', SCALAR, 'Market',
+      { source: 'Ch 5 Table 1',
+        note: 'The whole market at the peak month, in the unit set in the next row. Table 1 '
+            + 'prints $200, meaning $200 million: type 200M or 200000000.' }),
+    f('market_unit', 'Market unit', CHOICE, 'Market',
+      { options: MARKET_UNIT, source: 'new', note: 'Whether the market above is in dollars or in units. The sample uses dollars.' }),
+    f('penetration_basis', 'Penetration basis', CHOICE, 'Market',
+      { options: PENETRATION_BASIS, source: 'new', note: 'Whether peak penetration is a share of the market’s revenue or of its units. The sample uses revenue.' }),
+    f('sales_life_months', 'Selling ends at month', SCALAR, 'Market',
+      { unit: 'months', integer: true, source: 'Ch 5 Table 1',
+        note: 'Table 1’s project sales life end: 120.' }),
+    f('peak_month', 'Peak month from delivery', SCALAR, 'Market',
+      { unit: 'months', integer: true, source: 'Ch 5 Table 1',
+        note: 'Months after the expected delivery, as Table 1 counts it.' }),
+    f('revenue_curve', 'Revenue curve', CHOICE, 'Market',
+      { options: REVENUE_CURVE, source: 'new',
+        note: 'How sales fall after the peak. The sample ends them at the sales life, Table 1’s 120 months.' }),
+    f('peak_penetration', 'Peak penetration', DIST, 'Market',
+      { unit: '%', pct: true, source: 'Ch 5 Table 1',
+        note: 'Share of the market at the peak month, in per cent: Table 1’s 28%, 35%, 38.5% are typed 28, 35, 38.5.' }),
+    f('market_avg_price', 'Market average price', SCALAR, 'Market',
+      { unit: '$', source: 'new',
+        note: 'The market’s price, not yours. Needed only when the penetration basis and the '
+            + 'market unit differ; leave blank otherwise.' }),
+
+    f('selling_price', 'Selling price', DIST, 'Unit economics', { unit: '$', source: 'Ch 5 Table 1' }),
+    f('cos_per_unit', 'Cost of sales per unit', SCALAR, 'Unit economics', { unit: '$', source: 'Ch 5 Table 1' }),
+    f('cogs_per_unit', 'COGS per unit', SCALAR, 'Unit economics', { unit: '$', source: 'Ch 5 Table 1' }),
+    f('ops_cost_per_unit', 'Operations cost per unit', DIST, 'Unit economics',
+      { unit: '$', source: 'Ch 5 Table 1',
+        note: 'Support, warranty and hosting, per unit.' }),
+    f('ops_cost_basis', 'Operations cost basis', CHOICE, 'Unit economics',
+      { options: OPS_BASIS, source: 'new',
+        note: 'What the operations cost per unit is charged on. The sample charges it on the units sold each month.' }),
+    f('support_share_of_price', 'Support cost, share of price', SCALAR, 'Unit economics',
+      { lo: 0, hi: 50, step: 0.5, def: 5, unit: '% a month', pct: true, source: 'new',
+        note: 'Used only with the share-of-price basis. Charged each month on every unit still '
+            + 'supported: 5% for 3 months is 15% of price, Table 1’s $563. Type 10 for 10%.' }),
+    f('ops_cost_window', 'Support window', SCALAR, 'Unit economics',
+      { lo: 1, hi: 36, step: 1, def: 3, integer: true, unit: 'months', source: 'new',
+        note: 'Used only with the share-of-price basis. How long a unit is supported after it is sold.' }),
+    f('price_ops_exposure', 'Price–operations exposure', SCALAR, 'Unit economics',
+      { lo: -1, hi: 1, step: 0.05, def: 0, unit: '−1 to 1', source: 'new',
+        note: 'Above 0 when a dearer unit costs more to support; 0 treats them as unrelated. '
+            + 'It moves only the unit margins in the panel beside the sheet, not the reading.' }),
+
+    f('discount_rate_pa', 'Discount rate', SCALAR, 'Targets',
+      { lo: 0, hi: 50, step: 0.5, def: 0, unit: '% per year', pct: true, source: 'App 3 §1',
+        note: 'Type 5 for five per cent a year; it is applied at a twelfth each month '
+            + '(Appendix 3). Table 1 has none, so the sample has 0.' }),
+    f('option_confidence', 'Option confidence', SCALAR, 'Targets',
+      { lo: 5, hi: 99, step: 1, def: 85, unit: '%', pct: true, source: 'Ch 5 Table 1',
+        note: 'The option value is the NPV at this confidence. Table 1’s 85% is typed 85.' }),
+    f('budget_confidence', 'Budget confidence', SCALAR, 'Targets',
+      { lo: 5, hi: 99, step: 1, def: 85, unit: '%', pct: true, source: 'Ch 5 Table 3',
+        note: 'From Chapter 5 Table 3. Kept with the sheet; nothing on this page reads it yet.' }),
+    f('duration_confidence', 'Duration confidence', SCALAR, 'Targets',
+      { lo: 5, hi: 99, step: 1, def: 80, unit: '%', pct: true, source: 'Ch 5 Table 3',
+        note: 'From Chapter 5 Table 3. Kept with the sheet; nothing on this page reads it yet.' })
+  ];
+
+  var FIELDS = { rfp: RFP_FIELDS, business: BUSINESS_FIELDS },
+      CASE_NAMES = { rfp: 'RFP response', business: 'Business case' };
+
+  function specFor(c) {
+    if (!FIELDS[c]) throw new Error('unknown case ' + c);
+    return FIELDS[c];
+  }
+  function groupsFor(c) {
+    var out = [], seen = {};
+    specFor(c).forEach(function (s) { if (!seen[s.group]) { seen[s.group] = 1; out.push(s.group); } });
+    return out;
+  }
+
+  /* One reader for every box on the sheet. A box holds what was typed, and
+     this reads it in the unit the book prints beside the box: $4,750 is the
+     price it looks like; 200M is 200000000; in a per-cent box 85 and 85% are
+     both eighty-five per cent and 0.85 is refused with the fix named; in any
+     other box a % sign is refused. A comma that is not a thousands comma
+     (1,50 or 4.750,00) is refused, never guessed. Returns {n}, {empty:true}
+     or {bad: the text as typed, why: the sentence that names it}. */
+  function parseNumber(text, opts) {
+    opts = opts || {};
+    if (text === null || text === undefined) return { empty: true };
+    var raw = typeof text === 'number' ? String(text) : String(text),
+        t = raw.trim().replace(/[$£€\s]/g, '').replace(/−/g, '-'),
+        pct = false, why;
+    if (t === '') return { empty: true };
+    if (/%$/.test(t)) { pct = true; t = t.slice(0, -1); }
+    /* A thousands, millions or billions suffix, so a market the table prints
+       as $200 (million) can be typed as 200M. */
+    var mult = 1, sfx = t.match(/[kKmMbB]$/);
+    if (sfx) {
+      if (pct || opts.pct) return { bad: raw, why: 'reads "' + raw + '": a K, M or B suffix does not belong in a per-cent box.' };
+      mult = { k: 1e3, m: 1e6, b: 1e9 }[sfx[0].toLowerCase()];
+      t = t.slice(0, -1);
+    }
+    t = t.replace(/,(?=\d{3}(?!\d))/g, '');
+    if (!/^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(t))
+      return { bad: raw, why: 'reads "' + raw + '", which is not a number.' };
+    var n = +t * mult;
+    if (!isFinite(n)) return { bad: raw, why: 'reads "' + raw + '", which is not a number.' };
+    if (opts.pct) {
+      if (!pct && n > 0 && n < 1) {
+        why = asPercent(n);
+        return { bad: raw, why: 'reads "' + raw + '", a fraction; the box takes per cent: type ' + why + ' or ' + why + '%.' };
+      }
+      return { n: n };
+    }
+    if (pct) return { bad: raw, why: 'reads "' + raw + '", but the box takes ' + (opts.unit || 'a plain number') + ', not per cent.' };
+    return { n: n };
+  }
+  function asPercent(fraction) { return String(+(fraction * 100).toPrecision(12)); }
+
+  /* The members each estimate form uses, with the word the sheet shows for each. */
+  var FORM_MEMBERS = {
+    triple: [['low', 'low'], ['base', 'expected'], ['high', 'high']],
+    normal: [['mean', 'mean'], ['sd', 'standard deviation']],
+    lognormal: [['mu', 'mu'], ['sigma', 'sigma']],
+    uniform: [['start', 'start'], ['end', 'end']]
+  };
+  function blank(x) { return x === undefined || x === null || String(x).trim() === ''; }
+
+  /* A project saved by an earlier version is opened in this version's terms
+     without converting anything. An entry the box can still read is kept
+     exactly as it was stored. An entry it cannot read is taken out of the
+     box, and the box is left blank with a note naming what was stored and
+     what to type; the note shows on the sheet and in the reading until the
+     box is filled. Two kinds of entry qualify: a fraction stored as a number
+     in a per-cent box (0.85 for a confidence, stored by versions up to
+     v0.8.2, which took 85% and kept 0.85), and the old `discount_rate` key,
+     which took a rate per month as a fraction, 0 to 0.05. Returns true when
+     the project changed. */
+  var SAMPLE_CHOICES = {
+    'rsonic-terra': { market_unit: 'dollars', penetration_basis: 'share of revenue',
+                      revenue_curve: 'ramp to peak, decay to zero at sales-life end',
+                      ops_cost_basis: 'units sold in the period' }
+  };
+  function upgradeSheet(project) {
+    var changed = false, sheet = project && project.sheet;
+    if (!sheet || typeof sheet !== 'object') return false;
+    /* v0.8.1: the shipped Table 1 sample carries the four choices Table 1 does
+       not state, set to what his script reads. A copy saved before that, with
+       them blank, gets the same four on load; a choice already made is kept,
+       and a project of the user's own is not touched. */
+    var preset = SAMPLE_CHOICES[project.id];
+    if (preset) {
+      Object.keys(preset).forEach(function (k) {
+        var x = sheet[k];
+        if (x === null || x === undefined || (typeof x === 'object' && (x.value === null || x.value === undefined || x.value === ''))) {
+          sheet[k] = { value: preset[k] }; changed = true;
+        }
+      });
+    }
+    var notes = (sheet.__notes && typeof sheet.__notes === 'object') ? sheet.__notes : null;
+    function note(key, text) { if (!notes) notes = sheet.__notes = {}; notes[key] = text; changed = true; }
+    function isFraction(x) { return typeof x === 'number' && x > 0 && x < 1; }
+    (FIELDS[project.case] || []).forEach(function (s) {
+      if (!s.pct) return;
+      var x = sheet[s.key], members, vals;
+      if (s.kind === SCALAR && x && typeof x === 'object' && isFraction(x.value)) {
+        note(s.key, s.label + ': an earlier version stored ' + x.value + ', a fraction. The box takes per cent ' +
+                    'and the entry was not converted, so it is left blank. Type ' + asPercent(x.value) +
+                    ' or ' + asPercent(x.value) + '% for the same figure.');
+        delete sheet[s.key];
+      } else if (s.kind === DIST && x && typeof x === 'object' && x.form && (members = FORM_MEMBERS[x.form]) &&
+                 members.every(function (m) { return isFraction(x[m[0]]); })) {
+        vals = members.map(function (m) { return x[m[0]]; });
+        note(s.key, s.label + ': an earlier version stored ' + vals.join(', ') + ', fractions. The boxes take per cent ' +
+                    'and the entries were not converted, so they are left blank. Type ' +
+                    vals.map(asPercent).join(', ') + ' for the same figures.');
+        delete sheet[s.key];
+      }
+    });
+    /* v0.10.0: the bid page's cost is a velocity by construction, as his FP
+       has it, so the cost–duration exposure box is gone; a stored entry is
+       dropped, since no box reads it, and nothing else is touched. */
+    if (project.case === 'rfp' && 'cost_duration_exposure' in sheet) { delete sheet.cost_duration_exposure; changed = true; }
+    if ('discount_rate' in sheet) {
+      var old = sheet.discount_rate, ov = (old && typeof old === 'object') ? old.value : old;
+      if (sheet.discount_rate_pa === undefined && !blank(ov)) {
+        note('discount_rate_pa', 'Discount rate: an earlier version stored ' + ov + ' in a box that took a rate ' +
+             'per month, as a fraction. The box now takes per cent per year and the entry was not converted, ' +
+             'so it is left blank. Type the rate as it is quoted: 5 for five per cent a year.');
+      }
+      delete sheet.discount_rate;
+      changed = true;
+    }
+    return changed;
+  }
+
+  function Sheet(caseName, values) {
+    var spec = {}, order = [];
+    specFor(caseName).forEach(function (s) { spec[s.key] = s; order.push(s.key); });
+    var v = values || {},
+        notes = (v.__notes && typeof v.__notes === 'object') ? v.__notes : {};
+    function rawOf(key) {
+      var x = v[key];
+      if (x && typeof x === 'object' && !x.form) x = x.value;
+      return x;
+    }
+    function read(key, x) { var s = spec[key]; return parseNumber(x, { pct: !!s.pct, unit: s.unit }); }
+    return {
+      case: caseName, spec: spec, order: order, values: v,
+      /* A scalar box read by its rule: the number, the field's default when
+         the box is blank, null when it is blank with no default, NaN when it
+         holds something the rule refuses (which unreadable() names). */
+      scalar: function (key) {
+        var s = spec[key], r = read(key, rawOf(key));
+        /* A box an earlier version's entry was taken out of does not fall
+           back to its default: the note stands until something is typed. */
+        if (r.empty) return (s.def === undefined || notes[key]) ? null : s.def;
+        if (r.n === undefined) return NaN;
+        return r.n;
+      },
+      choice: function (key) {
+        var x = v[key], opts = (spec[key] || {}).options;
+        if (x && typeof x === 'object') x = x.value;
+        if (!x) return null;
+        /* A project saved against an option this version no longer offers reads
+           as unset, so the sheet asks again rather than quietly meaning something
+           else. */
+        if (opts && opts.indexOf(x) < 0) return null;
+        return x;
+      },
+      /* The stored estimate as typed, or null unless every box of its form
+         holds something. */
+      payload: function (key) {
+        var x = v[key], members;
+        if (!(x && typeof x === 'object' && x.form)) return null;
+        members = FORM_MEMBERS[x.form];
+        if (members) {
+          for (var i = 0; i < members.length; i++) if (blank(x[members[i][0]])) return null;
+        } else if (x.form === 'draws') { if (!(x.values && x.values.length >= 2)) return null; }
+        else if (x.form === 'quantiles') { if (!(x.points && x.points.length >= 2)) return null; }
+        else return null;
+        return x;
+      },
+      /* The estimate with every box read by the field's rule, for the model.
+         Throws a PayloadError naming the box that does not read. */
+      estimate: function (key) {
+        var x = this.payload(key);
+        if (!x) return null;
+        var s = spec[key], out = { form: x.form }, members = FORM_MEMBERS[x.form];
+        if (members) {
+          members.forEach(function (m) {
+            var r = read(key, x[m[0]]);
+            if (r.n === undefined) throw PayloadError(s.label + ', ' + m[1] + ' ' + r.why);
+            out[m[0]] = r.n;
+          });
+        } else if (x.form === 'draws') out.values = x.values.map(Number);
+        else out.points = x.points;
+        return out;
+      },
+      missing: function () {
+        var out = [], self = this;
+        order.forEach(function (key) {
+          var s = spec[key];
+          if (s.optional) return;
+          if (s.kind === DIST && self.payload(key) === null) {
+            /* The per-unit dollar figure is not in play on every basis, so a
+               sheet that does not use it is complete without it. */
+            if (key === 'ops_cost_per_unit' && OPS_BASIS_WITHOUT_DOLLARS[self.choice('ops_cost_basis')])
+              return;
+            out.push(s.label);
+          }
+          else if (s.kind === CHOICE && self.choice(key) === null) out.push(s.label);
+          else if (s.kind === SCALAR && self.scalar(key) === null) {
+            /* The market's own price only matters when the penetration basis and
+               the market unit are stated in different terms. */
+            if (key === 'market_avg_price' && !crossedBasis(self)) return;
+            out.push(s.label);
+          }
+        });
+        return out;
+      },
+      /* Every box holding something its rule refuses, named with what was
+         typed and the reason, so a filled box is never reported as empty. */
+      unreadable: function () {
+        var out = [];
+        order.forEach(function (key) {
+          var s = spec[key], x = v[key], r;
+          if (s.kind === SCALAR) {
+            r = read(key, rawOf(key));
+            if (r.bad !== undefined) out.push(s.label + ' ' + r.why);
+          } else if (s.kind === DIST && x && typeof x === 'object' && FORM_MEMBERS[x.form]) {
+            FORM_MEMBERS[x.form].forEach(function (m) {
+              if (blank(x[m[0]])) return;
+              r = read(key, x[m[0]]);
+              if (r.bad !== undefined) out.push(s.label + ', ' + m[1] + ' ' + r.why);
+            });
+          }
+        });
+        return out;
+      },
+      unreadableKeys: function () {
+        var out = [];
+        order.forEach(function (key) {
+          var s = spec[key], x = v[key];
+          if (s.kind === SCALAR) {
+            if (read(key, rawOf(key)).bad !== undefined) out.push(key);
+          } else if (s.kind === DIST && x && typeof x === 'object' && FORM_MEMBERS[x.form] &&
+                     FORM_MEMBERS[x.form].some(function (m) { return !blank(x[m[0]]) && read(key, x[m[0]]).bad !== undefined; }))
+            out.push(key);
+        });
+        return out;
+      },
+      /* Every entry the model will refuse, with the key it sits on, so the sheet
+         can outline exactly those rows and the reading can name them: text the
+         box's rule refuses, a figure outside its range, and an estimate that
+         contradicts itself (low above expected, a negative spread). */
+      refused: function () {
+        var out = [], self = this;
+        this.unreadableKeys().forEach(function (k) { out.push(k); });
+        order.forEach(function (key) {
+          var s = spec[key], x;
+          if (out.indexOf(key) >= 0) return;
+          if (s.kind === SCALAR && s.lo !== undefined) {
+            x = self.scalar(key);
+            if (x !== null && (x < s.lo || x > s.hi)) out.push(key);
+          } else if (s.kind === DIST && self.payload(key)) {
+            try { toDistribution(self.estimate(key), s.label); }
+            catch (e) { if (e.name === 'PayloadError') out.push(key); else throw e; }
+          }
+        });
+        return out;
+      },
+      /* An estimate the model cannot use, named by the field's own label. */
+      badEstimates: function () {
+        var out = [], self = this;
+        order.forEach(function (key) {
+          var s = spec[key];
+          if (s.kind !== DIST || !self.payload(key)) return;
+          try { toDistribution(self.estimate(key), s.label); }
+          catch (e) { if (e.name === 'PayloadError') out.push(e.message); else throw e; }
+        });
+        return out;
+      },
+      /* A figure typed past the end of its range is refused by name rather than
+         quietly pulled back inside it, so a confidence of 100 -- where the
+         option value is the worst draw and means nothing -- reads as a mistake,
+         the way his own reader refuses it. */
+      outOfRange: function () {
+        var out = [], self = this;
+        order.forEach(function (key) {
+          var s = spec[key], x;
+          if (s.kind !== SCALAR || s.lo === undefined) return;
+          x = self.scalar(key);
+          if (x === null || x !== x) return;
+          if (x < s.lo || x > s.hi)
+            out.push(s.label + ' is ' + x + ', outside ' + s.lo + ' to ' + s.hi + (s.pct ? ' per cent.' : '.') +
+                     (key === 'discount_rate_pa' && x > s.hi
+                        ? ' An earlier version converted a rate per month into a rate per year; type the rate as it is quoted, 5 for five per cent a year.'
+                        : ''));
+        });
+        return out;
+      },
+      /* What an earlier version stored in a box this version could not read,
+         in the sheet's own order; each one clears when the box is filled. */
+      notes: function () {
+        var out = [];
+        order.forEach(function (key) { if (notes[key] && blank(rawOf(key)) && !(v[key] && v[key].form)) out.push(notes[key]); });
+        return out;
+      },
+      fingerprint: function () { return JSON.stringify([caseName, v]); }
+    };
+  }
+
+  /* ==================================================================== *
+   *  The two value models                                                *
+   * ==================================================================== */
+
+  var CONFIDENCE_GRID = [0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+      DELAY_GRID = [0, 3, 6, 9, 12, 18, 24],
+      WEEKS_PER_MONTH = 4.34524;
+
+  function Blocked(missing, notes) {
+    var e = new Error('sheet incomplete');
+    e.name = 'Blocked'; e.missing = missing; e.notes = notes || [];
+    return e;
+  }
+
+  function OutOfRange(bad, notes) {
+    var e = new Error(bad.join('; '));
+    e.name = 'PayloadError'; e.outOfRange = bad; e.notes = notes || [];
+    return e;
+  }
+
+  function Unreadable(bad, notes) {
+    var e = new Error(bad.join(' '));
+    e.name = 'PayloadError'; e.unreadable = bad; e.notes = notes || [];
+    return e;
+  }
+
+  function build(project) {
+    var sheet = Sheet(project.case, project.sheet),
+        notes = sheet.notes(),
+        unreadable = sheet.unreadable();
+    if (unreadable.length) throw Unreadable(unreadable, notes);
+    var missing = sheet.missing();
+    if (missing.length) throw Blocked(missing, notes);
+    var bad = sheet.outOfRange().concat(sheet.badEstimates());
+    if (bad.length) throw OutOfRange(bad, notes);
+    var sc = project.scenario_set || {},
+        scen = ScenarioSet(sc.draws || 20000, sc.seed === undefined ? 20260916 : sc.seed);
+    return sheet.case === 'rfp' ? RFPResponse(sheet, scen) : BusinessCase(sheet, scen);
+  }
+
+  /* ---------------------------------------------------------------- *
+   *  RFP response — his qnav-fixed-bid package, model.py and surface.py, *
+   *  function for function, with the sheet feeding it directly         *
+   * ---------------------------------------------------------------- */
+
+  /* The cost is not drawn directly. His FP draws a cost VELOCITY, money a
+     period, and multiplies it by the drawn duration, so an overrun in time is
+     an overrun in money by construction: the sheet's cost is a total over the
+     due periods, and FP.triangular / FP.normal divide it by due_periods. A
+     three-point or a normal estimate scales member by member, exactly as his
+     constructors build the velocity; any other form is the same distribution
+     scaled. */
+  function velocityOf(payload, costD, due) {
+    if (payload.form === 'triple')
+      return Triangular(payload.low / due, payload.base / due, payload.high / due);
+    if (payload.form === 'normal')
+      return Normal(payload.mean / due, payload.sd / due);
+    return Scaled(costD, 1 / due);
+  }
+
+  var SURFACE_DRAWS = 40000,          /* RoiSurface(fp, draws=40_000) */
+      PER_DURATION = 10;              /* his msamps: cost draws per retained duration */
+
+  function RFPResponse(sheet, scen) {
+    var durPayload = sheet.estimate('duration_to_complete'),
+        costPayload = sheet.estimate('cost_to_complete'),
+        durD = toDistribution(durPayload, 'Duration to complete'),
+        costD = toDistribution(costPayload, 'Cost to complete'),
+        n = scen.draws, m = PER_DURATION, i;
+
+    var due = sheet.scalar('due_periods'),
+        dd0 = sheet.scalar('drop_dead_periods'),
+        dd = (dd0 === null) ? due : dd0,
+        penalty = sheet.scalar('penalty_if_late') || 0,
+        sunk = sheet.scalar('cost_to_date') || 0,
+        contracted = sheet.scalar('contracted_payment');   /* null: a bid to price */
+
+    if (!(due > 0)) throw PayloadError('Deadline is ' + due + '; it must be at least 1 period from now.');
+    if (dd < due) throw PayloadError('Drop-dead period is ' + dd + ', before the deadline of ' + due + '; it must be the deadline or later.');
+    if (sunk < 0) throw PayloadError('Cost to date is ' + sunk + '; money already spent cannot be negative.');
+    if (contracted !== null && !(contracted > 0)) throw PayloadError('Contracted payment is ' + contracted + '; leave the box blank to price a bid, or type the payment the contract fixes.');
+
+    var velD = velocityOf(costPayload, costD, due);
+
+    /* One uniform stream per quantity, keyed on its name, read from its start
+       every time it is asked for: his `_rng(offset)` opens a fresh generator
+       at seed + offset on every call. */
+    function uniforms(key, count) {
+      var r = streamFor(scen.seed, 'u::' + key), a = new Float64Array(count), k;
+      for (k = 0; k < count; k++) a[k] = r();
+      return a;
+    }
+    function drawn(dist, key, count) {
+      var u = uniforms(key, count), a = new Float64Array(count), k;
+      for (k = 0; k < count; k++) a[k] = dist.invCdf(u[k]);
+      return a;
+    }
+
+    /* Region probabilities, read off the duration CDF, no sampling. */
+    var pwin = durD.cdf(due), plate = durD.cdf(dd) - pwin, pfail = 1 - durD.cdf(dd);
+
+    /* EAC: a velocity times the duration it runs for, durations past the
+       drop-dead date dropped, each retained duration carrying `m` cost draws. */
+    var eacDur = drawn(durD, 'eac-duration', n), keptDur = [], durMin = Infinity;
+    for (i = 0; i < n; i++) { if (eacDur[i] <= dd) keptDur.push(eacDur[i]); if (eacDur[i] < durMin) durMin = eacDur[i]; }
+    if (keptDur.length < 2)
+      throw PayloadError('nothing finishes by the drop-dead date of ' + dd + ' periods: the duration ' +
+                         'estimate runs from ' + (+durMin.toPrecision(6)) + ' upward. There is no cost at ' +
+                         'completion to speak of, because the engagement never completes.');
+    var eacLen = keptDur.length * m, eacVel = drawn(velD, 'eac-velocity', eacLen), eacCost = new Float64Array(eacLen), k;
+    for (i = 0, k = 0; i < keptDur.length; i++) for (var j = 0; j < m; j++, k++) eacCost[k] = eacVel[k] * keptDur[i];
+    function eacOf(sunkCost) {
+      var a = new Float64Array(eacLen), q;
+      for (q = 0; q < eacLen; q++) a[q] = sunkCost + eacCost[q];
+      return Empirical(a);
+    }
+
+    /* EV, the blend the book's figures were computed with: each draw is
+       pwin x (win payoff) + plate x (late payoff) + pfail x (failure payoff),
+       the three payoffs drawn independently, on 50 bins. */
+    var velWin = drawn(velD, 'ev-win-velocity', n), velLate = drawn(velD, 'ev-late-velocity', n),
+        velFail = drawn(velD, 'ev-fail-velocity', n);
+    function evOf(bid, sunkCost) {
+      var a = new Float64Array(n), q, win, late, fail;
+      for (q = 0; q < n; q++) {
+        win = bid - (sunkCost + velWin[q] * due);
+        late = bid * penalty - (sunkCost + velLate[q] * dd);
+        fail = -(sunkCost + velFail[q] * dd);
+        a[q] = pwin * win + plate * late + pfail * fail;
+      }
+      return Empirical(a, 50);
+    }
+
+    /* Divide, dropping the draws whose denominator is near zero: his
+       _safe_ratio, the floor Hard_deadline_services5.ROI applies. */
+    function safeRatio(num, den) {
+      var s = 0, q, out = [], floor;
+      for (q = 0; q < den.length; q++) s += Math.abs(den[q]);
+      floor = 1e-6 * Math.max(s / den.length, 1);
+      for (q = 0; q < den.length; q++) if (Math.abs(den[q]) > floor) out.push(num[q] / den[q]);
+      return Float64Array.from(out);
+    }
+
+    /* ROI: the value and the cost resampled apart through inv_cdf(u), on the
+       streams his ROI() opens at offsets 4 and 5, which are the streams the
+       win and late velocities came from. */
+    var uRoiValue = uniforms('ev-win-velocity', n), uRoiCost = uniforms('ev-late-velocity', n);
+    function roiOf(ev, eac) {
+      var a = new Float64Array(n), b = new Float64Array(n), q;
+      for (q = 0; q < n; q++) { a[q] = ev.invCdf(uRoiValue[q]); b[q] = eac.invCdf(uRoiCost[q]); }
+      return Empirical(safeRatio(a, b));
+    }
+
+    /* fp.initialize(): the three distributions of the model, at a payoff and
+       a sunk cost. The bid case prices with the whole sunk cost in; a job under
+       way is read twice, on what is left and on everything invested. */
+    function FP(bid, sunkCost) {
+      var eac = eacOf(sunkCost), ev = evOf(bid, sunkCost);
+      return { eac: eac, ev: ev, roi: roiOf(ev, eac), benefit: bid, sunk: sunkCost };
+    }
+
+    /* Appendix 8 section 3, his fp.bid(ROI, con): cover the cost at a
+       percentile, mark it up, divide by the chance of being paid. */
+    function closedForm(eac, roi, con) {
+      if (!(pwin > 0)) return null;
+      return (roi + 1) * eac.invCdf(con) / pwin;
+    }
+
+    /* RoiSurface: every bid from one set of draws, on one sequential stream,
+       in his order: the three blended velocities, then the durations, then
+       the velocities of the retained durations. */
+    var surface = (function () {
+      var r = streamFor(scen.seed, 'u::surface'), N = SURFACE_DRAWS, q,
+          vel = function (count) { var a = new Float64Array(count), t; for (t = 0; t < count; t++) a[t] = velD.invCdf(r()); return a; },
+          W = vel(N), L = vel(N), D = vel(N), kk = pwin + plate * penalty,
+          Z = new Float64Array(N), dur = new Float64Array(N), kept = [], t;
+      for (q = 0; q < N; q++) Z[q] = -(pwin * (sunk + W[q] * due) + plate * (sunk + L[q] * dd) + pfail * (sunk + D[q] * dd));
+      for (q = 0; q < N; q++) dur[q] = durD.invCdf(r());
+      for (q = 0; q < N; q++) if (dur[q] <= dd) kept.push(dur[q]);
+      var ve = vel(kept.length), eac = new Float64Array(kept.length);
+      for (q = 0; q < kept.length; q++) eac[q] = sunk + ve[q] * kept[q];
+      var nn = Math.min(N, kept.length), s = 0, floor, EAC = [], ZZ = [];
+      for (q = 0; q < nn; q++) s += Math.abs(eac[q]);
+      floor = 1e-6 * Math.max(s / nn, 1);
+      for (q = 0; q < nn; q++) if (Math.abs(eac[q]) > floor) { EAC.push(eac[q]); ZZ.push(Z[q]); }
+      EAC = Float64Array.from(EAC); ZZ = Float64Array.from(ZZ);
+      var len = EAC.length, eac99 = quantile(EAC, 0.99);
+      function pRoiGe(bid, roi) {
+        var c = 0, t;
+        for (t = 0; t < len; t++) if ((kk * bid + ZZ[t]) / EAC[t] >= roi) c++;
+        return c / len;
+      }
+      /* bid_for: the bid at which P(return >= roi) = confidence, by his
+         bisection; null when no finite bid reaches it, which is an answer. */
+      function bidFor(roi, confidence) {
+        var f = function (b) { return pRoiGe(b, roi) - confidence; },
+            lo = 0, hi = Math.max(1, eac99 * (roi + 2)), span, mid, t, tol = 1e-9;
+        if (f(lo) > 0) return 0;
+        for (t = 0; t < 60; t++) { if (f(hi) >= 0) break; hi *= 2; }
+        if (t === 60) return null;
+        span = hi - lo;
+        for (t = 0; t < 200; t++) {
+          mid = 0.5 * (lo + hi);
+          if ((hi - lo) <= tol * Math.max(span, 1)) return mid;
+          if (f(mid) < 0) lo = mid; else hi = mid;
+        }
+        return 0.5 * (lo + hi);
+      }
+      return { k: kk, draws: len, bidFor: bidFor, pRoiGe: pRoiGe,
+               roiAtConfidence: function (bid, confidence) {
+                 var a = new Float64Array(len), t;
+                 for (t = 0; t < len; t++) a[t] = (kk * bid + ZZ[t]) / EAC[t];
+                 return quantile(a, 1 - confidence);
+               } };
+    })();
+
+    var job = contracted !== null,
+        whole = job ? FP(contracted, sunk) : FP(sunk + statedValue(costPayload, costD), sunk),   /* his placeholder payoff */
+        togo = job ? (sunk ? FP(contracted, 0) : whole) : null,
+        durMean = durD.mean, durP80 = durD.quantile(0.80);
+
+    function derivedOf(fp) {
+      return {
+        /* read off the CDF, not rounded here: the closed form beside them must
+           reproduce from the printed P(on time) and the page rounds for display */
+        'P(on time)': pwin,
+        'P(late, before drop-dead)': plate,
+        'P(past drop-dead)': pfail,
+        'EAC mean': fp.eac.mean,
+        'EAC p50': fp.eac.invCdf(0.50),
+        'EAC p80': fp.eac.invCdf(0.80),
+        'EAC p95': fp.eac.invCdf(0.95),
+        'Duration mean': durMean,
+        'Duration p80': durP80
+      };
+    }
+    function roiBlock(roi, target) {
+      return { mean: roi.mean, p50: roi.invCdf(0.50), p20: roi.invCdf(0.20), p80: roi.invCdf(0.80),
+               p_break_even: 1 - roi.cdf(0), p_reaches_target: 1 - roi.cdf(target) };
+    }
+
+    var model = {
+      kind: 'rfp', sheet: sheet, scen: scen, job: job,
+      pwin: pwin, pLate: plate, pFail: pfail, due: due, dropDead: dd, penalty: penalty, sunk: sunk,
+      durD: durD, velD: velD, whole: whole, togo: togo, surface: surface,
+      FP: FP, closedForm: closedForm,
+
+      derived: function () { return derivedOf(job ? togo : whole); },
+
+      reading: function (opts) {
+        opts = opts || {};
+        var roi = opts.roi == null ? sheet.scalar('required_roi') : +opts.roi,
+            cf = opts.return_confidence == null ? sheet.scalar('return_confidence') / 100 : +opts.return_confidence,
+            cc = opts.cost_confidence == null ? sheet.scalar('cost_confidence') / 100 : +opts.cost_confidence;
+
+        if (job) {
+          /* run_roi.py: the return on what is left, the number that decides
+             whether to carry on, and on everything invested. */
+          return {
+            case: 'rfp', job: true, required_roi: roi, return_confidence: cf, cost_confidence: cc,
+            contracted: contracted, cost_to_date: sunk,
+            value_of_carrying_on: togo.ev.mean,
+            to_go: roiBlock(togo.roi, roi),
+            whole: sunk ? roiBlock(whole.roi, roi) : null,
+            return_at_confidence: togo.roi.invCdf(1 - cf),
+            cost_still_to_spend: togo.eac.invCdf(cc),
+            derived: derivedOf(togo)
+          };
+        }
+
+        var search = surface.bidFor(roi, cf),
+            closed = closedForm(whole.eac, roi, cc),
+            curve = CONFIDENCE_GRID.map(function (c) {
+              return { confidence: c, search: surface.bidFor(roi, c),
+                       closed: closedForm(whole.eac, roi, c), covered: whole.eac.invCdf(c) };
+            });
+        var out = {
+          case: 'rfp', job: false, required_roi: roi, return_confidence: cf, cost_confidence: cc,
+          route: 'search', price: search, refused: search === null,
+          closed_form: closed, cost_covered: whole.eac.invCdf(cc),
+          k: surface.k, derived: derivedOf(whole), curve: curve
+        };
+        if (search === null) {
+          out.refusal = {
+            p_on_time: pwin, p_late: plate, p_fail: pfail, penalty: penalty,
+            reason: 'No bid reaches a return of ' + roi.toFixed(2) + ' at ' + Math.round(100 * cf) +
+                    '% confidence. Too many outcomes pay nothing whatever the price, so there is no number to quote.'
+          };
+        }
+        return out;
+      },
+
+      /* The figures his package draws for a case: the duration with its three
+         regions, the cost at completion against the cost the work was planned
+         at, the value and the return, and, for a bid, the bid against the
+         required return at three confidences. The value and the return are
+         drawn at the bid the reading prices; when the search refuses, at the
+         closed form's, and the figure says so. A job under way draws the work
+         still to run, at the contracted payment, and has no bid figure. */
+      figures: function (opts) {
+        var rd = this.reading(opts), fp, bid, planned = sunk + statedValue(costPayload, costD), rois = [], lines = [], q;
+        if (job) { fp = togo; bid = contracted; planned = statedValue(costPayload, costD); }
+        else {
+          bid = rd.refused ? rd.closed_form : rd.price;
+          fp = bid === null ? null : FP(bid, sunk);
+          for (q = 0; q < 20; q++) rois.push(0.1 + q * (1.9 / 19));
+          lines = [0.7, 0.8, 0.9].map(function (c) {
+            var pts = [];
+            rois.forEach(function (r) { var b = surface.bidFor(r, c); if (b !== null) pts.push([r, b]); });
+            return { confidence: c, points: pts };
+          });
+        }
+        var eac = fp ? fp.eac : whole.eac;
+        return {
+          case: 'rfp', job: job, bid: bid, bid_route: job ? 'contracted' : (rd.refused ? 'closed form' : 'search'),
+          refused: !!rd.refused, required_roi: rd.required_roi, return_confidence: rd.return_confidence,
+          cost_confidence: rd.cost_confidence,
+          duration: densityOf(eacDur, null, durPayload), due: due, drop_dead: dd,
+          p_on_time: pwin, p_late: plate, p_fail: pfail,
+          eac: curveOf(eac), planned: planned,
+          p_opportunity: eac.cdf(planned), p_risk: 1 - eac.cdf(planned),
+          no_bid: bid === null ? (rd.refusal ? rd.refusal.reason : 'no price holds the return') : null,
+          ev: fp ? curveOf(fp.ev) : null, p_ev_positive: fp ? 1 - fp.ev.cdf(0) : null,
+          roi: fp ? curveOf(fp.roi) : null, p_roi_positive: fp ? 1 - fp.roi.cdf(0) : null,
+          bids: { rois: rois, lines: lines }
+        };
+      }
+    };
+    return model;
+  }
+
+  /* ---------------------------------------------------------------- *
+   *  Business case — model.py, Case and Economics, with the sheet      *
+   *  feeding it directly                                               *
+   * ---------------------------------------------------------------- */
+
+  function BusinessCase(sheet, scen) {
+    var n = scen.draws, W = WEEKS_PER_MONTH, i, k, m;
+
+    /* ---- Case: the parameters of one project at one stage ---------- */
+    var durEst = sheet.estimate('duration_to_complete'),
+        devEst = sheet.estimate('dev_cost_to_complete'),
+        penEst = sheet.estimate('peak_penetration'),
+        priceEst = sheet.estimate('selling_price'),
+        opsEst = sheet.estimate('ops_cost_per_unit');
+
+    var durW = toDistribution(durEst, 'duration'),
+        durM = Scaled(durW, 1 / W),                        /* Case.duration(), in months */
+        devD = toDistribution(devEst, 'dev cost'),         /* Case.cost() */
+        penD = toDistribution(penEst, 'penetration'),      /* in per cent, as Table 1 prints it */
+        priceD = toDistribution(priceEst, 'price'),        /* Case.price_per_unit() */
+        opsD = opsEst ? toDistribution(opsEst, 'ops cost') : null;   /* Case.ops_per_unit() */
+
+    var cos = sheet.scalar('cos_per_unit'),
+        cogs = sheet.scalar('cogs_per_unit'),
+        /* Case.margin_per_unit(): the price less what it costs to make and sell
+           one, as a three-point estimate built on the three shifted figures
+           (so a degenerate price is nudged on the margin's own scale, as his
+           is); any other form of price estimate is shifted as it stands. */
+        marginD = priceEst.form === 'triple'
+                ? Triangular(priceEst.low - (cogs + cos), priceEst.base - (cogs + cos), priceEst.high - (cogs + cos))
+                : Shifted(priceD, -(cogs + cos)),
+        /* Quoted per year, as Appendix 3 quotes it; each month is discounted at
+           a twelfth of it, its Equation 3 with n = 12. 0 is his model. */
+        rate = (sheet.scalar('discount_rate_pa') || 0) / 100 / 12,
+        peakFromDelivery = sheet.scalar('peak_month'),     /* peak_month_from_delivery */
+        salesLife = Math.trunc(sheet.scalar('sales_life_months')),   /* int(product_sales_life) */
+        market = sheet.scalar('addressable_market'),
+        marketUnit = sheet.choice('market_unit'),
+        penBasis = sheet.choice('penetration_basis'),
+        curveChoice = sheet.choice('revenue_curve'),
+        opsBasis = sheet.choice('ops_cost_basis'),
+        opsWindow = Math.max(1, Math.round(sheet.scalar('ops_cost_window') || 3)),
+        supportShare = (sheet.scalar('support_share_of_price') || 0) / 100,
+        mktPrice = sheet.scalar('market_avg_price');
+
+    /* The market figure and the two basis choices decide the peak rate jointly,
+       and they are four different statements, not two. When the basis matches
+       the unit the market is stated in, our own price carries it. When it
+       crosses — a unit share of a market counted in dollars, or the reverse —
+       it takes the MARKET's price to convert. The conversion uses the price
+       the sheet STATES, as his _units divides the market's money by the
+       expected price and carries the uncertainty as a separate multiplier on
+       the curve. */
+    var priceStated = statedValue(priceEst, priceD),
+        penStated = statedValue(penEst, penD) / 100;
+    if (!(penStated > 0)) throw PayloadError('Peak penetration: the expected figure must be above zero');
+    function peakRateOf(pen) {
+      if (marketUnit === 'units') {
+        return (penBasis === 'share of revenue') ? pen * market * mktPrice / priceStated
+                                                 : pen * market;
+      }
+      return (penBasis === 'share of units') ? pen * market / mktPrice
+                                             : pen * market / priceStated;
+    }
+    /* Case._units(): units a month at the peak, int(np.round(...)). */
+    var peakUnits = npRound(peakRateOf(penStated)),
+        /* Case.penetration_factor(): Triangular(Pessimistic, 1, Optimist), the
+           penetration estimate over the figure it is stated at. */
+        factorD = Scaled(penD, 1 / (100 * penStated)),
+        /* Case.peak_month: peak_month_from_delivery + the duration's stated
+           centre, so Table 1's 36 is month 36 + 80 / 4.34524. */
+        durCentre = statedValue(durEst, durW) / W,
+        peakMonth = peakFromDelivery + durCentre,
+        END = curveChoice === 'ramp to peak, decay to zero at year 6' ? 72 : salesLife,
+        /* Economics(conf=0.75): the sales curve starts at the month the product
+           is delivered by with 75% confidence, Case.delivery_month(). */
+        CONF = 0.75,
+        delivery = durM.quantile(1 - CONF);
+
+    /* Case.units(conf): peak_curve(peak_month, delivery_month, sales_life,
+       peak_units). A delivery delayed by d months moves the start and, since
+       the peak is counted from delivery, the peak. */
+    function curveFor(d) { return peakCurve(peakMonth + d, delivery + d, END, peakUnits); }
+
+    /* ---- Economics: the month sums --------------------------------- *
+       revenue()   sum over the months of price x units
+       profit()    sum over the months of margin x units, the same units
+       operations() sum over the months of ops cost x units drawn again
+       Each month of each scenario draws its own price, margin, operations
+       cost and penetration factor, as his _per_period does, so a hundred
+       months of trading average out. The months are summed from int(the
+       delivery month) to the end of the sales life over every month the
+       curve is above zero, and every delay on the grid is summed in the
+       same pass off the same draws. */
+    var sums = null;
+    function buildSums() {
+      if (sums) return sums;
+      var D = DELAY_GRID.length, curves = DELAY_GRID.map(curveFor),
+          profit = [], ops = [], revenue = new Float64Array(n),
+          supportPv = new Float64Array(END + 1), ws = new Float64Array(D), d, j, a, any,
+          fac, facOps, pm, gm, om, mrow, orow, w, first = Math.max(0, Math.floor(delivery));
+      for (d = 0; d < D; d++) { profit.push(new Float64Array(n)); ops.push(new Float64Array(n)); }
+      for (m = 0; m <= END; m++) {
+        supportPv[m] = 0;
+        for (j = 1; j <= opsWindow; j++) supportPv[m] += Math.pow(1 + rate, -(m + j));
+      }
+      for (m = first; m < END; m++) {
+        any = false;
+        for (d = 0; d < D; d++) { ws[d] = curves[d](m); if (ws[d] > 0) any = true; }
+        if (!any) continue;
+        fac = scen.drawOnce(factorD, 'peak_penetration@' + m);
+        facOps = scen.drawOnce(factorD, 'peak_penetration_ops@' + m);
+        pm = scen.drawOnce(priceD, 'selling_price@' + m);
+        gm = scen.drawOnce(marginD, 'margin_per_unit@' + m);
+        om = opsD ? scen.drawOnce(opsD, 'ops_cost_per_unit@' + m) : null;
+        a = Math.pow(1 + rate, -m);
+        for (k = 0; k < n; k++) {
+          mrow = fac[k] * gm[k] * a;
+          if (opsBasis === 'excluded') orow = 0;
+          else if (opsBasis === 'a share of price, over the last n periods') orow = facOps[k] * supportShare * pm[k] * supportPv[m];
+          else orow = facOps[k] * om[k] * a;
+          for (d = 0; d < D; d++) {
+            w = ws[d];
+            if (w > 0) { profit[d][k] += w * mrow; ops[d][k] += w * orow; }
+          }
+          if (ws[0] > 0) revenue[k] += ws[0] * fac[k] * pm[k] * a;
+        }
+      }
+      sums = { profit: profit, ops: ops, revenue: revenue };
+      return sums;
+    }
+
+    /* ---- Economics: what is read off the sums ----------------------- *
+       His npvPDF draws the profit, the operations cost and the development
+       cost as three unrelated distributions: each month sum becomes an
+       Empirical_PDF and the NPV is
+           profit.inv_cdf(u) - operations.inv_cdf(u') - cost.inv_cdf(u'')
+       on fresh uniforms. His ROI() resamples the NPV and the cost apart
+       again, so a scenario's value is divided by another scenario's cost,
+       with draws of a cost within a millionth of zero left out. */
+    var pieces = {};
+    function piecesFor(di) {
+      if (pieces[di]) return pieces[di];
+      var s = buildSums(),
+          profitE = Empirical(s.profit[di]),
+          opsE = opsBasis === 'excluded' ? null : Empirical(s.ops[di]),
+          u6 = scen.uniform('dev_cost_to_complete'),
+          u7 = scen.uniform('npv.profit'), u8 = scen.uniform('npv.operations'),
+          u9 = scen.uniform('roi.npv'), u10 = scen.uniform('roi.development'),
+          npv = new Float64Array(n), dev = new Float64Array(n), dev10 = new Float64Array(n),
+          roi = [], abs = 0, floor, q;
+      for (q = 0; q < n; q++) {
+        dev[q] = devD.invCdf(u6[q]);
+        npv[q] = profitE.invCdf(u7[q]) - (opsE ? opsE.invCdf(u8[q]) : 0) - dev[q];
+      }
+      var npvE = Empirical(npv);
+      for (q = 0; q < n; q++) { dev10[q] = devD.invCdf(u10[q]); abs += Math.abs(dev10[q]); }
+      floor = 1e-6 * Math.max(abs / n, 1.0);
+      for (q = 0; q < n; q++) if (Math.abs(dev10[q]) > floor) roi.push(npvE.invCdf(u9[q]) / dev10[q]);
+      pieces[di] = { profit: profitE, ops: opsE, dev: dev, npv: npv, npvE: npvE, roiE: Empirical(roi) };
+      return pieces[di];
+    }
+
+    /* The confidence to read at, refused if it is not a confidence. The
+       sheet states it in per cent; the reading contract carries a fraction. */
+    function confidence(opts) {
+      var c = (opts && opts.option_confidence != null) ? +opts.option_confidence
+            : sheet.scalar('option_confidence') / 100;
+      if (!(c > 0 && c < 1)) throw PayloadError('a confidence runs between 0 and 100 per cent, not ' + (100 * c));
+      return c;
+    }
+
+    /* The derived card: the unit economics behind the reading. The margin
+       before and after operations draw the price and the operations cost once
+       per scenario; the price–operations exposure couples the two here. */
+    var price = scen.draw(priceD, 'selling_price'),
+        opsUnit = opsD ? scen.drawCoupled(opsD, 'ops_cost_per_unit', 'selling_price',
+                                          sheet.scalar('price_ops_exposure') || 0)
+                       : new Float64Array(n),
+        gross = new Float64Array(n), net = new Float64Array(n);
+    for (i = 0; i < n; i++) {
+      gross[i] = price[i] - cos - cogs;
+      net[i] = gross[i] - opsUnit[i];
+    }
+    /* Economics.cost_of_a_month(): peak / 2 units at the expected margin after
+       operations, the closed form of what one month of delay gives up. */
+    function costOfAMonth() {
+      var opsMean = opsBasis === 'excluded' ? 0
+                  : opsBasis === 'a share of price, over the last n periods' ? supportShare * priceD.mean * opsWindow
+                  : opsD.mean;
+      return 0.5 * peakUnits * (marginD.mean - opsMean);
+    }
+
+    return {
+      kind: 'business', sheet: sheet, scen: scen,
+      case: { peakUnits: peakUnits, peakMonth: peakMonth, delivery: delivery, end: END,
+              durCentre: durCentre, duration: durM, cost: devD, margin: marginD, ops: opsD,
+              price: priceD, factor: factorD },
+
+      derived: function () {
+        var out = {
+          'Unit margin before operations — mean': meanOf(gross),
+          '  before operations p5 / p50 / p95':
+            [quantile(gross, 0.05), quantile(gross, 0.50), quantile(gross, 0.95)],
+          '  before operations P(negative)': shareBelow(gross, 0)
+        };
+        /* On the share-of-price basis the dollar figure on the sheet is not in
+           play, so showing a margin net of it would be reporting a number the
+           reading does not use. The support cost the reading does use is the
+           share, over the window, so that is what is shown. */
+        if (opsBasis === 'a share of price, over the last n periods') {
+          var sup = new Float64Array(n), after = new Float64Array(n), q;
+          for (q = 0; q < n; q++) {
+            sup[q] = supportShare * price[q] * opsWindow;
+            after[q] = gross[q] - sup[q];
+          }
+          out['Support cost per unit, over ' + opsWindow +
+    (opsWindow === 1 ? ' period' : ' periods') + ' — mean'] = meanOf(sup);
+          out['Unit margin after support — mean'] = meanOf(after);
+          out['  after support p5 / p50 / p95'] =
+            [quantile(after, 0.05), quantile(after, 0.50), quantile(after, 0.95)];
+          out['  after support P(negative)'] = shareBelow(after, 0);
+        } else {
+          out['Unit margin after operations — mean'] = meanOf(net);
+          out['  after operations p5 / p50 / p95'] =
+            [quantile(net, 0.05), quantile(net, 0.50), quantile(net, 0.95)];
+          out['  after operations P(negative)'] = shareBelow(net, 0);
+        }
+        out['Peak units per month'] = peakUnits;
+        out['Duration months mean'] = durM.mean;
+        out['Delivered by month, at 75% confidence'] = delivery;
+        out['Peak month of the programme'] = peakMonth;
+        out['Dev cost p80'] = devD.quantile(0.80);
+        out['Every month of delay gives up — margin'] = costOfAMonth();
+        return out;
+      },
+
+      reading: function (opts) {
+        var con = confidence(opts), P = piecesFor(0);
+        var delays = DELAY_GRID.map(function (d, di) {
+          var Q = piecesFor(di);
+          return { delay_months: d, npv: Q.npvE.quantile(1 - con), roi: Q.roiE.quantile(1 - con) };
+        });
+        return {
+          case: 'business', option_confidence: con,
+          npv: P.npvE.quantile(1 - con),                    /* Economics.option_value() */
+          roi: P.roiE.quantile(1 - con),                    /* Economics.return_at() */
+          npv_mean: P.npvE.mean, p_npv_positive: 1 - P.npvE.cdf(0),
+          refused: false, derived: this.derived(), delays: delays,
+          npv_percentiles: [0.05, 0.15, 0.25, 0.50, 0.75, 0.85, 0.95].map(function (p) {
+            return { p: p, value: P.npvE.quantile(p) };
+          })
+        };
+      },
+
+      /* The seven figures his real-option package draws for a case: units a
+         month over the sales life (units_figure), then the revenue, the margin
+         on what is sold, the cost of supporting it and the development cost,
+         each as its distribution's own density, then the NPV with the option
+         value marked and the ROI with the return marked. The three money terms
+         are the ones the NPV is made of. */
+      figures: function (opts) {
+        var con = confidence(opts), P = piecesFor(0), s = buildSums(),
+            c0 = curveFor(0), g = linspace(delivery, END, 400), xs = [], ys = [], j;
+        for (j = 0; j < 400; j++) { xs.push(g[j]); ys.push(c0(g[j])); }
+        var pLoses = P.npvE.cdf(0);
+        return {
+          case: 'business', option_confidence: con,
+          option_value: P.npvE.quantile(1 - con), return_at: P.roiE.quantile(1 - con),
+          units: { xs: xs, ys: ys, start: delivery, end: END, peak: peakUnits,
+                   total: totalUnits(delivery, END, peakUnits) },
+          revenue: curveOf(Empirical(s.revenue)), margin: curveOf(P.profit),
+          operations: curveOf(P.ops || Point(0)),
+          development: curveOf(devD),
+          npv: curveOf(P.npvE), roi: curveOf(P.roiE),
+          p_loses: pLoses, p_makes: 1 - pLoses
+        };
+      },
+
+      /* For the check harness: the three summed terms and the NPV draws. */
+      terms: function () {
+        var s = buildSums(), P = piecesFor(0);
+        return { revenue: s.revenue, margin: s.profit[0], operations: s.ops[0],
+                 development: P.dev, npv: P.npv };
+      }
+    };
+  }
+
+  function round4(x) { return Math.round(x * 1e4) / 1e4; }
+
+  /* ==================================================================== */
+
+  return {
+    Phi: Phi, PhiInv: PhiInv, quantile: quantile, atConfidence: atConfidence,
+    Triangular: Triangular, Normal: Normal, Lognormal: Lognormal, Point: Point,
+    Empirical: Empirical, QuantileTable: QuantileTable, Uniform: Uniform,
+    Shifted: Shifted, Scaled: Scaled, curveOf: curveOf, peakCurve: peakCurve, totalUnits: totalUnits,
+    linspace: linspace, interp1d: interp1d, npRound: npRound, statedValue: statedValue,
+    toDistribution: toDistribution, ScenarioSet: ScenarioSet, parseNumber: parseNumber,
+    upgradeSheet: upgradeSheet, densityOf: densityOf,
+    Sheet: Sheet, specFor: specFor, groupsFor: groupsFor,
+    FIELDS: FIELDS, CASE_NAMES: CASE_NAMES,
+    build: build, RFPResponse: RFPResponse, BusinessCase: BusinessCase,
+    CONFIDENCE_GRID: CONFIDENCE_GRID, DELAY_GRID: DELAY_GRID,
+    WEEKS_PER_MONTH: WEEKS_PER_MONTH, VERSION: '0.13.3'
+  };
+})();
+
+</script>
+<script>var PD_PAGE_CASE = "business";</script>
+<script>
+/* pd-store.js — projects in the browser, and the same small API the local
+   Python build served over HTTP.
+ *
+ * There is no server. `api(path)` answers the same paths from localStorage and
+ * from pd-core.js, so the page above it is unchanged whether the arithmetic is
+ * running in Python on your machine or here in the browser.
+ *
+ * Projects live in this browser, on this machine. Export writes them to a JSON
+ * file you keep; Import reads one back. That file is the same shape the Python
+ * build reads, so a project moves between the two without conversion.
+ */
+var PDLocal = (function () {
+  'use strict';
+
+  /* One page, one model. Each model page sets PD_PAGE_CASE before this script
+     runs, and the page is then a desk for that model alone: its own store, its
+     own sample, its own export file, and nothing of the other model anywhere on
+     it. A page that sets nothing carries both, which is what the node check
+     harness and any single-file build do. */
+  var PAGE_CASE = (typeof PD_PAGE_CASE === 'string' &&
+                   (PD_PAGE_CASE === 'rfp' || PD_PAGE_CASE === 'business'))
+                ? PD_PAGE_CASE : null;
+  var KEY = 'projectdesk.v1' + (PAGE_CASE ? '.' + PAGE_CASE : '');
+  var OLDKEY = 'projectdesk.v1';
+
+  function mine(p) { return !PAGE_CASE || p.case === PAGE_CASE; }
+
+  /* -------------------------------------------------------------- samples */
+  var ALL_SAMPLES = [
+    {
+      id: 'qnav-edl', name: 'QNAV — EDL for Mars Sample Return', case: 'rfp',
+      phase: 'Chartering', source: 'Chapter 6, Table 2',
+      units: { currency: 'USD', scale: 'billions', period: 'months' },
+      scenario_set: { draws: 20000, seed: 20260916 },
+      sheet: {
+        cost_to_complete: { form: 'normal', mean: 1.80, sd: 0.56 },
+        duration_to_complete: { form: 'normal', mean: 52.55, sd: 1.70 },
+        due_periods: { value: 56 },
+        drop_dead_periods: { value: 58 },
+        penalty_if_late: { value: 0.50 },
+        required_roi: { value: 1.00 },
+        cost_confidence: { value: '80' },
+        return_confidence: { value: '80' }
+      },
+      revisions: [], updated: '2026-09-16T22:00:00'
+    },
+    {
+      id: 'rsonic-terra', name: 'RSonic Terra System', case: 'business',
+      phase: 'Ideation', source: 'Chapter 5, Table 1',
+      units: { currency: 'USD', scale: 'units', period: 'months' },
+      scenario_set: { draws: 20000, seed: 20260916 },
+      sheet: {
+        dev_cost_to_complete: { form: 'triple', low: 4000000, base: 5000000, high: 7500000 },
+        duration_to_complete: { form: 'triple', low: 70, base: 80, high: 100 },
+        addressable_market: { value: 200000000 },
+        /* The four choices Table 1 does not state, preset to what his script
+           reads (v0.8.1) so the sample opens reading; a project started from
+           scratch still has them blank. */
+        market_unit: { value: 'dollars' },
+        penetration_basis: { value: 'share of revenue' },
+        sales_life_months: { value: 120 },
+        peak_month: { value: 36 },
+        revenue_curve: { value: 'ramp to peak, decay to zero at sales-life end' },
+        peak_penetration: { form: 'triple', low: 28.0, base: 35.0, high: 38.5 },
+        selling_price: { form: 'triple', low: 3000, base: 3750, high: 4500 },
+        cos_per_unit: { value: 900 },
+        cogs_per_unit: { value: 2200 },
+        ops_cost_per_unit: { form: 'triple', low: 450, base: 563, high: 731 },
+        ops_cost_basis: { value: 'units sold in the period' },
+        support_share_of_price: { value: 5 },
+        ops_cost_window: { value: 3 },
+        price_ops_exposure: { value: 0.0 },
+        discount_rate_pa: { value: 0 },
+        option_confidence: { value: '85' },
+        budget_confidence: { value: '85' },
+        duration_confidence: { value: '80' }
+      },
+      revisions: [], updated: '2026-09-16T22:00:00'
+    }
+  ];
+
+  var SAMPLES = ALL_SAMPLES.filter(mine);
+
+  /* ---------------------------------------------------------------- disk */
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
+
+  function stored(key) {
+    var raw = null;
+    try { raw = window.localStorage.getItem(key); } catch (e) { return null; }
+    if (!raw) return null;
+    try {
+      var j = JSON.parse(raw);
+      return (j && j.projects && j.projects.length) ? j.projects : null;
+    } catch (e) { return null; }
+  }
+
+  function upgraded(list) {
+    var changed = false;
+    list.forEach(function (p) { if (PD.upgradeSheet(p)) changed = true; });
+    if (changed) writeAll(list);
+    return list;
+  }
+
+  function readAll() {
+    var list = stored(KEY);
+    if (list) return upgraded(list.filter(mine));
+    /* A single page used to hold both models under one key. Anything saved
+       there that belongs to this model is carried over on first load rather
+       than left where nothing will show it. */
+    if (PAGE_CASE) {
+      var old = stored(OLDKEY);
+      if (old) {
+        var kept = old.filter(mine);
+        kept.forEach(PD.upgradeSheet);
+        if (kept.length) { writeAll(kept); return kept; }
+      }
+    }
+    return clone(SAMPLES);
+  }
+
+  function writeAll(list) {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify({ version: 1, projects: list }));
+      return true;
+    } catch (e) {
+      /* A private window, or storage turned off. The page still works for this
+         visit; it just will not remember. Say so rather than failing quietly. */
+      notice = 'This browser is not letting the page save, so changes will be ' +
+               'lost when the tab closes. Export to keep them.';
+      return false;
+    }
+  }
+
+  var notice = '';
+
+  /* ---------------------------------------------------------------- meta */
+  function now() { return new Date().toISOString().replace(/\.\d+Z$/, ''); }
+
+  function meta(p) {
+    var sheet = PD.Sheet(p.case, p.sheet);
+    return {
+      id: p.id, name: p.name, case: p.case, case_name: PD.CASE_NAMES[p.case],
+      phase: p.phase || 'Ideation', source: p.source || '', units: p.units || {},
+      updated: p.updated || '', revisions: (p.revisions || []).length,
+      draws: (p.scenario_set || {}).draws || 20000,
+      seed: (p.scenario_set || {}).seed, missing: sheet.missing()
+    };
+  }
+
+  function slug(name) {
+    var s = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return s || 'project';
+  }
+
+  /* --------------------------------------------------------- model cache */
+  var cache = {}, cacheOrder = [];
+
+  function modelFor(p) {
+    var key = p.id + '|' + PD.Sheet(p.case, p.sheet).fingerprint();
+    if (cache[key]) return cache[key];
+    var m = PD.build(p);                       /* may throw Blocked */
+    if (cacheOrder.length > 12) delete cache[cacheOrder.shift()];
+    cache[key] = m; cacheOrder.push(key);
+    return m;
+  }
+
+  /* ----------------------------------------------------------- the calls */
+  function get(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+
+  function num(v) {
+    if (v === null || v === undefined || v === '' || v === 'null') return null;
+    var x = parseFloat(v);
+    return isFinite(x) ? x : null;
+  }
+
+  /* Answers the same paths the Python build served, so the page above does not
+     know or care which one it is talking to. */
+  function api(path, opts) {
+    var list = readAll(), q = {}, base = path, i;
+    var hash = path.indexOf('?');
+    if (hash >= 0) {
+      base = path.slice(0, hash);
+      path.slice(hash + 1).split('&').forEach(function (kv) {
+        if (!kv) return;
+        var p = kv.split('=');
+        q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || '');
+      });
+    }
+    var parts = base.replace(/^\/+|\/+$/g, '').split('/');   /* api/projects/... */
+    var body = opts && opts.body ? JSON.parse(opts.body) : null;
+    var post = opts && opts.method === 'POST';
+
+    if (parts.length === 2) {                                /* /api/projects */
+      if (post) {
+        var name = (body.name || 'Untitled project').trim(),
+            kind = body.case;
+        if (PAGE_CASE) kind = PAGE_CASE;
+        if (kind !== 'rfp' && kind !== 'business') throw new Error('case must be rfp or business');
+        var id = slug(name), n = 2;
+        while (get(list, id)) { id = slug(name) + '-' + n; n++; }
+        var p = { id: id, name: name, case: kind, phase: 'Ideation', source: '',
+                  units: {}, scenario_set: { draws: 20000, seed: 20260916 },
+                  sheet: {}, revisions: [], updated: now() };
+        list.push(p); writeAll(list);
+        return { id: id, meta: meta(p) };
+      }
+      return {
+        projects: list.map(meta),
+        folder: 'this browser',
+        distributions: 'the JavaScript port of Distributions.py, in this page',
+        notice: notice
+      };
+    }
+
+    var pid = parts[2], proj = get(list, pid);
+    if (!proj) throw new Error('no project ' + pid);
+
+    if (parts.length === 3) {                                /* /api/projects/id */
+      return { meta: meta(proj), spec: PD.specFor(proj.case),
+               groups: PD.groupsFor(proj.case), sheet: clone(proj.sheet) };
+    }
+
+    if (parts[3] === 'sheet' && post) {                      /* save */
+      var values = body.sheet || {};
+      if (JSON.stringify(proj.sheet) !== JSON.stringify(values)) {
+        proj.revisions = proj.revisions || [];
+        proj.revisions.push({ superseded: now(), sheet: proj.sheet });
+        proj.sheet = clone(values);
+        proj.updated = now();
+        writeAll(list);
+      }
+      return { ok: true, meta: meta(proj), notice: notice };
+    }
+
+    if (parts[3] === 'reading') {
+      var m;
+      try { m = modelFor(proj); }
+      catch (e) {
+        if (e.name === 'Blocked') return { blocked: true, missing: e.missing, unusable: [], notes: e.notes || [] };
+        if (e.name === 'PayloadError')
+          return { blocked: true, missing: PD.Sheet(proj.case, proj.sheet).missing(),
+                   unusable: e.unreadable || e.outOfRange || [e.message],
+                   unreadable: !!e.unreadable, notes: e.notes || [] };
+        throw e;
+      }
+      var out = (proj.case === 'rfp')
+        ? m.reading({ roi: num(q.roi), return_confidence: num(q.confid),
+                      cost_confidence: num(q.con) })
+        : m.reading({ option_confidence: num(q.con) });
+      out.meta = meta(proj);
+      return out;
+    }
+
+    if (parts[3] === 'figures') {
+      var mf;
+      try { mf = modelFor(proj); }
+      catch (e) {
+        if (e.name === 'Blocked') return { blocked: true, missing: e.missing, unusable: [], notes: e.notes || [] };
+        if (e.name === 'PayloadError')
+          return { blocked: true, missing: PD.Sheet(proj.case, proj.sheet).missing(),
+                   unusable: e.unreadable || e.outOfRange || [e.message],
+                   unreadable: !!e.unreadable, notes: e.notes || [] };
+        throw e;
+      }
+      var fo = (proj.case === 'rfp')
+        ? mf.figures({ roi: num(q.roi), return_confidence: num(q.confid),
+                       cost_confidence: num(q.con) })
+        : mf.figures({ option_confidence: num(q.con) });
+      fo.meta = meta(proj);
+      return fo;
+    }
+
+    if (parts[3] === 'delete' && post) {
+      list = list.filter(function (x) { return x.id !== pid; });
+      if (!list.length) list = clone(SAMPLES);
+      writeAll(list);
+      return { ok: true };
+    }
+
+    throw new Error('no route ' + base);
+  }
+
+  /* ------------------------------------------------------ export, import */
+  function exportBlob() {
+    return JSON.stringify({ app: 'Project Desk', version: 1, exported: now(),
+                            projects: readAll() }, null, 2);
+  }
+
+  function importText(text) {
+    var j = JSON.parse(text), incoming;
+    if (Array.isArray(j)) incoming = j;
+    else if (j && j.projects) incoming = j.projects;
+    else if (j && j.id && j.case) incoming = [j];             /* a single project file */
+    else throw new Error('that file does not hold any projects');
+
+    incoming.forEach(function (p) {
+      if (!p.id || !PD.CASE_NAMES[p.case]) throw new Error('a project in that file has no id or case');
+      PD.upgradeSheet(p);
+    });
+    /* This page keeps one model's projects, so a file of the other model's is
+       refused here rather than saved where the page will not list it. */
+    if (PAGE_CASE) {
+      var strangers = incoming.filter(function (p) { return p.case !== PAGE_CASE; });
+      if (strangers.length && strangers.length === incoming.length)
+        throw new Error('that file holds ' + PD.CASE_NAMES[strangers[0].case] +
+                        ' projects, which are kept on their own page');
+      incoming = incoming.filter(mine);
+    }
+
+    var list = readAll(), added = 0, replaced = 0;
+    incoming.forEach(function (p) {
+      var cur = get(list, p.id);
+      if (cur) { list[list.indexOf(cur)] = clone(p); replaced++; }
+      else { list.push(clone(p)); added++; }
+    });
+    writeAll(list);
+    cache = {}; cacheOrder = [];
+    return { added: added, replaced: replaced };
+  }
+
+  function resetToSamples() {
+    writeAll(clone(SAMPLES));
+    cache = {}; cacheOrder = [];
+  }
+
+  return { api: api, exportBlob: exportBlob, importText: importText,
+           resetToSamples: resetToSamples, SAMPLES: SAMPLES,
+           noticeText: function () { return notice; } };
+})();
+</script>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t, a, k) => { const n = document.createElement(t);
+  for (const key in (a||{})) { if (key==="class") n.className=a[key];
+    else if (key==="html") n.innerHTML=a[key];
+    else if (key.startsWith("on")) n.addEventListener(key.slice(2), a[key]);
+    else if (a[key]!=null) n.setAttribute(key, a[key]); }
+  for (const c of [].concat(k||[])) { if (c==null) continue;
+    n.appendChild(typeof c==="string" ? document.createTextNode(c) : c); }
+  return n; };
+
+/* Which model this page is, or null on a build that carries both. The two
+   model pages set it in the markup above this script. */
+const PAGE_CASE = (typeof PD_PAGE_CASE === "string") ? PD_PAGE_CASE : null;
+
+let state = { screen:"projects", projects:[], id:null, doc:null, sheet:null,
+              dirty:false, reading:null, figures:null, controls:{}, forms:{}, folder:"", dists:"" };
+
+/* The same paths the local Python build served over HTTP, answered here in the
+   page by pd-store.js. Nothing above this line knows the difference. */
+const api = async (path, opts) => PDLocal.api(path, opts);
+const fail = m => { $("#err").innerHTML = ""; if (m) $("#err").appendChild(el("div",{class:"err"}, String(m))); };
+
+/* ---------- number formatting: the units come from the project ---------- */
+function money(v, meta) {
+  if (v == null || !isFinite(v)) return "—";
+  const sign = v < 0 ? "\u2212" : "";          /* the sign goes before the currency */
+  const a = Math.abs(v);
+  const scale = (meta && meta.units && meta.units.scale) || "";
+  if (scale === "billions") return sign + "$" + a.toFixed(3) + "B";
+  if (a >= 1e9) return sign + "$" + (a/1e9).toFixed(2) + "B";
+  if (a >= 1e6) return sign + "$" + (a/1e6).toFixed(1) + "M";
+  if (a >= 1e3) return sign + "$" + Math.round(a).toLocaleString();
+  return sign + "$" + a.toFixed(0);
+}
+/* one minus sign on the page: the same U+2212 money() uses, not a hyphen */
+/* the unit printed beside a money box: the scale the project's figures are in */
+const moneyUnit = meta => { const s = (meta && meta.units && meta.units.scale) || ""; return s === "billions" ? "$B" : s === "millions" ? "$M" : "$"; };
+const num = (v, d) => (v==null || !isFinite(v)) ? "\u2014"
+                    : v.toFixed(d==null?3:d).replace(/^-/, "\u2212");
+const pct = v => (v==null || !isFinite(v)) ? "—" : (100*v).toFixed(1) + "%";
+const pctc = v => (v==null || !isFinite(v)) ? "—" : Math.round(100*v) + "%";
+
+/* What this page calls the thing it prices, and where it comes from in the book.
+   A model's own page says only its own; nothing here reaches for the other. */
+const PAGE = {
+  business: {
+    what: "A business case is a parameter sheet, not a plan. Fill it in and read what the " +
+          "investment is worth at a confidence you state, with the return on the money still " +
+          "to spend beside it. The method is Chapter 5 of Project Economics Under Uncertainty: From Concept to Realization with " +
+          "Appendix 3.",
+    sample: "the sample below is the worked example from the book",
+    restore: "Restore the book sample",
+    ask: "Put the book sample back as it was printed? Anything you have changed or added " +
+         "is discarded. Export first if you want to keep it.",
+    done: "The sample is back at the values printed in the book.",
+    hint: "Changing Terra to see what happens is the point. This puts it back."
+  },
+  rfp: {
+    what: "A bid is a parameter sheet, not a plan. Fill it in and read what to charge for a " +
+          "return you require, at a confidence you state, on a job whose date the client " +
+          "sets; or, with the payment contracted, the return on carrying on. The method is " +
+          "Appendix 8 of Project Economics Under Uncertainty: From Concept to Realization with Chapter 2.",
+    sample: "the sample below is the worked example from the book",
+    restore: "Restore the book sample",
+    ask: "Put the book sample back as it was printed? Anything you have changed or added " +
+         "is discarded. Export first if you want to keep it.",
+    done: "The sample is back at the values printed in the book.",
+    hint: "Changing QNAV to see what happens is the point. This puts it back."
+  },
+  both: {
+    what: "A project is a parameter sheet, not a plan. Fill it in and take a reading: a bid " +
+          "price for a fixed-deadline RFP response, an NPV at a stated confidence for a " +
+          "business case whose delivery date you still control. The methods are those of " +
+          "Project Economics Under Uncertainty: From Concept to Realization — Chapter 5 with Appendix 3, Chapter 6 with Appendix 8.",
+    sample: "the two samples below are the worked examples from the book",
+    restore: "Restore the book samples",
+    ask: "Put the two book samples back as they were printed? Anything you have changed or " +
+         "added is discarded. Export first if you want to keep it.",
+    done: "The two samples are back at the values printed in the book.",
+    hint: "Changing QNAV or Terra to see what happens is the point. This puts them back."
+  }
+};
+
+/* ================================ screens =============================== */
+
+const COPY = PAGE[PAGE_CASE || "both"];
+
+function screenProjects() {
+  const rows = state.projects.map(p => el("tr", { class:"row",
+      onclick: () => { select(p.id, "sheet"); } }, [
+    el("td",{},[el("b",{},p.name)]),
+    /* On a model's own page every row is that model, so the column says nothing. */
+    ...(PAGE_CASE ? [] : [el("td",{},[el("span",{class:"pill case"}, p.case_name)])]),
+    el("td",{}, p.phase),
+    el("td",{},[ p.missing.length
+        ? el("span",{class:"pill warn"}, "sheet incomplete")
+        : el("span",{class:"pill ok"}, "ready") ]),
+    el("td",{class:"r"}, String(p.revisions)),
+    el("td",{class:"r"}, (p.updated||"").replace("T"," ").slice(0,16)),
+  ]));
+  return el("div",{},[
+    el("h2",{},"Projects"),
+    el("p",{class:"sub"}, COPY.what),
+    el("p",{class:"sub"},"Your projects are kept in this browser, on this machine. " +
+      "Nothing is uploaded and nothing is shared. Export writes them to a file you keep, " +
+      "and " + COPY.sample + "."),
+    el("div",{class:"card tablewrap"},[ el("table",{},[
+      el("thead",{},[el("tr",{},[el("th",{},"Project"),
+        ...(PAGE_CASE ? [] : [el("th",{},"Case")]), el("th",{},"Phase"),
+        el("th",{},"State"),el("th",{class:"r"},"Revisions"),el("th",{class:"r"},"Updated")])]),
+      el("tbody",{}, rows.length?rows:[el("tr",{},[
+        el("td",{colspan: PAGE_CASE ? "5" : "6"},"No projects yet.")])]),
+    ])]),
+    el("p",{class:"sub", style:"margin-top:1rem"},[
+      el("button",{class:"btn", onclick: async () => {
+        if (!confirm(COPY.ask)) return;
+        PDLocal.resetToSamples();
+        state.id = null;
+        await loadAll();
+        $("#foot").textContent = COPY.done;
+      }}, COPY.restore),
+      el("span",{style:"margin-left:.7rem"}, COPY.hint),
+    ]),
+  ]);
+}
+
+/* ---------------------------------- sheet ------------------------------- */
+const FORMS = [["triple","low, expected, high"],["normal","mean and std dev"],["quantiles","percentile table"],["draws","pasted values"]];
+/* The word above each box, as his input sheets name them (Cost Low, Cost
+   Expected, Cost High; Cost Mean, Cost Std). */
+const boxed = (cap, input) => el("label",{class:"box"},[el("span",{class:"cap"},cap), input]);
+
+function distEditor(spec, val) {
+  const wrap = el("div",{class:"fval dist"});
+  const form = (val && val.form) || state.forms[spec.key] || "triple";
+  const sel = el("select",{class:"form", onchange: e => {
+      state.forms[spec.key] = e.target.value;
+      setField(spec.key, null); render(); } },
+    FORMS.map(([v,l]) => el("option",{value:v, selected: v===form?"selected":null}, l)));
+  wrap.appendChild(sel);
+
+  /* Each box is stored exactly as typed. The sheet reads it by the field's
+     rule when it is used ($4,750 is 4750; in a per-cent box 35 and 35% are
+     both thirty-five per cent) and names any box it cannot read, so text
+     that is not a number is reported with what you typed rather than the
+     field being called empty. An estimate with every box empty is none. */
+  const pack = (form, keys, inputs) => {
+    if (inputs.every(i => i.value.trim() === "")) return null;
+    const o = {form};
+    keys.forEach((k, j) => { o[k] = inputs[j].value; });
+    return o;
+  };
+  const upd = () => {
+    const f = sel.value;
+    if (f === "triple") setField(spec.key, pack("triple", ["low","base","high"], [i1,i2,i3]));
+    else if (f === "normal") setField(spec.key, pack("normal", ["mean","sd"], [i1,i2]));
+    else if (f === "quantiles") {
+      const pts = ta.value.trim().split(/\n+/).map(r => r.trim().split(/[\s,]+/).map(Number))
+                    .filter(r => r.length===2 && r.every(isFinite));
+      setField(spec.key, pts.length >= 2 ? {form:"quantiles", points:pts} : null);
+    } else {
+      const vs = ta.value.trim().split(/[\s,]+/).map(Number).filter(isFinite);
+      setField(spec.key, vs.length >= 2 ? {form:"draws", values:vs} : null);
+    }
+  };
+  let i1,i2,i3,ta;
+  const boxes = el("div",{class:"boxes"});
+  if (form === "triple") {
+    i1 = el("input",{class:"t",type:"text",value: val? val.low : "", oninput:upd});
+    i2 = el("input",{class:"t",type:"text",value: val? val.base : "", oninput:upd});
+    i3 = el("input",{class:"t",type:"text",value: val? val.high : "", oninput:upd});
+    boxes.append(boxed("low",i1), boxed("expected",i2), boxed("high",i3));
+  } else if (form === "normal") {
+    i1 = el("input",{class:"t",type:"text",value: val? val.mean : "", oninput:upd});
+    i2 = el("input",{class:"t",type:"text",value: val? val.sd : "", oninput:upd});
+    boxes.append(boxed("mean",i1), boxed("std dev",i2));
+  } else if (form === "quantiles") {
+    ta = el("textarea",{placeholder:"one line each: probability, value\n0.05 7.9\n0.50 13.0\n0.95 21.3", oninput:upd},
+      (val && val.points ? val.points.map(r=>r.join(" ")).join("\n") : ""));
+    boxes.append(ta);
+  } else {
+    ta = el("textarea",{placeholder:"paste simulated values, separated by spaces or commas", oninput:upd},
+      (val && val.values ? val.values.join(" ") : ""));
+    boxes.append(ta);
+  }
+  boxes.appendChild(el("span",{class:"unit"}, spec.money ? moneyUnit(state.doc && state.doc.meta) : (spec.unit||"")));
+  wrap.appendChild(boxes);
+  return wrap;
+}
+
+const notNumber = x => x !== undefined && x !== null && x !== "" && !isFinite(+x);
+
+function fieldRow(spec, gaps, refused) {
+  const raw = state.sheet[spec.key];
+  /* Amber marks exactly what the reading names as missing: one source of truth. */
+  const unset = gaps.has(spec.label);
+  const notnum = refused.has(spec.key);
+  /* What an earlier version stored in this box and this version could not
+     read: shown under the label until the box is filled. */
+  const oldNote = (state.sheet.__notes || {})[spec.key];
+  let ctrl;
+  if (spec.kind === "dist") ctrl = distEditor(spec, raw);
+  else if (spec.kind === "choice") {
+    ctrl = el("div",{class:"fval"},[
+      el("select",{class:"val", onchange: e => {
+          setField(spec.key, e.target.value ? {value:e.target.value} : null); render(); }},
+        [el("option",{value:""},"— not set —")].concat(
+          spec.options.map(o => el("option",{value:o, selected:(raw&&raw.value===o)?"selected":null}, o)))),
+    ]);
+  } else {
+    /* a box an earlier version's entry was taken out of stays empty, with
+       its note, rather than showing the default */
+    const cur = raw && raw.value != null ? raw.value
+              : (spec.def != null && !oldNote ? spec.def : "");
+    ctrl = el("div",{class:"fval"},[
+      el("input",{class:"t"+(spec.money || spec.unit === "$" || spec.key === "addressable_market" ? " wide" : ""),type:"text",value:cur, oninput: e => {
+        /* Stored exactly as typed. The sheet reads it by the field's rule
+           when it is used, and names it if it cannot: a per-cent box takes
+           85 or 85% and refuses 0.85; every other box refuses a % sign. */
+        setField(spec.key, e.target.value.trim() === "" ? null : {value: e.target.value});
+      }}),
+      el("span",{class:"unit"}, spec.money ? moneyUnit(state.doc && state.doc.meta) : (spec.unit||"")),
+    ]);
+  }
+  return el("div",{class:"frow"+(notnum ? " notnum" : unset && !spec.optional ? " unset" : "")},[
+    el("div",{class:"flab"},[
+      document.createTextNode(spec.label),
+      spec.hint ? el("span",{class:"hint"}, spec.hint) : null,
+      spec.note ? el("span",{class:"why"}, spec.note) : null,
+      oldNote ? el("span",{class:"why oldnote"}, oldNote) : null,
+    ]),
+    ctrl,
+  ]);
+}
+
+function setField(key, value) {
+  if (value === null) delete state.sheet[key]; else state.sheet[key] = value;
+  /* typing into a box clears the note an earlier version's entry left on it */
+  if (state.sheet.__notes && state.sheet.__notes[key]) {
+    delete state.sheet.__notes[key];
+    if (!Object.keys(state.sheet.__notes).length) delete state.sheet.__notes;
+  }
+  state.dirty = true;
+  const s = document.getElementById("savestate");
+  if (s) { s.textContent = "unsaved changes"; s.className = "dirty"; }
+  const b = document.getElementById("savebtn"); if (b) b.disabled = false;
+}
+
+function screenSheet() {
+  const d = state.doc;
+  const byGroup = {};
+  d.spec.forEach(s => (byGroup[s.group] = byGroup[s.group]||[]).push(s));
+  const sh = PD.Sheet(d.meta.case, state.sheet);
+  const gaps = new Set(sh.missing()), refused = new Set(sh.refused());
+  const groups = d.groups.map(g => el("div",{class:"grp"},
+    [el("div",{class:"ghead"}, g)].concat(byGroup[g].map(s => fieldRow(s, gaps, refused)))));
+
+  return el("div",{},[
+    el("h2",{}, d.meta.name),
+    el("p",{class:"sub"}, d.meta.case_name + " · " + d.meta.phase +
+      (d.meta.source ? " · values as printed in " + d.meta.source : "") +
+      " · " + d.meta.draws.toLocaleString() + " scenarios"),
+    el("div",{class:"cols"},[
+      el("div",{class:"card"}, groups.concat([
+        el("div",{class:"savebar"},[
+          el("button",{class:"btn pri", id:"savebtn", disabled: state.dirty?null:"disabled",
+            onclick: saveSheet}, "Save sheet"),
+          el("span",{id:"savestate", class: state.dirty?"dirty":""},
+            state.dirty ? "unsaved changes" : "saved"),
+        ]),
+      ])),
+      el("div",{}, [ el("div",{id:"derived"}, derivedCard()) ]),
+    ]),
+  ]);
+}
+
+function derivedCard() {
+  const r = state.reading;
+  if (!r) return el("div",{class:"card pad"},"Reading…");
+  if (r.blocked) return el("div",{class:"card"},[
+    el("div",{class:"ghead"},"What the sheet implies"),
+    el("div",{class:"note"},"Nothing worked out yet — " + ((r.unusable||[]).length
+      ? r.unusable.length + (r.unusable.length === 1 ? " entry" : " entries") +
+        " on the sheet cannot be used, outlined in red:"
+      : r.missing.length + " field(s) still need a value, outlined in amber:")),
+    el("ul",{class:"note",style:"margin:0;padding:.2rem 1.25rem 1rem 2.4rem;border-top:0;color:var(--ink)"},
+      ((r.unusable||[]).length ? r.unusable : r.missing).map(m => el("li",{},m))),
+    (r.notes||[]).length ? el("ul",{class:"note oldnotes",style:"margin:0;padding:.2rem 1.25rem 1rem 2.4rem;border-top:0"},
+      r.notes.map(m => el("li",{},m))) : null,
+  ]);
+  const rows = [];
+  let lastGroup = null;
+  /* grouped in the order each group first appears, so a group is shown once */
+  const ents = Object.entries(r.derived), gOrder = [];
+  ents.forEach(([k]) => { const g = derivedLabel(k, r).group; if (!gOrder.includes(g)) gOrder.push(g); });
+  ents.sort((x, y) => gOrder.indexOf(derivedLabel(x[0], r).group) - gOrder.indexOf(derivedLabel(y[0], r).group));
+  for (const [k, v] of ents) {
+    const alert = /P\(negative\)/.test(k) && Array.isArray(v)===false && v > 0.2;  /* figures: engine's own, unchanged */
+    let txt;
+    if (Array.isArray(v)) txt = v.map(x => fmtDerived(k, x)).join(" / ");
+    else txt = fmtDerived(k, v);
+    const d = derivedLabel(k, r);
+    if (d.group !== lastGroup) {
+      rows.push(el("div",{class:"dgroup"},[el("span",{},d.group),
+        d.groupNote ? el("span",{class:"why"}, d.groupNote) : null]));
+      lastGroup = d.group;
+    }
+    rows.push(el("div",{class:"drow"+(alert?" alert":""), "data-key": k.trim(), "data-v": txt},[
+      el("span",{class:"k"},[document.createTextNode(d.label),
+        d.note ? el("span",{class:"why"}, d.note) : null,
+        alert ? el("span",{class:"why"}, "Over a fifth of units sold lose money at this stage.") : null]),
+      el("span",{class:"v"},txt + (d.unit ? " " + d.unit : ""))]));
+  }
+  return el("div",{class:"card"},[
+    el("div",{class:"ghead"},"What the sheet implies"),
+    el("div",{class:"note",style:"border-top:0;padding-top:0"},"What the sheet works out to before any valuation is run. You do not type these; the reading is built from them. “80% confident” means 4 times in 5 the figure is at or below the one shown."),
+    ...rows,
+    el("div",{style:"padding:.6rem 1rem .8rem"},[
+      el("button",{class:"btn pri", onclick: () => go("reading")}, "Take a reading")]),
+  ]);
+}
+/* Plain words for the engine's derived keys. The keys, and the figures under
+   them, are the engine's and do not change; only what the panel prints does. */
+function derivedLabel(k, r) {
+  const t = k.trim();
+  const MARGIN = {group:"Margin on each unit sold", groupNote:"Selling price less cost of sales and COGS; after operations, less the operations cost too. It varies with the price and operations cost estimates."};
+  const TIME = {group:"Timing and volume"};
+  const DEV = {group:"Development cost and delay"};
+  const WHEN = {group:"When it is delivered", groupNote:"Read off the duration estimate against the deadline and the drop-dead period."};
+  const EAC = r && r.job
+    ? {group:"Cost still to spend", groupNote:"The work left, costed at the planned rate per period for as long as it takes; work that runs past the drop-dead period is not counted."}
+    : {group:"Cost at completion (EAC)", groupNote:"The cost to date plus the work, costed at the planned rate per period for as long as it takes; work that runs past the drop-dead period is not counted."};
+  const map = {
+    "Unit margin before operations — mean": [MARGIN, "Before operations: average", "", "What a typical unit earns over what it costs to make and sell."],
+    "before operations p5 / p50 / p95": [MARGIN, "Before operations: low / middle / high", "", "5 in 100 units earn less than the first, half less than the second, 95 in 100 less than the third."],
+    "before operations P(negative)": [MARGIN, "Before operations: chance of a loss", "", "How often a unit sells for less than it costs to make and sell."],
+    "Unit margin after operations — mean": [MARGIN, "After operations: average", "", "The same, once support, warranty and hosting are paid."],
+    "after operations p5 / p50 / p95": [MARGIN, "After operations: low / middle / high", "", "The 5th, 50th and 95th percentiles, as above."],
+    "after operations P(negative)": [MARGIN, "After operations: chance of a loss", "", "How often a unit loses money once operations are paid."],
+    "Unit margin after support — mean": [MARGIN, "After support: average", "", "What a typical unit earns once its support is paid."],
+    "after support p5 / p50 / p95": [MARGIN, "After support: low / middle / high", "", "The 5th, 50th and 95th percentiles."],
+    "after support P(negative)": [MARGIN, "After support: chance of a loss", "", "How often a unit loses money once support is paid."],
+    "Peak units per month": [TIME, "Units sold a month at the peak", "", "Market × penetration ÷ price, at the expected penetration and price."],
+    "Duration months mean": [TIME, "Development time: average", "months", "The duration estimate, weeks turned into months."],
+    "Delivered by month, at 75% confidence": [TIME, "Sales start month", "", "The month sales begin: an early delivery, reached one time in four (the model’s delivery month at 75% confidence)."],
+    "Peak month of the programme": [TIME, "Peak sales month", "", "Months from now: the expected development time plus the peak month from delivery."],
+    "Dev cost p80": [DEV, "Development cost, 80% confident", "", "4 times in 5 development costs this or less."],
+    "Every month of delay gives up — margin": [DEV, "Margin lost per month of delay", "", "Half the peak month’s units at the average margin after operations."],
+    "P(on time)": [WHEN, "Chance of delivery by the deadline", "", "Paid the full price."],
+    "P(late, before drop-dead)": [WHEN, "Chance of late delivery", "", "After the deadline but by the drop-dead period: paid the late share."],
+    "P(past drop-dead)": [WHEN, "Chance of delivery past drop-dead", "", "Paid nothing."],
+    "Duration mean": [WHEN, "Duration: average", "periods"],
+    "Duration p80": [WHEN, "Duration: 80% confident", "periods", "4 times in 5 the work is done by then."],
+    "EAC mean": [EAC, "Average"],
+    "EAC p50": [EAC, "50% confident", "", "Half the time the cost is this or less."],
+    "EAC p80": [EAC, "80% confident", "", "4 times in 5 the cost is this or less."],
+    "EAC p95": [EAC, "95% confident", "", "19 times in 20 the cost is this or less."],
+  };
+  let m = map[t];
+  if (!m && /^Support cost per unit, over/.test(t))
+    m = [MARGIN, "Support cost per unit: average", "", t.replace(/^Support cost per unit, (over .*) — mean$/, "Share of price $1.")];
+  if (!m) return {group: "Other", label: k};
+  return {group: m[0].group, groupNote: m[0].groupNote, label: m[1], unit: m[2] || "", note: m[3] || ""};
+}
+function fmtDerived(k, v) {
+  if (Array.isArray(v)) return v.map(x => fmtDerived(k, x)).join("  /  ");
+  if (typeof v !== "number") return String(v);
+  if (/^P\(|P\(negative\)/.test(k.trim())) return (v==null || !isFinite(v)) ? "\u2014" : (100*v).toFixed(2) + "%";
+  if (/margin|EAC|Cost still|Dev cost|Support cost|p5 \/ p50|gives up/.test(k)) return money(v, state.doc && state.doc.meta);
+  if (/units|Duration|month/.test(k)) return num(v, 2);
+  return num(v, 4);
+}
+
+async function saveSheet() {
+  try {
+    await api("/api/projects/" + state.id + "/sheet", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ sheet: state.sheet }) });
+    state.dirty = false;
+    await loadProject(state.id);
+    /* the Projects table carries the revision count and the saved time, so it
+       has to be refreshed here too or a save shows up nowhere but the sheet */
+    state.projects = (await api("/api/projects")).projects;
+    await refreshReading();
+    render();
+  } catch (e) { fail(e.message); }
+}
+
+/* --------------------------------- reading ------------------------------ */
+
+function screenReading() {
+  const r = state.reading, meta = state.doc.meta;
+  if (!r) return el("div",{class:"card pad"},"Reading…");
+
+  if (r.blocked && (r.unusable||[]).length) {
+    const n = r.unusable.length, entries = n === 1 ? "1 entry" : n + " entries";
+    return el("div",{},[
+      el("h2",{},"Reading — " + meta.name),
+      el("p",{class:"sub"}, meta.case_name),
+      el("div",{class:"blocked"},[
+        el("div",{style:"font-weight:650"}, r.missing.length
+          ? "No reading yet — " + entries + " on the sheet cannot be used, and " +
+            r.missing.length + " field(s) have no value."
+          : "Every field is filled in, but " + entries + " on the sheet cannot be used as " +
+            (n === 1 ? "it stands." : "they stand.")),
+        el("p",{style:"margin:.4rem 0 0;font-size:.87rem"}, r.unreadable
+          ? "A figure may carry a currency sign and thousands commas, as in $4,750, and a box " +
+            "in per cent takes 85 or 85%, never 0.85. Anything else the page cannot read is " +
+            "named here with what you typed."
+          : "Each entry below is on the sheet but contradicts itself or lies outside " +
+            "its range. The app declines to return a number rather than choosing for you."),
+        el("ul",{}, r.unusable.map(m => el("li",{},m))),
+        r.missing.length ? el("p",{style:"margin:.6rem 0 0;font-size:.87rem"},"Still to fill in:") : null,
+        r.missing.length ? el("ul",{}, r.missing.map(m => el("li",{},m))) : null,
+        (r.notes||[]).length ? el("ul",{class:"oldnotes"}, r.notes.map(m => el("li",{},m))) : null,
+        el("div",{style:"margin-top:.7rem"},[
+          el("button",{class:"btn", onclick:()=>go("sheet")},"Open the sheet")]),
+      ]),
+    ]);
+  }
+
+  if (r.blocked) return el("div",{},[
+    el("h2",{},"Reading — " + meta.name),
+    el("p",{class:"sub"}, meta.case_name),
+    el("div",{class:"blocked"},[
+      el("div",{style:"font-weight:650"},"No reading yet — " + r.missing.length +
+        " field(s) on the sheet have no value."),
+      el("p",{style:"margin:.4rem 0 0;font-size:.87rem"},
+        meta.case === "business"
+          ? "A per-unit operations figure is not interpretable without knowing what it "+
+            "attaches to, and a market figure is not interpretable without its unit. "+
+            "The app declines to return a number rather than choosing for you."
+          : "A bid price is priced against a cost, a duration and a deadline. Until all "+
+            "three are on the sheet the app declines to return a number rather than "+
+            "choosing for you."),
+      el("ul",{}, r.missing.map(m => el("li",{},m))),
+      (r.notes||[]).length ? el("ul",{class:"oldnotes"}, r.notes.map(m => el("li",{},m))) : null,
+      el("div",{style:"margin-top:.7rem"},[
+        el("button",{class:"btn", onclick:()=>go("sheet")},"Open the sheet")]),
+    ]),
+  ]);
+
+  return r.case === "rfp" ? readingRFP(r, meta) : readingBusiness(r, meta);
+}
+
+function readingRFP(r, meta) {
+  const head = [ el("h2",{},"Reading — " + meta.name),
+    el("p",{class:"sub"}, r.job
+      ? "A job under way · the return on the work still to do, at the contracted payment"
+      : "RFP response · what to bid for the return you require, at the confidence you choose") ];
+
+  if (r.job) {
+    const block = (b, title) => el("div",{class:"card pad"},[
+      el("div",{class:"ghead",style:"padding:0 0 .5rem"}, title),
+      el("div",{class:"kv"},[
+        kv("Average", num(b.mean,3)), kv("Middle", num(b.p50,3)),
+        kv("Low / high (20% / 80%)", num(b.p20,3) + " / " + num(b.p80,3)),
+        kv("Chance of breaking even", pct(b.p_break_even)),
+        kv("Chance of reaching " + num(r.required_roi,2), pct(b.p_reaches_target)),
+      ])]);
+    return el("div",{},[ ...head,
+      el("div",{class:"card pad"},[
+        el("div",{class:"big" + (r.to_go.mean < 0 ? " neg" : "")}, num(r.to_go.mean,2)),
+        el("div",{class:"bigsub"},"the mean return on what is left, at the contracted payment of " + money(r.contracted, meta) +
+          ": the number that decides whether to carry on. " + (r.cost_to_date ? "The " + money(r.cost_to_date, meta) +
+          " already spent is out of it, because it is gone whichever way the decision goes." : "Nothing has been spent yet, so the two readings are the same number.")),
+        el("div",{class:"kv"},[
+          kv("Value of carrying on", money(r.value_of_carrying_on, meta)),
+          kv("Cost still to spend, " + pctc(r.cost_confidence) + " confident", money(r.cost_still_to_spend, meta)),
+          kv("Return, " + pctc(r.return_confidence) + " confident", num(r.return_at_confidence,3)),
+          kv("Chance of delivery by the deadline", pct(r.derived["P(on time)"])),
+        ]),
+      ]),
+      block(r.to_go, "Return on what is left, the number that decides whether to carry on"),
+      r.whole ? block(r.whole, "Return on everything invested, including the " + money(r.cost_to_date, meta) + " already spent") : null,
+      el("h3",{},"Controls"),
+      el("div",{class:"card pad"},[
+        slider("roi","Target return", 0, 3, 0.05, r.required_roi, v => v.toFixed(2)),
+        slider("confid","Return confidence", 0.05, 0.98, 0.01, r.return_confidence, v => Math.round(v*100) + "%"),
+        slider("con","Cost confidence", 0.05, 0.98, 0.01, r.cost_confidence, v => Math.round(v*100) + "%"),
+        el("p",{style:"margin:.6rem 0 0;font-size:.82rem;color:var(--ink-soft)"},
+          "The target return sets the chance of reaching it; the two confidences set the return and the cost still to spend shown above. The sheet keeps what you typed there."),
+      ]),
+      ...readingFigures(meta),
+    ]);
+  }
+
+  const panel = r.refused
+    ? el("div",{class:"refusal"},[
+        el("div",{class:"big"},"No bid"),
+        el("p",{style:"margin:.5rem 0 0;font-size:.88rem"}, r.refusal.reason),
+        el("div",{class:"kv"},[
+          kv("Chance of delivery by the deadline", pct(r.refusal.p_on_time)),
+          kv("Chance of late delivery", pct(r.refusal.p_late)),
+          kv("Late delivery pays", pct(r.refusal.penalty) + " of the bid"),
+          kv("Quick estimate would say", r.closed_form == null ? "nothing: there is no chance of delivery by the deadline" : money(r.closed_form, meta)),
+        ]),
+      ])
+    : el("div",{class:"card pad"},[
+        el("div",{class:"big"}, money(r.price, meta)),
+        el("div",{class:"bigsub"},"is the bid that gives a " + pctc(r.return_confidence) + " chance of a return of at least " +
+          num(r.required_roi,2) + " (profit over cost), counting the chances of late delivery and of delivery past drop-dead."),
+        el("div",{class:"kv"},[
+          kv("Cost, " + pctc(r.cost_confidence) + " confident", money(r.cost_covered, meta)),
+          kv("Chance of delivery by the deadline", pct(r.derived["P(on time)"])),
+          kv("Quick estimate", money(r.closed_form, meta)),
+        ]),
+        el("p",{class:"rnote"},"The quick estimate is Appendix 8’s markup: the " + pctc(r.cost_confidence) +
+          "-confident cost × (1 + required return) ÷ the chance of delivery by the deadline. It ignores what a late delivery pays, so it differs from the bid."),
+      ]);
+
+  return el("div",{},[ ...head, panel,
+    el("h3",{},"Bid price against confidence"),
+    el("div",{class:"card pad"},[ bidChart(r, meta),
+      el("div",{class:"legend"},[
+        el("span",{html:'<i style="background:var(--accent)"></i>' +
+          ((r.curve||[]).some(c => c.search != null)
+            ? 'The bid, with the confidence as the chance of reaching the required return'
+            : 'No bid reaches the required return at any confidence shown')}),
+        el("span",{html:'<i style="background:var(--ink-faint)"></i>The quick estimate, with the confidence applied to the cost'}),
+      ]) ]),
+    el("h3",{},"Controls"),
+    el("div",{class:"card pad"},[
+      slider("roi","Required return", 0, 3, 0.05, r.required_roi, v => v.toFixed(2)),
+      slider("confid","Return confidence", 0.05, 0.98, 0.01, r.return_confidence, v => Math.round(v*100) + "%"),
+      slider("con","Cost confidence", 0.05, 0.98, 0.01, r.cost_confidence, v => Math.round(v*100) + "%"),
+      el("p",{style:"margin:.6rem 0 0;font-size:.82rem;color:var(--ink-soft)"},
+        "Return confidence sets the bid; cost confidence sets the quick estimate. "+
+        "Slide to re-read; the sheet keeps what you typed there."),
+    ]),
+    ...readingFigures(meta),
+  ]);
+}
+
+function readingBusiness(r, meta) {
+  const neg = r.npv < 0;
+  return el("div",{},[
+    el("h2",{},"Reading — " + meta.name),
+    el("p",{class:"sub"},"Business case · what the investment is worth, at the confidence you choose"),
+    el("div",{class:"card pad"},[
+      el("div",{class:"big"+(neg?" neg":"")}, money(r.npv, meta)),
+      el("div",{class:"bigsub"},"is what this investment is worth with " + pctc(r.option_confidence) +
+        " confidence: " + Math.round(100*r.option_confidence) + " times in 100 its net present value, after the cost to complete, is at least this."),
+      el("div",{class:"kv"},[
+        kv("Return on the money still to spend", num(r.roi,2)),
+        kv("Average value", money(r.npv_mean, meta)),
+        kv("Chance it makes money", pct(r.p_npv_positive)),
+        kv("Chance a unit loses money", pct(r.derived["  after operations P(negative)"])),
+      ]),
+      el("p",{class:"rnote"},"The return is profit over the money still to spend, read at the same confidence: 1 would mean the investment doubles its money. The average is over every outcome; the chance a unit loses money is after operations costs."),
+    ]),
+    el("h3",{},"Value against delivery delay"),
+    el("div",{class:"card pad"},[ delayChart(r, meta),
+      el("div",{class:"legend"},[
+        el("span",{html:'<i style="background:var(--accent)"></i>What the investment is worth, at the same confidence, if delivery slips by the months shown'}),
+      ]) ]),
+    el("h3",{},"Controls"),
+    el("div",{class:"card pad"},[
+      slider("con","Confidence", 0.05, 0.98, 0.01, r.option_confidence, v => Math.round(v*100) + "%"),
+      el("p",{style:"margin:.6rem 0 0;font-size:.82rem;color:var(--ink-soft)"},
+        "Slide to read the value at another confidence; the chart and the figures below follow. "+
+        "The sheet keeps the confidence you typed there."),
+    ]),
+    ...readingFigures(meta),
+  ]);
+}
+
+const kv = (k,v) => el("div",{},[el("span",{class:"k"},k), el("span",{class:"v"},v)]);
+
+function slider(key, label, lo, hi, step, value, fmt) {
+  const out = el("span",{class:"v"}, fmt(value));
+  const inp = el("input",{type:"range", min:lo, max:hi, step:step, value:value,
+    id:"ctl-"+key, oninput: e => {
+      const v = Number(e.target.value); out.textContent = fmt(v);
+      state.controls[key] = v; debounceReading();
+    }});
+  return el("div",{class:"ctrl"},[ el("label",{for:"ctl-"+key}, label), inp, out ]);
+}
+
+let tmr = null;
+function debounceReading() {
+  clearTimeout(tmr);
+  tmr = setTimeout(async () => { await refreshReading(); renderReadingOnly(); }, 110);
+}
+function renderReadingOnly() {
+  if (state.screen !== "reading") return;
+  const host = $("#screen"); host.innerHTML = ""; host.appendChild(screenReading());
+}
+
+/* --------------------------------- charts ------------------------------- */
+function axes(W,H,L,R,T,B,xt,yt,xlab,ylab) {
+  const k = [];
+  yt.forEach(([v,y,txt]) => {
+    k.push(`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="currentColor" stroke-opacity=".12"/>`);
+    k.push(`<text x="${L-8}" y="${y+3.5}" text-anchor="end" font-size="10" fill="currentColor" fill-opacity=".62" font-family="var(--sans)">${txt}</text>`);
+  });
+  xt.forEach(([v,x,txt]) => {
+    k.push(`<text x="${x}" y="${H-B+15}" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity=".62" font-family="var(--sans)">${txt}</text>`);
+  });
+  k.push(`<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="currentColor" stroke-opacity=".35"/>`);
+  k.push(`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="currentColor" stroke-opacity=".35"/>`);
+  k.push(`<text x="${(L+W-R)/2}" y="${H-5}" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity=".75">${xlab}</text>`);
+  return k;
+}
+function nice(lo, hi, n) {
+  if (!(isFinite(lo) && isFinite(hi))) return [0,1,[0,1]];
+  if (hi === lo) { hi = lo + 1; }
+  const span = hi - lo, raw = span / n;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].map(m=>m*mag).find(s => s >= raw) || 10*mag;
+  const s = Math.floor(lo/step)*step, e = Math.ceil(hi/step)*step;
+  const ticks = []; for (let v=s; v<=e+step/2; v+=step) ticks.push(v);
+  return [s, e, ticks];
+}
+
+function bidChart(r, meta) {
+  const W=580,H=250,L=62,R=16,T=16,B=48;
+  const pts = r.curve.filter(d => d.search != null || d.closed != null);
+  const vals = [];
+  pts.forEach(d => { if (d.search!=null) vals.push(d.search); if (d.closed!=null) vals.push(d.closed); });
+  if (!vals.length) return el("div",{class:"note"},"No priced point on this grid.");
+  const [y0,y1,yticks] = nice(Math.min(...vals), Math.max(...vals), 5);
+  const cs = r.curve.map(d=>d.confidence);
+  const x0 = Math.min(...cs)-0.02, x1 = Math.max(...cs)+0.02;
+  const xs = c => L + (c-x0)/(x1-x0)*(W-L-R);
+  const ys = v => T + (y1-v)/(y1-y0)*(H-T-B);
+  const k = axes(W,H,L,R,T,B,
+    r.curve.filter((d,i)=>i%2===0).map(d=>[d.confidence, xs(d.confidence), Math.round(d.confidence*100)+"%"]),
+    yticks.map(v=>[v, ys(v), money(v, meta)]),
+    "Confidence");
+  const line = (key, stroke, dash) => {
+    const p = r.curve.filter(d=>d[key]!=null);
+    if (p.length < 2) return "";
+    return `<path d="${p.map((d,i)=>(i?"L":"M")+xs(d.confidence).toFixed(1)+","+ys(d[key]).toFixed(1)).join(" ")}" fill="none" stroke="${stroke}" stroke-width="${dash?1.6:2.2}" ${dash?'stroke-dasharray="5 4"':""}/>`;
+  };
+  k.push(line("closed","var(--ink-faint)",true));
+  k.push(line("search","var(--accent)",false));
+  r.curve.forEach(d => { if (d.search!=null)
+    k.push(`<circle cx="${xs(d.confidence)}" cy="${ys(d.search)}" r="2.6" fill="var(--accent)"/>`); });
+  if (!r.refused && r.price!=null) {
+    const x = xs(r.return_confidence), y = ys(r.price);
+    k.push(`<line x1="${x}" y1="${T}" x2="${x}" y2="${H-B}" stroke="var(--accent)" stroke-opacity=".45" stroke-dasharray="3 3"/>`);
+    k.push(`<circle cx="${x}" cy="${y}" r="4.5" fill="none" stroke="var(--accent)" stroke-width="2"/>`);
+    k.push(`<text x="${x-8}" y="${y-13}" text-anchor="end" font-size="11.5" fill="var(--accent)" font-family="var(--sans)">${money(r.price, meta)} at ${Math.round(r.return_confidence*100)}%</text>`);
+  }
+  return el("div",{html:`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bid price against confidence.">${k.join("")}</svg>`});
+}
+
+function delayChart(r, meta) {
+  const W=580,H=250,L=72,R=16,T=16,B=48;
+  const vals = r.delays.map(d=>d.npv);
+  const [y0,y1,yticks] = nice(Math.min(...vals, 0), Math.max(...vals, 0), 5);
+  const ds = r.delays.map(d=>d.delay_months);
+  const x0 = Math.min(...ds), x1 = Math.max(...ds);
+  const xs = v => L + (v-x0)/((x1-x0)||1)*(W-L-R);
+  const ys = v => T + (y1-v)/((y1-y0)||1)*(H-T-B);
+  const k = axes(W,H,L,R,T,B,
+    r.delays.map(d=>[d.delay_months, xs(d.delay_months), d.delay_months+"mo"]),
+    yticks.map(v=>[v, ys(v), money(v, meta)]),
+    "Months later than planned");
+  if (y0 < 0 && y1 > 0)
+    k.push(`<line x1="${L}" y1="${ys(0)}" x2="${W-R}" y2="${ys(0)}" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="4 4"/>`);
+  k.push(`<path d="${r.delays.map((d,i)=>(i?"L":"M")+xs(d.delay_months).toFixed(1)+","+ys(d.npv).toFixed(1)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2.2"/>`);
+  r.delays.forEach(d => k.push(`<circle cx="${xs(d.delay_months)}" cy="${ys(d.npv)}" r="2.8" fill="var(--accent)"/>`));
+  return el("div",{html:`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="NPV at the option confidence against delivery delay.">${k.join("")}</svg>`});
+}
+
+/* --------------------------------- figures ------------------------------ */
+/* The figures his packages draw for a case, drawn here for the selected
+   project: greyscale fills, hatching, black edges, and the number on the
+   picture rather than in a caption. Each title begins with the project's name,
+   the way his begin with the case's, and each saves as a PNG named the way his
+   files are, <project>_<Figure>.png. Nothing here reaches the network. */
+const FIG_FONT = "Calibri, 'Segoe UI', Helvetica, Arial, sans-serif";
+const FIGCOPY = {
+  business: "The spread of outcomes behind the reading, at the confidence set above. Each can be saved as a picture.",
+  rfp: "The spread of outcomes behind the reading, at the return and confidences set above; for a job under way, of the work still to do. Each can be saved as a picture."
+};
+
+/* A set of figures is drawn for one project at one setting of the controls;
+   the key says which, so the Reading screen never shows a set drawn for
+   another project or at another confidence. */
+function figuresKey() {
+  const q = new URLSearchParams();
+  for (const [k,v] of Object.entries(state.controls)) if (v!=null) q.set(k, v);
+  return state.id + "?" + q.toString();
+}
+async function loadFigures() {
+  if (!state.id) return;
+  const key = figuresKey();
+  try { state.figures = await api("/api/projects/"+state.id+"/figures?"+key.slice(key.indexOf("?")+1)); fail(null); }
+  catch (e) { state.figures = { error: e.message }; fail(e.message); }
+  state.figures.__for = key;
+  if (state.screen === "figures") render();
+  else if (state.screen === "reading") renderReadingOnly();
+}
+
+/* The same figures under the reading, at the reading's own controls: what the
+   Python package draws at the end of a run. The Figures tab shows the set on
+   its own. */
+function readingFigures(meta) {
+  const f = state.figures;
+  const head = [ el("h3",{},"Figures"),
+    el("p",{style:"margin:0 0 .6rem;font-size:.82rem;color:var(--ink-soft)"}, FIGCOPY[meta.case] || "") ];
+  if (!f || f.__for !== figuresKey()) {
+    loadFigures();
+    return [...head, el("div",{class:"card pad"},"Drawing the figures…")];
+  }
+  if (f.error) return [...head, el("div",{class:"err"}, f.error)];
+  if (f.blocked) return [];      /* the reading above has already said why */
+  const figs = meta.case === "rfp" ? rfpFigures(f, meta) : businessFigures(f, meta);
+  return [...head, el("div",{class:"figs"}, figs.map(([suffix, svg]) => figureCard(meta, suffix, svg)))];
+}
+
+function screenFigures() {
+  const f = state.figures, meta = state.doc.meta;
+  const head = [ el("h2",{},"Figures — " + meta.name), el("p",{class:"sub"}, FIGCOPY[meta.case] || "") ];
+  if (!f) { loadFigures(); return el("div",{},[...head, el("div",{class:"card pad"},"Drawing the figures…")]); }
+  if (f.error) return el("div",{},[...head, el("div",{class:"err"}, f.error)]);
+  if (f.blocked) {
+    const bad = (f.unusable||[]).length ? f.unusable : f.missing;
+    return el("div",{},[...head, el("div",{class:"blocked"},[
+      el("div",{style:"font-weight:650"}, "No figures yet — " + ((f.unusable||[]).length
+        ? f.unusable.length + (f.unusable.length === 1 ? " entry" : " entries") + " on the sheet cannot be used."
+        : f.missing.length + " field(s) on the sheet have no value.")),
+      el("ul",{}, bad.map(m => el("li",{},m))),
+      el("div",{style:"margin-top:.7rem"},[el("button",{class:"btn", onclick:()=>go("sheet")},"Open the sheet")]),
+    ])]);
+  }
+  const figs = meta.case === "rfp" ? rfpFigures(f, meta) : businessFigures(f, meta);
+  return el("div",{},[...head, el("div",{class:"figs"}, figs.map(([suffix, svg]) => figureCard(meta, suffix, svg)))]);
+}
+
+function figureCard(meta, suffix, svg) {
+  const holder = el("div",{html: svg});
+  const name = slugName(meta.name) + "_" + suffix + ".png";
+  return el("div",{class:"fig"},[ holder,
+    el("div",{class:"figbar"},[
+      el("button",{class:"btn", title:"Save this figure as " + name,
+        onclick: () => savePng(holder.querySelector("svg"), name)}, "Save as PNG") ]) ]);
+}
+const slugName = s => String(s).trim().replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "project";
+
+function savePng(svgEl, filename) {
+  const xml = new XMLSerializer().serializeToString(svgEl);
+  const url = URL.createObjectURL(new Blob([xml], {type:"image/svg+xml;charset=utf-8"}));
+  const download = (href, name) => {
+    const a = el("a",{href, download:name}); document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(href); a.remove(); }, 0);
+  };
+  const asSvg = () => download(url, filename.replace(/\.png$/, ".svg"));
+  const img = new Image();
+  img.onload = () => {
+    try {
+      const scale = 3, c = document.createElement("canvas");
+      c.width = svgEl.viewBox.baseVal.width * scale; c.height = svgEl.viewBox.baseVal.height * scale;
+      const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => { if (b) { download(URL.createObjectURL(b), filename); URL.revokeObjectURL(url); } else asSvg(); }, "image/png");
+    } catch (e) { asSvg(); }          /* a browser that will not rasterise it: the SVG instead */
+  };
+  img.onerror = asSvg;
+  img.src = url;
+}
+
+/* --- the drawing --- */
+const GREY = g => { const v = Math.round(255 * g); return `rgb(${v},${v},${v})`; };
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function hatchDef(id, kind) {
+  if (!kind) return "";
+  const s = 7, L = [];
+  if (kind === "/" || kind === "x") L.push(`<path d="M-1,${s+1} L${s+1},-1" stroke="#000" stroke-width=".7"/>`);
+  if (kind === "\\" || kind === "x") L.push(`<path d="M-1,-1 L${s+1},${s+1}" stroke="#000" stroke-width=".7"/>`);
+  return `<pattern id="${id}" patternUnits="userSpaceOnUse" width="${s}" height="${s}">${L.join("")}</pattern>`;
+}
+function figTitle(W, name, title, sub) {
+  const k = [`<text x="${W/2}" y="19" text-anchor="middle" font-size="13" font-weight="600" fill="#000" font-family="${FIG_FONT}">${esc(name + ": " + title)}</text>`];
+  if (sub) k.push(`<text x="${W/2}" y="36" text-anchor="middle" font-size="12" fill="#000" font-family="${FIG_FONT}">${esc(sub)}</text>`);
+  return k.join("");
+}
+function figFrame(L, T, W, R, H, B) {
+  return `<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="none" stroke="#000" stroke-width=".8"/>`;
+}
+function figLegend(W, R, T, rows, id) {
+  /* rows: [{swatch:'line'|{face,hatch}, label}] — top right, his loc='upper right' */
+  const fs = 11, lh = 16, wid = Math.max(...rows.map(r => r.label.length)) * 5.6 + 44, ht = rows.length * lh + 8;
+  const x = W - R - wid - 6, y = T + 6, k = [];
+  k.push(`<rect x="${x}" y="${y}" width="${wid}" height="${ht}" fill="#fff" fill-opacity=".9" stroke="#999" stroke-width=".6"/>`);
+  rows.forEach((r, i) => {
+    const cy = y + 4 + i * lh + lh / 2;
+    if (r.swatch === "line") k.push(`<line x1="${x+7}" y1="${cy}" x2="${x+31}" y2="${cy}" stroke="#000" stroke-width="1.8"/>`);
+    else if (r.swatch && r.swatch.dash !== undefined) k.push(`<line x1="${x+7}" y1="${cy}" x2="${x+31}" y2="${cy}" stroke="#000" stroke-width="1.4" ${r.swatch.dash?`stroke-dasharray="${r.swatch.dash}"`:""}/>`);
+    else {
+      k.push(`<rect x="${x+7}" y="${cy-6}" width="24" height="12" fill="${r.swatch.face}" fill-opacity=".55"/>`);
+      if (r.swatch.hatch) k.push(`<rect x="${x+7}" y="${cy-6}" width="24" height="12" fill="url(#${id}-h${r.swatch.hatch === "/" ? "s" : r.swatch.hatch === "\\" ? "b" : "x"})"/>`);
+      k.push(`<rect x="${x+7}" y="${cy-6}" width="24" height="12" fill="none" stroke="#000" stroke-width=".6"/>`);
+    }
+    k.push(`<text x="${x+38}" y="${cy+4}" font-size="${fs}" fill="#000" font-family="${FIG_FONT}">${esc(r.label)}</text>`);
+  });
+  return k.join("");
+}
+function figXAxis(L, R, W, H, B, x0, x1, ticks, fmt, xlab) {
+  const k = [], xs = v => L + (v - x0) / (x1 - x0) * (W - L - R);
+  ticks.forEach(v => {
+    if (v < x0 - 1e-9 || v > x1 + 1e-9) return;
+    k.push(`<line x1="${xs(v).toFixed(1)}" y1="${H-B}" x2="${xs(v).toFixed(1)}" y2="${H-B+4}" stroke="#000" stroke-width=".8"/>`);
+    k.push(`<text x="${xs(v).toFixed(1)}" y="${H-B+16}" text-anchor="middle" font-size="10.5" fill="#000" font-family="${FIG_FONT}">${esc(fmt(v))}</text>`);
+  });
+  k.push(`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="#000" font-family="${FIG_FONT}">${esc(xlab)}</text>`);
+  return k.join("");
+}
+const figMoney = (v, meta) => {
+  const a = Math.abs(v), s = v < 0 ? "\u2212" : "", scale = (meta && meta.units && meta.units.scale) || "";
+  if (scale === "billions") return s + "$" + +a.toPrecision(3) + "B";
+  if (scale === "millions") return s + "$" + +a.toPrecision(3) + "M";
+  if (a >= 1e9) return s + "$" + +(a/1e9).toPrecision(3) + "B";
+  if (a >= 1e6) return s + "$" + +(a/1e6).toPrecision(3) + "M";
+  if (a >= 1e3) return s + "$" + Math.round(a).toLocaleString();
+  return s + "$" + +a.toPrecision(3);
+};
+const figNum = v => (v < 0 ? "\u2212" : "") + (+Math.abs(v).toPrecision(3)).toString();
+
+/* A density with either shaded regions under it or one marked value, his
+   density_figure / regions_figure / marked_figure. */
+function densityFig(o) {
+  const W = 580, H = 372, L = 18, R = 18, T = o.sub ? 50 : 34, B = 44, id = "f" + o.id;
+  const d = o.d, k = [], fmt = o.money ? v => figMoney(v, o.meta) : figNum;
+  k.push(`<defs>${hatchDef(id+"-hs","/")}${hatchDef(id+"-hb","\\")}${hatchDef(id+"-hx","x")}</defs>`);
+  k.push(figTitle(W, o.name, o.title, o.sub));
+  if (d.degenerate) {
+    k.push(figFrame(L, T, W, R, H, B));
+    k.push(`<text x="${W/2}" y="${(T+H-B)/2}" text-anchor="middle" font-size="12" fill="#000" font-family="${FIG_FONT}">${esc("Every draw is exactly " + fmt(d.lo) + ", so there is no spread to draw.")}</text>`);
+    k.push(figXAxis(L, R, W, H, B, d.lo - 1, d.lo + 1, [d.lo], fmt, o.xlab));
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(o.title)}">${k.join("")}</svg>`;
+  }
+  const [x0, x1, ticks] = nice(d.lo, d.hi, 5);
+  const ymax = Math.max(...d.ys) * 1.08 || 1;
+  const xs = v => L + (v - x0) / (x1 - x0) * (W - L - R), ys = v => (H - B) - v / ymax * (H - B - T);
+  const seg = (lo, hi) => {                       /* the curve between two x's, closed to the baseline */
+    const pts = [];
+    for (let i = 0; i < d.xs.length; i++) if (d.xs[i] >= lo && d.xs[i] <= hi) pts.push([d.xs[i], d.ys[i]]);
+    if (pts.length < 2) return "";
+    return "M" + xs(pts[0][0]).toFixed(1) + "," + (H-B) + " " + pts.map(p => "L" + xs(p[0]).toFixed(1) + "," + ys(p[1]).toFixed(1)).join(" ") + " L" + xs(pts[pts.length-1][0]).toFixed(1) + "," + (H-B) + " Z";
+  };
+  const legend = [];
+  if (o.regions && o.regions.length) {
+    o.regions.forEach(r => {
+      const lo = r.lo == null ? d.lo : Math.max(r.lo, d.lo), hi = r.hi == null ? d.hi : Math.min(r.hi, d.hi);
+      if (hi <= lo) return;                        /* a region the draws never enter */
+      const p = seg(lo, hi);
+      if (!p) return;
+      k.push(`<path d="${p}" fill="${r.face}" fill-opacity=".55"/>`);
+      if (r.hatch) k.push(`<path d="${p}" fill="url(#${id}-h${r.hatch === "/" ? "s" : r.hatch === "\\" ? "b" : "x"})"/>`);
+      legend.push({ swatch: { face: r.face, hatch: r.hatch }, label: r.label + " = " + r.p.toFixed(3) });
+    });
+  } else {
+    k.push(`<path d="${seg(d.lo, d.hi)}" fill="${GREY(.85)}" fill-opacity=".6"/>`);
+  }
+  k.push(`<path d="${d.xs.map((x, i) => (i ? "L" : "M") + xs(x).toFixed(1) + "," + ys(d.ys[i]).toFixed(1)).join(" ")}" fill="none" stroke="#000" stroke-width="1.4"/>`);
+  if (o.mark != null && o.mark >= d.lo && o.mark <= d.hi) {
+    k.push(`<line x1="${xs(o.mark).toFixed(1)}" y1="${T}" x2="${xs(o.mark).toFixed(1)}" y2="${H-B}" stroke="#000" stroke-width="1.8"/>`);
+    if (o.markLabel) legend.push({ swatch: "line", label: o.markLabel });
+  }
+  k.push(figFrame(L, T, W, R, H, B));
+  k.push(figXAxis(L, R, W, H, B, x0, x1, ticks, fmt, o.xlab));
+  if (legend.length) k.push(figLegend(W, R, T, legend, id));
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(o.title)}">${k.join("")}</svg>`;
+}
+
+/* Units a month over the sales life, his units_figure. */
+function unitsFig(name, u) {
+  const W = 580, H = 372, L = 74, R = 18, T = 50, B = 44, k = [];
+  const [x0, x1, xt] = nice(0, u.end, 6), [y0, y1, yt] = nice(0, Math.max(...u.ys) || 1, 5);
+  const xs = v => L + (v - x0) / (x1 - x0) * (W - L - R), ys = v => (H - B) - (v - y0) / (y1 - y0) * (H - B - T);
+  k.push(figTitle(W, name, "Units a month over the sales life",
+    Math.round(u.total).toLocaleString() + " units in total, peak " + Math.round(u.peak).toLocaleString() + " a month"));
+  yt.forEach(v => { k.push(`<line x1="${L}" y1="${ys(v).toFixed(1)}" x2="${W-R}" y2="${ys(v).toFixed(1)}" stroke="#000" stroke-opacity=".12"/>`);
+    k.push(`<text x="${L-6}" y="${ys(v).toFixed(1)}" dy="3.5" text-anchor="end" font-size="10.5" fill="#000" font-family="${FIG_FONT}">${Math.round(v).toLocaleString()}</text>`); });
+  xt.forEach(v => k.push(`<line x1="${xs(v).toFixed(1)}" y1="${T}" x2="${xs(v).toFixed(1)}" y2="${H-B}" stroke="#000" stroke-opacity=".12"/>`));
+  const path = u.xs.map((x, i) => (i ? "L" : "M") + xs(x).toFixed(1) + "," + ys(u.ys[i]).toFixed(1)).join(" ");
+  k.push(`<path d="M${xs(u.xs[0]).toFixed(1)},${H-B} ${path.replace(/^M/, "L")} L${xs(u.xs[u.xs.length-1]).toFixed(1)},${H-B} Z" fill="${GREY(.85)}" fill-opacity=".6"/>`);
+  k.push(`<path d="${path}" fill="none" stroke="#000" stroke-width="1.6"/>`);
+  k.push(`<line x1="${xs(u.start).toFixed(1)}" y1="${T}" x2="${xs(u.start).toFixed(1)}" y2="${H-B}" stroke="#000" stroke-width="1" stroke-dasharray="1.5 3"/>`);
+  k.push(`<text x="${L-6}" y="${T-4}" text-anchor="end" font-size="10.5" fill="#000" font-family="${FIG_FONT}">units a month</text>`);
+  k.push(figFrame(L, T, W, R, H, B));
+  k.push(figXAxis(L, R, W, H, B, x0, x1, xt, v => String(Math.round(v)), "month"));
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Units a month over the sales life">${k.join("")}</svg>`;
+}
+
+/* Bid against required return, one line per confidence, his bids_figure. */
+function bidsFig(name, b, meta) {
+  const W = 580, H = 372, L = 80, R = 18, T = 34, B = 44, k = [], dashes = ["", "7 4", "2 3", "7 3 2 3"];
+  const lines = b.lines.filter(l => l.points.length);
+  k.push(figTitle(W, name, "Bid for a given return"));
+  if (!lines.length) {
+    k.push(figFrame(L, T, W, R, H, B));
+    k.push(`<text x="${(L+W-R)/2}" y="${(T+H-B)/2-8}" text-anchor="middle" font-size="12" fill="#000" font-family="${FIG_FONT}">No bid reaches any return at these confidences.</text>`);
+    k.push(`<text x="${(L+W-R)/2}" y="${(T+H-B)/2+10}" text-anchor="middle" font-size="12" fill="#000" font-family="${FIG_FONT}">A price that cannot earn the return is not a high price.</text>`);
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bid for a given return">${k.join("")}</svg>`;
+  }
+  const bids = [].concat(...lines.map(l => l.points.map(p => p[1])));
+  const [x0, x1, xt] = nice(Math.min(...b.rois), Math.max(...b.rois), 5), [y0, y1, yt] = nice(Math.min(...bids), Math.max(...bids), 5);
+  const xs = v => L + (v - x0) / (x1 - x0) * (W - L - R), ys = v => (H - B) - (v - y0) / (y1 - y0) * (H - B - T);
+  yt.forEach(v => { k.push(`<line x1="${L}" y1="${ys(v).toFixed(1)}" x2="${W-R}" y2="${ys(v).toFixed(1)}" stroke="#000" stroke-opacity=".12"/>`);
+    k.push(`<text x="${L-6}" y="${ys(v).toFixed(1)}" dy="3.5" text-anchor="end" font-size="10.5" fill="#000" font-family="${FIG_FONT}">${esc(figMoney(v, meta))}</text>`); });
+  xt.forEach(v => k.push(`<line x1="${xs(v).toFixed(1)}" y1="${T}" x2="${xs(v).toFixed(1)}" y2="${H-B}" stroke="#000" stroke-opacity=".12"/>`));
+  const legend = [];
+  lines.forEach((l, i) => {
+    k.push(`<path d="${l.points.map((p, j) => (j ? "L" : "M") + xs(p[0]).toFixed(1) + "," + ys(p[1]).toFixed(1)).join(" ")}" fill="none" stroke="#000" stroke-width="1.4" ${dashes[i % dashes.length] ? `stroke-dasharray="${dashes[i % dashes.length]}"` : ""}/>`);
+    legend.push({ swatch: { dash: dashes[i % dashes.length] }, label: Math.round(100 * l.confidence) + "% confident of the return" });
+  });
+  k.push(`<text x="${L-6}" y="${T-4}" text-anchor="end" font-size="10.5" fill="#000" font-family="${FIG_FONT}">bid</text>`);
+  k.push(figFrame(L, T, W, R, H, B));
+  k.push(figXAxis(L, R, W, H, B, x0, x1, xt, v => (+v.toFixed(2)).toString(), "required return on the work"));
+  k.push(figLegend(W, R, T, legend, "bids"));
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bid for a given return">${k.join("")}</svg>`;
+}
+
+function noteFig(name, title, lines) {
+  const W = 580, H = 372, L = 18, R = 18, T = 34, B = 44, k = [figTitle(W, name, title), figFrame(L, T, W, R, H, B)];
+  lines.forEach((t, i) => k.push(`<text x="${W/2}" y="${(T+H-B)/2 + (i - (lines.length-1)/2) * 18}" text-anchor="middle" font-size="12" fill="#000" font-family="${FIG_FONT}">${esc(t)}</text>`));
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(title)}">${k.join("")}</svg>`;
+}
+
+function businessFigures(f, meta) {
+  const name = meta.name, c = Math.round(100 * f.option_confidence) + "%";
+  const dens = (id, title, xlab, d, extra) => densityFig(Object.assign({ id, name, title, xlab, d, money: true, meta }, extra || {}));
+  return [
+    ["Units", unitsFig(name, f.units)],
+    ["Revenue", dens("rev", "Revenue over the sales life", "revenue", f.revenue)],
+    ["Margin", dens("mar", "Gross margin on what is sold", "margin, after what it costs to make and sell", f.margin)],
+    ["Operations", dens("ops", "Cost of supporting what is sold", "operations cost", f.operations)],
+    ["Development", dens("dev", "Development cost", "cost to complete", f.development)],
+    ["NPV", dens("npv", "Net present value", "NPV", f.npv, {
+      sub: "option value at " + c + " confidence = " + figMoney(f.option_value, meta),
+      mark: f.option_value, markLabel: c + " confident of clearing this",
+      regions: [ { lo: null, hi: 0, label: "P(loses money)", hatch: "x", face: GREY(.55), p: f.p_loses },
+                 { lo: 0, hi: null, label: "P(makes money)", hatch: "/", face: GREY(.92), p: f.p_makes } ] })],
+    ["ROI", dens("roi", "Return on the development spend", "return", f.roi, {
+      money: false, sub: "return at " + c + " confidence = " + num(f.return_at, 2),
+      mark: f.return_at, markLabel: c + " confident of clearing this" })],
+  ];
+}
+
+function rfpFigures(f, meta) {
+  const name = meta.name,
+        at = f.job ? "at the contracted payment of " + figMoney(f.bid, meta)
+                   : "at the bid of " + figMoney(f.bid, meta) + (f.refused ? " (the quick estimate: no bid reaches the return)" : "");
+  const dens = (id, title, xlab, d, extra) => densityFig(Object.assign({ id, name, title, xlab, d, money: false, meta }, extra || {}));
+  const figs = [
+    ["Duration", dens("dur", "Estimated time to complete", "periods", f.duration, {
+      regions: [ { lo: null, hi: f.due, label: "P(on time)", hatch: "/", face: GREY(.92), p: f.p_on_time },
+                 { lo: f.due, hi: f.drop_dead, label: "P(late)", hatch: "\\", face: GREY(.72), p: f.p_late },
+                 { lo: f.drop_dead, hi: null, label: "P(past drop dead)", hatch: "x", face: GREY(.50), p: f.p_fail } ] })],
+    ["EAC", dens("eac", f.job ? "Cost still to spend" : "Estimated cost at completion", "cost", f.eac, { money: true,
+      sub: "against the " + figMoney(f.planned, meta) + " the work was planned at",
+      regions: [ { lo: null, hi: f.planned, label: "P(opportunity)", hatch: "/", face: GREY(.92), p: f.p_opportunity },
+                 { lo: f.planned, hi: null, label: "P(risk)", hatch: "\\", face: GREY(.60), p: f.p_risk } ] })],
+    ["EV", f.ev ? dens("ev", "Expected value", "value", f.ev, { money: true, sub: at, mark: 0, markLabel: "breaks even" })
+                : noteFig(name, "Expected value", ["No bid to draw it at.", f.no_bid])],
+    ["ROI", f.roi ? dens("roi", "Return on the work", "return", f.roi, { sub: at, mark: 0, markLabel: "breaks even" })
+                  : noteFig(name, "Return on the work", ["No bid to draw it at.", f.no_bid])],
+  ];
+  if (!f.job) figs.push(["Bids", bidsFig(name, f.bids, meta)]);
+  return figs;
+}
+
+/* ---------------------------------- shell ------------------------------- */
+function go(s) {
+  /* A reading is of the sheet on screen: unsaved changes are saved first. */
+  if ((s === "reading" || s === "figures") && state.dirty && state.id) {
+    state.screen = s; if (s === "figures") state.figures = null; saveSheet(); return;
+  }
+  state.screen = s; if (s === "figures") state.figures = null; render();
+}
+
+async function refreshReading() {
+  if (!state.id) return;
+  state.figures = null;   /* drawn from the same model at the same controls: redrawn with the reading */
+  const q = new URLSearchParams();
+  for (const [k,v] of Object.entries(state.controls)) if (v!=null) q.set(k, v);
+  try { state.reading = await api("/api/projects/"+state.id+"/reading?"+q.toString()); fail(null); }
+  catch (e) { state.reading = null; fail(e.message); }
+}
+
+async function loadProject(id) {
+  state.doc = await api("/api/projects/" + id);
+  state.sheet = JSON.parse(JSON.stringify(state.doc.sheet));
+  state.dirty = false;
+}
+
+async function select(id, screen) {
+  /* moving to another project keeps what was typed on this one */
+  if (state.dirty && state.id && state.id !== id) await saveSheet();
+  state.id = id; state.controls = {}; state.forms = {};
+  try { await loadProject(id); await refreshReading(); fail(null); }
+  catch (e) { fail(e.message); }
+  go(screen || state.screen);
+}
+
+async function loadAll() {
+  const j = await api("/api/projects");
+  state.projects = j.projects; state.folder = j.folder; state.dists = j.distributions;
+  $("#foot").textContent = j.notice || "Everything is worked out in this page. Nothing you type leaves your computer.";
+  if (!state.id && state.projects.length) await select(state.projects[0].id, state.screen);
+  else render();
+}
+
+function render() {
+  document.querySelectorAll(".tab").forEach(t =>
+    t.setAttribute("aria-selected", String(t.dataset.screen === state.screen)));
+  const sel = $("#proj"); sel.innerHTML = "";
+  state.projects.forEach(p => sel.appendChild(
+    el("option",{value:p.id, selected: p.id===state.id ? "selected" : null}, p.name)));
+  const host = $("#screen"); host.innerHTML = "";
+  if (state.screen === "projects") host.appendChild(screenProjects());
+  else if (!state.doc) host.appendChild(el("div",{class:"card pad"},"No project selected."));
+  else host.appendChild(state.screen === "sheet" ? screenSheet()
+                      : state.screen === "figures" ? screenFigures() : screenReading());
+}
+
+document.querySelectorAll(".tab").forEach(t =>
+  t.addEventListener("click", () => go(t.dataset.screen)));
+$("#proj").addEventListener("change", e => select(e.target.value));
+$("#newbtn").addEventListener("click", () => $("#newdlg").showModal());
+$("#newdlg").addEventListener("close", async e => {
+  if (e.target.returnValue !== "create") return;
+  /* On a model's own page there is nothing to choose: the page is the model. */
+  const picked = e.target.querySelector("input[name=kind]:checked");
+  const kind = picked ? picked.value : PAGE_CASE;
+  const name = ($("#nm").value || "Untitled project").trim();
+  try {
+    const j = await api("/api/projects", { method:"POST",
+      headers:{"Content-Type":"application/json"}, body: JSON.stringify({name, case:kind}) });
+    await loadAll(); await select(j.id, "sheet");
+  } catch (err) { fail(err.message); }
+});
+$("#exportbtn").addEventListener("click", () => {
+  const blob = new Blob([PDLocal.exportBlob()], {type:"application/json"});
+  const a = el("a",{href:URL.createObjectURL(blob),
+                    download: (PAGE_CASE === "rfp" ? "bid-price-projects.json"
+                             : PAGE_CASE === "business" ? "real-option-projects.json"
+                             : "project-desk-projects.json")});
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+});
+$("#importbtn").addEventListener("click", () => $("#importfile").click());
+$("#importfile").addEventListener("change", async e => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  try {
+    const n = PDLocal.importText(await f.text());
+    state.id = null;
+    await loadAll();
+    fail(null);
+    $("#foot").textContent = "Imported " + n.added + " new project(s)" +
+      (n.replaced ? " and replaced " + n.replaced : "") + " from " + f.name + ".";
+  } catch (err) { fail("That file could not be read: " + err.message); }
+});
+$("#ver").textContent = "v" + PD.VERSION;
+loadAll().catch(e => fail(e.message));
+</script>
+</body>
+</html>
