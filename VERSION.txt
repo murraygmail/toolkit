@@ -1,12 +1,14 @@
-Project Desk v0.13.3
+Project Desk v0.13.4
 built 2026-09-30
 
 A page per model: real-option.html and fixed-bid.html. Each shows this version
-at the left of its toolbar, under the masthead. If a page does not say v0.13.3,
+at the left of its toolbar, under the masthead. If a page does not say v0.13.4,
 your browser is serving a cached copy: reload it with Shift held down
 (Cmd-Shift-R on a Mac).
 
-New in v0.13.3: the two buttons under the home page's opening paragraph are
+New in v0.13.4: the home page no longer has the paragraph naming the two
+  algorithms of the book not yet on the site. Nothing else changes. Test plan r22.
+v0.13.3: the two buttons under the home page's opening paragraph are
   removed. Nothing else changes. Test plan r21.
 v0.13.2: index.html is a landing page. It says what the models are
   for, why there are two (how a project's value responds to its delivery date),

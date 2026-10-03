@@ -1,4 +1,4 @@
-PROJECT DESK v0.13.3, a standalone site
+PROJECT DESK v0.13.4, a standalone site
 =======================================
 
 The folder is the whole site, and index.html is its home. Each model has
@@ -25,7 +25,7 @@ request of any kind, so the site works opened from a folder, served locally,
 or uploaded anywhere as it is.
 
 The two pages that take a reading show this version at the left of the
-toolbar. If what you see does not say v0.13.3, the browser is serving a cached
+toolbar. If what you see does not say v0.13.4, the browser is serving a cached
 copy: reload with Shift held down (Cmd-Shift-R on a Mac).
 
 site.css is the stylesheet of murraycantor.com, copied in, so the site keeps
@@ -85,6 +85,11 @@ exactly as printed:
 The test plan that came with this folder walks both pages, step by step, with
 the figure to expect at each one.
 
+
+What changed in v0.13.4
+----------------------
+the home page no longer has the paragraph naming the two
+  algorithms of the book not yet on the site. Nothing else changes. Test plan r22.
 
 What changed in v0.13.3
 ----------------------
